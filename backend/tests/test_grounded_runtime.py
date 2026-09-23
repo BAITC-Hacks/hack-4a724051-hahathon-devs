@@ -344,6 +344,26 @@ def test_image_without_model_is_explicitly_reported_unread(grounded, monkeypatch
     assert "vision_analysis_unavailable" in answer["warnings"]
 
 
+def test_vision_article_query_resolves_without_prefetched_product_hints(grounded, monkeypatch):
+    from app.modules.documents.models import OwnedImage
+
+    async def image_documents(session_id, asset_ids):
+        return [ParsedDocument(asset_id=asset, status="ready", text="") for asset in asset_ids]
+
+    async def images(session_id, asset_ids):
+        return [OwnedImage(asset_ids[0], "image/jpeg", b"test image content")]
+
+    monkeypatch.setattr(grounded[0].documents, "resolve", image_documents)
+    monkeypatch.setattr(grounded[0].documents, "images", images)
+    planner = RecordingPlanner(queries=["990100001_"])
+    grounded[0].worker.processor.planner = planner
+    answer = turn(grounded, "Найди товары из фотографии", asset_ids=[str(uuid4())], allow_external_analysis=True)
+    assert planner.calls[0]["payload"]["candidates"] == []
+    assert len(planner.calls[0]["images"]) == 1
+    assert [product["article_original"] for product in answer["products"]] == ["990100001_"]
+    assert answer["mode"] == "grounded"
+
+
 @pytest.mark.parametrize("private", ["4111 1111 1111 1111", "CVV: 123", "sk-private_test_secret_123456789"])
 def test_payment_or_secret_data_is_rejected_before_persistence(grounded, private):
     services, client, headers, conv = grounded

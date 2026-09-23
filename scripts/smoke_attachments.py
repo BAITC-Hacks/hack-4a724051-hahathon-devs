@@ -20,9 +20,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:3000")
     parser.add_argument("--analyze", action="store_true", help="Send synthetic PDF/photo/DOCX to the configured paid model")
+    parser.add_argument("--only", choices=sorted(p.name for p in (ROOT / "test-files/assistant").iterdir()))
     args = parser.parse_args()
     base = args.base_url.rstrip("/")
     for path in sorted((ROOT / "test-files/assistant").iterdir()):
+        if args.only and path.name != args.only:
+            continue
         with httpx.Client(base_url=base, timeout=65, trust_env=False) as client:
             def request(method, route, **kwargs):
                 response = client.request(method, route, **kwargs)
