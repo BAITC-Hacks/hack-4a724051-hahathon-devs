@@ -139,7 +139,7 @@ class GroundedAssistant:
         self.state = AssistantState(path)
         self.terms = PurchaseTermsService()
         self.planner = planner
-        # Распознавание фото и сканов (NVIDIA), участник 1: app/modules/documents/ocr.py
+        # Распознавание фото и сканов (OpenAI или NVIDIA), участник 1: app/modules/documents/ocr.py
         self.image_reader = image_reader
 
     async def _read_images(self, context):
@@ -164,7 +164,7 @@ class GroundedAssistant:
                 documents.append(doc)
                 continue
             result = await self.image_reader.aread(pages, context.session_id)
-            warnings = list(doc.warnings) + ["ocr_nvidia"] + (["ocr_pages_failed"] if result.pages_failed else [])
+            warnings = list(doc.warnings) + ["ocr_external"] + (["ocr_pages_failed"] if result.pages_failed else [])
             text = "\n".join(x for x in (doc.text, result.text) if x)[:40000]
             status = "partial" if result.pages_failed or not result.text else doc.status
             documents.append(doc.model_copy(update={"text": text, "status": status, "warnings": warnings}))

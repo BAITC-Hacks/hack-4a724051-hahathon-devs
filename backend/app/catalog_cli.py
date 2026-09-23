@@ -4,7 +4,7 @@ python -m app.catalog_cli migrate
 python -m app.catalog_cli import-synthetic
 python -m app.catalog_cli import-ekt --pages 3
 python -m app.catalog_cli status
-python -m app.catalog_cli embed [--source synthetic|db]   # индекс смыслового поиска (NVIDIA)
+python -m app.catalog_cli embed [--source synthetic|db]   # индекс смыслового поиска (OpenAI или NVIDIA)
 
 Адрес БД берётся из DATABASE_URL, доступ к EKT из EKT_API_USER / EKT_API_PASSWORD.
 """
@@ -82,15 +82,15 @@ def main(argv: list[str] | None = None) -> int:
 
 def _embed(args) -> int:
     """Считает эмбеддинги всех карточек и сохраняет индекс для SEMANTIC_SEARCH_ENABLED."""
-    from app.adapters.nvidia.client import NvidiaClient
+    from app.adapters.ai_services.client import AIServicesClient
     from app.core.config import Settings
     from app.modules.catalog.quality import product_from_source
     from app.modules.search.semantic import SemanticIndex
 
     settings = Settings()
-    key = settings.nvidia_api_key.get_secret_value()
+    key = settings.ai_key()
     if not key:
-        print("NVIDIA_API_KEY не задан в .env", file=sys.stderr)
+        print(f"Нет ключа для AI_SERVICES_PROVIDER={settings.ai_services_provider} в .env", file=sys.stderr)
         return 2
     if args.source == "synthetic":
         products = [product_from_source(raw) for raw in json.loads(SYNTHETIC.read_text(encoding="utf-8"))["items"]]
@@ -100,9 +100,9 @@ def _embed(args) -> int:
         with pool.connection() as conn:
             products = [product_from_source(raw, ts) for raw, ts in conn.execute("SELECT raw, fetched_at FROM products")]
         pool.close()
-    client = NvidiaClient(key)
+    client = AIServicesClient(settings.ai_services_provider, key)
     try:
-        index = SemanticIndex.build(products, client, settings.nvidia_embed_model)
+        index = SemanticIndex.build(products, client, settings.resolved_embed_model())
     finally:
         client.close()
     out = args.out or settings.semantic_index_path

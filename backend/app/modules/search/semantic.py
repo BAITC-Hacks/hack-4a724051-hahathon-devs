@@ -1,9 +1,9 @@
-"""Смысловой поиск по каталогу на эмбеддингах NVIDIA.
+"""Смысловой поиск по каталогу на эмбеддингах (OpenAI или NVIDIA).
 
 Векторы карточек считаются заранее (python -m app.catalog_cli embed) и лежат в файле,
 на запрос клиента уходит один вызов эмбеддинга (с кэшем). Результат смешивается с
 обычным поиском, а не заменяет его: точный артикул всегда важнее похожести.
-Без ключа или при сбое NVIDIA поиск работает как раньше.
+Без ключа или при сбое сервиса поиск работает как раньше.
 """
 
 import array
@@ -43,7 +43,7 @@ def _unpack(value: str) -> list[float]:
 
 
 class SemanticIndex:
-    def __init__(self, model: str, vectors: dict[int, list[float]], client=None, min_score: float = 0.2,
+    def __init__(self, model: str, vectors: dict[int, list[float]], client=None, min_score: float = 0.3,
                  cache_size: int = 512):
         self.model = model
         self.vectors = {pid: _normalize(v) for pid, v in vectors.items()}
@@ -55,7 +55,7 @@ class SemanticIndex:
     # --- файл индекса ---
 
     @classmethod
-    def load(cls, path: Path, client=None, min_score: float = 0.2) -> "SemanticIndex | None":
+    def load(cls, path: Path, client=None, min_score: float = 0.3) -> "SemanticIndex | None":
         path = Path(path)
         if not path.exists():
             return None
@@ -86,10 +86,10 @@ class SemanticIndex:
             return self._cache[key]
         if self.client is None:
             return None
-        from app.adapters.nvidia.client import NvidiaError
+        from app.adapters.ai_services.client import AIServiceError
         try:
             vector = _normalize(self.client.embed([query], self.model, "query", session_id=session_id)[0])
-        except NvidiaError as e:
+        except AIServiceError as e:
             log.warning("semantic query skipped: %s", e)
             return None
         self._cache[key] = vector

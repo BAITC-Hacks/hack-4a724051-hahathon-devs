@@ -1,4 +1,4 @@
-"""Распознавание текста на фото и сканах через модель NVIDIA, понимающую изображения.
+"""Распознавание текста на фото и сканах через модель, понимающую изображения (OpenAI или NVIDIA).
 
 Вызывается только когда клиент разрешил внешнюю обработку файлов. Модель просим
 переписать текст как есть: артикулы и количества потом ищутся в каталоге обычным
@@ -32,21 +32,21 @@ def clean(text: str) -> str:
     return "\n".join(lines).strip()[:MAX_TEXT_CHARS]
 
 
-class NvidiaImageReader:
+class ImageReader:
     def __init__(self, client, model: str):
         self.client = client
         self.model = model
 
     def read(self, images: list[tuple[str, bytes]], session_id: str | None = None) -> OcrResult:
-        from app.adapters.nvidia.client import NvidiaBudgetExceeded, NvidiaError
+        from app.adapters.ai_services.client import AIBudgetExceeded, AIServiceError
         parts, failed = [], 0
         for number, (media_type, content) in enumerate(images, 1):
             try:
                 text = clean(self.client.read_image(content, media_type, self.model, PROMPT, session_id=session_id))
-            except NvidiaBudgetExceeded:
+            except AIBudgetExceeded:
                 failed += len(images) - number + 1
                 break
-            except NvidiaError:
+            except AIServiceError:
                 failed += 1
                 continue
             if text:
