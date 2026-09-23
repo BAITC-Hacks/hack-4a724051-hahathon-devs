@@ -60,7 +60,8 @@ def test_categories_have_twelve_real_top_levels_and_aggregate_counts(browse):
     assert len(data["items"]) == 12
     assert {node["path"][0]: node["name"] for node in data["items"]} == CATEGORY_LABELS
     assert sum(node["count"] for node in data["items"]) == page(browse)["total"]
-    assert any(node["count"] == 0 for node in data["items"])
+    # Демо-каталог заполняет каждый раздел; пустые разделы всё равно видны (len == 12 выше).
+    assert all(node["count"] > 0 for node in data["items"])
     for node in data["items"]:
         assert sum(child["count"] for child in node["children"]) == node["count"]
         assert all(child["path"][0] == node["path"][0] for child in node["children"])
@@ -93,7 +94,7 @@ def test_category_prefix_brand_stock_and_price_filters_use_database(browse):
     assert data["brands"] == page(browse, category="nizkovoltnaya_apparatura", stock_only=True,
                                     min_price="1000", max_price="5000")["brands"]
     category = page(browse, category="kabel_provod/kabel_silovoy")
-    assert category["total"] == 3
+    assert category["total"] == 4  # три сечения завода А и 3х2,5 завода Б
     assert page(browse, category="kabel_provod/kabel")["total"] == 0
 
 

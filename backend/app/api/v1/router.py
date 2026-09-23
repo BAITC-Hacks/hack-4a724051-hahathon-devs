@@ -64,6 +64,21 @@ def certificate(name: str, services: Services, session: SessionRead):
     return FileResponse(path, media_type="application/pdf", filename=name)
 
 
+@router.get("/product-images/{name}", tags=["catalog"])
+def product_image(name: str, services: Services):
+    """Демо-иллюстрации синтетического каталога. Без сессии: картинка может грузиться до её создания."""
+    if services.settings.integration_mode not in {"synthetic", "catalog_db"} or not re.fullmatch(r"SYN-[0-9]+\.svg", name):
+        raise AppError("image_not_found", "Изображение не найдено.", 404)
+    path = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "images" / name
+    if not path.is_file():
+        raise AppError("image_not_found", "Изображение не найдено.", 404)
+    # SVG без скриптов, но на случай прямого открытия запрещаем всё, кроме встроенных стилей.
+    return FileResponse(path, media_type="image/svg+xml", headers={
+        "Cache-Control": "public, max-age=86400",
+        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'",
+    })
+
+
 @router.get("/cart/view", response_class=HTMLResponse, tags=["actions"])
 async def cart_page(services: Services, session: SessionRead):
     cart = await bounded_read(services.actions.get_cart(session.id))

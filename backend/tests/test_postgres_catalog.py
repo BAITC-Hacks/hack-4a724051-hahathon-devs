@@ -76,7 +76,7 @@ def test_lookup_and_search(catalog):
 def test_stored_product_keeps_quality_rules(catalog):
     conflict = catalog.search_text("DRX250", 1)[0]
     assert "conflict:rated_current" in conflict.warnings
-    defect = next(p for p in catalog.search_text("светильник 18W", 5) if "18W" in p.name)
+    defect = next(p for p in catalog.search_text("светильник 18W", 5) if "18W" in p.name and "MEGALIGHT" in p.name)
     assert defect.stock.status is StockStatus.NOT_SELLABLE
 
 

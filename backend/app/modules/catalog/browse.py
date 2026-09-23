@@ -1,4 +1,6 @@
 """Read-only storefront browsing over the same catalog used by the assistant."""
+import json
+from pathlib import Path
 from typing import Protocol, runtime_checkable
 from app.integrations.domain import product_view
 from app.modules.catalog.dto import CatalogPage, CategoriesPage, CategoryNode
@@ -27,6 +29,11 @@ SUBCATEGORY_LABELS = {
     "differentsialnye_avtomaty": "Дифференциальные автоматы",
     "rozetki": "Розетки",
 }
+# Остальные подразделы: заголовки страниц ekt.kz (data/synthetic/fetch_ekt_selection.py labels).
+_LABELS_FILE = Path(__file__).resolve().parents[4] / "data" / "curated" / "category_labels.json"
+if _LABELS_FILE.exists():
+    for _path, _label in json.loads(_LABELS_FILE.read_text(encoding="utf-8")).items():
+        SUBCATEGORY_LABELS.setdefault(_path.rsplit("/", 1)[-1], _label)
 
 
 @runtime_checkable

@@ -70,8 +70,13 @@ UNIT_SCALE = {
 }
 
 
+AC_SUFFIX = re.compile(r"\s*(?:\bac\b|~|пер\.?\s*тока|переменного\s+тока)\.?\s*$", re.I)
+
+
 def scalar_value(value: str, unit: str | None = None) -> Decimal | None:
     """Only a complete scalar in a compatible known unit is comparable numerically."""
+    # «400В AC», «230 В пер. тока.» это те же 400 В и 230 В. DC не убираем: это другое значение.
+    value = AC_SUFFIX.sub("", value).rstrip(" .")
     match = re.fullmatch(r"\s*(\d+(?:[.,]\d+)?)\s*([A-Za-zА-Яа-я]*)\s*", value)
     if not match:
         return None

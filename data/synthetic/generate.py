@@ -6,9 +6,13 @@
 Запуск: python data/synthetic/generate.py
 """
 
+import html
 import json
 import random
+import re
 from pathlib import Path
+
+from pictures import render
 
 OUT = Path(__file__).parent
 rng = random.Random(2026)
@@ -25,6 +29,7 @@ STORES = [
 CITY_STORES = [3, 7, 12, 13, 18, 19, 20, 21, 23, 24, 25]
 
 products = []
+pictures = {}  # id -> описание картинки для pictures.render()
 next_id = 900001
 next_article = 990100001
 
@@ -49,7 +54,7 @@ def stock(mode):
     return [{"id": sid, "name": name, "quantity": q[sid]} for sid, name in STORES]
 
 
-def add(name, category, price, props, description, mode="normal", cert=True, unit="шт"):
+def add(name, category, price, props, description, mode="normal", cert=True, unit="шт", picture=None, image=None):
     global next_id, next_article
     pid, article = next_id, f"{next_article}_"
     next_id += 1
@@ -81,12 +86,14 @@ def add(name, category, price, props, description, mode="normal", cert=True, uni
         "price": price,
         "quantity": sum(s["quantity"] for s in stores),
         "stores": stores,
-        "image": None,
+        "image": image or (f"/api/v1/product-images/SYN-{pid}.svg" if picture else None),
         "url": f"/catalog/{category}/{slug(name)}/",
         "offers": [],
         "properties": properties,
         "certificates": certificates,
     })
+    if picture:
+        pictures[pid] = picture
     return pid
 
 
@@ -119,7 +126,7 @@ for brand, series, kA, k in BREAKER_SERIES:
             curve = "C"
             mode = "zero" if (brand, poles, current) in zero_breakers else rng.choice(["normal"] * 6 + ["low"])
             code = f"{rng.randint(100000, 999999)}"
-            name = f"{code} АВ {series} {poles}P {current}А {curve} {kA} {brand}"
+            name = f"Автоматический выключатель {series} {poles}P {current}А {curve} {kA} {brand}"
             add(
                 name, "nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli",
                 int(BASE_PRICE[current] * k * (2.8 if poles == 3 else 1) // 10 * 10),
@@ -133,43 +140,50 @@ for brand, series, kA, k in BREAKER_SERIES:
                 },
                 breaker_description(brand, series, poles, current, curve, kA),
                 mode=mode, cert=rng.random() < 0.7,
+                picture={"kind": "breaker", "brand": brand, "series": series, "poles": poles,
+                         "current": current, "curve": curve, "ka": kA},
             )
 
 # Силовой автомат с противоречием: в названии и описании 160 А, в свойствах 250 А.
 add(
-    "971300 АВ DRX250 MT 3ф 160А 18kA Legrand",
+    "Автоматический выключатель в литом корпусе DRX250 MT 3P 160А 18кА Legrand",
     "nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli", 61900,
     {
         "ARTIKULPOSTAVSHCHIKA": "971300", "TORGOVAYA_MARKA": "Legrand", "SERIYA": "DRX250",
         "KOLICHESTVO_POLYUSOV": "3", "NOMINALNYY_TOK": "250 А",
         "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "18кА", "NOMINALNOE_NAPRYAZHENIE": "400В",
+        "TIP_RASTSEPITELYA": "термомагнитный",
         "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе",
     },
     "Автоматический выключатель DRX250 MT 3P 160А 18kA Legrand для распределительных сетей.\r\n\r\n"
     "Основные характеристики:\r\n\r\n\tСерия: DRX250 MT\r\n\tКоличество полюсов: 3\r\n"
     "\tНоминальный ток: 160А\r\n\tОтключающая способность: 18kA\r\n\tНоминальное напряжение: 400В AC",
+    picture={"kind": "mccb", "brand": "Legrand", "series": "DRX250 MT", "current": 160, "ka": "18кА"},
 )
 add(
-    "971301 АВ ВА88-35 3P 160А 35кА IEK",
+    "Автоматический выключатель в литом корпусе ВА88-35 3P 160А 35кА IEK",
     "nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli", 48700,
     {
         "ARTIKULPOSTAVSHCHIKA": "971301", "TORGOVAYA_MARKA": "IEK", "SERIYA": "ВА88-35",
         "KOLICHESTVO_POLYUSOV": "3", "NOMINALNYY_TOK": "160А",
         "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "35кА", "NOMINALNOE_NAPRYAZHENIE": "400В",
+        "TIP_RASTSEPITELYA": "термомагнитный",
         "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе",
     },
     "Автоматический выключатель ВА88-35 3P 160А 35кА IEK в литом корпусе.\r\n\r\n"
     "Основные характеристики:\r\n\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 160А\r\n"
     "\tОтключающая способность: 35кА\r\n\tНоминальное напряжение: 400В",
+    picture={"kind": "mccb", "brand": "IEK", "series": "ВА88-35", "current": 160, "ka": "35кА"},
 )
 
 # УЗО и дифавтоматы
+RCBO_KA = {"IEK": "4,5кА", "Legrand": "6кА", "Chint": "6кА"}
 for brand, series, price in [("IEK", "АД12", 6900), ("Legrand", "DX3", 18400), ("Chint", "NXBLE-32", 7600)]:
     for current, leak in [(16, 30), (25, 30), (32, 30)]:
         code = f"{rng.randint(100000, 999999)}"
         mode = "zero" if (brand, current) == ("Legrand", 25) else "normal"
         add(
-            f"{code} Диф.авт. {series} 1P+N {current}А {leak}мА C {brand}",
+            f"Дифференциальный автомат {series} 1P+N {current}А {leak}мА C {brand}",
             "nizkovoltnaya_apparatura/differentsialnye_avtomaty",
             price + (current - 16) * 90,
             {
@@ -177,12 +191,15 @@ for brand, series, price in [("IEK", "АД12", 6900), ("Legrand", "DX3", 18400),
                 "KOLICHESTVO_POLYUSOV": "2", "NOMINALNYY_TOK": f"{current}А",
                 "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": f"{leak}мА",
                 "KHARAKTERISTIKA_SRABATYVANIYA": "C", "NOMINALNOE_NAPRYAZHENIE": "230В",
+                "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": RCBO_KA[brand], "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
                 "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель",
             },
             f"Дифференциальный автомат {series} 1P+N {current}А {leak}мА {brand}. Защищает от перегрузки, "
             f"короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n"
             f"\tНоминальный ток: {current}А\r\n\tТок утечки: {leak}мА\r\n\tХарактеристика: C",
             mode=mode,
+            picture={"kind": "rcbo", "brand": brand, "series": series, "current": current, "leak": leak,
+                     "ka": RCBO_KA[brand]},
         )
 
 # Розетки и выключатели
@@ -192,7 +209,7 @@ for brand, series, color, price in [
 ]:
     code = f"{rng.randint(100000, 999999)}"
     add(
-        f"{code} Розетка 2К+З {series} {color} {brand}",
+        f"Розетка с заземлением {series} 2К+З 16А {color} {brand}",
         "rozetki_vyklyuchateli_korobki/rozetki", price,
         {
             "ARTIKULPOSTAVSHCHIKA": code, "TORGOVAYA_MARKA": brand, "SERIYA": series, "TSVET": color,
@@ -202,19 +219,24 @@ for brand, series, color, price in [
         f"Розетка с заземлением {series} {brand}, цвет {color}, для скрытой установки.\r\n\r\n"
         f"Основные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tНапряжение: 250В\r\n\tЦвет: {color}",
         mode="zero" if series == "Mosaic" else "normal",
+        picture={"kind": "socket", "brand": brand, "series": series, "color": color},
     )
 
 # Кабель: единица «м», дробное количество не округляем.
+CABLE_CONSTRUCTION = {"MARKA_KABELYA": "ВВГнг(А)-LS", "MATERIAL_ZHILY": "медь",
+                      "MATERIAL_IZOLYATSII": "ПВХ пониженной пожароопасности",
+                      "KLASS_POZHARNOY_BEZOPASNOSTI": "П1б.8.2.2.2"}
 for section, price in [("3х1,5", 410), ("3х2,5", 620), ("5х4", 1650)]:
     add(
-        f"Кабель ВВГнг(А)-LS {section} ок(N,PE)-0,66 ГОСТ",
+        f"Кабель силовой ВВГнг(А)-LS {section} ок(N,PE)-0,66 кВ",
         "kabel_provod/kabel_silovoy", price,
         {
             "ARTIKULPOSTAVSHCHIKA": f"VVG-{section}", "TORGOVAYA_MARKA": "Кабельный завод",
-            "SECHENIE": section, "NOMINALNOE_NAPRYAZHENIE": "660В",
+            "SECHENIE": section, "NOMINALNOE_NAPRYAZHENIE": "660В", **CABLE_CONSTRUCTION,
         },
         f"Силовой кабель ВВГнг(А)-LS {section} с пониженным дымо- и газовыделением. Продаётся на метры.",
         unit="м",
+        picture={"kind": "cable", "section": section, "brand": "Кабельный завод"},
     )
 
 # Светильники: один товар лежит только на складе брака.
@@ -224,26 +246,106 @@ for brand, power, flux, price, mode in [
 ]:
     code = f"{rng.randint(100000, 999999)}"
     add(
-        f"{code} Светильник LED ДПО {power}W {flux}Lm 4000K IP40 {brand}",
+        f"Светильник светодиодный ДПО {power}W {flux}Lm 4000K IP40 {brand}",
         "svetilniki_lampy/svetilniki_ofisnye", price,
         {
             "ARTIKULPOSTAVSHCHIKA": code, "TORGOVAYA_MARKA": brand, "MOSHCHNOST": f"{power}Вт",
             "SVETOVOY_POTOK_LM": str(flux), "TSVETOVAYA_TEMPERATURA": "4000K", "STEPEN_ZASHCHITY": "IP40",
+            "TIP_USTROYSTVA": "Светильник светодиодный",
         },
         f"Светодиодный светильник {power}Вт {flux}Лм 4000K IP40 {brand} для офисов и общественных помещений.",
         mode=mode,
+        picture={"kind": "led_panel", "brand": brand, "power": power, "flux": flux},
     )
+
+# Добавлены позже, в конец, чтобы ID и артикулы остальных товаров не поменялись.
+# Для каждого есть проверяемый аналог по профилю категории.
+add(
+    "Кабель силовой ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 кВ, Кабельный завод Б",
+    "kabel_provod/kabel_silovoy", 640,
+    {"ARTIKULPOSTAVSHCHIKA": "VVG-B-3х2,5", "TORGOVAYA_MARKA": "Кабельный завод Б", "SECHENIE": "3х2,5",
+     "NOMINALNOE_NAPRYAZHENIE": "660В", **CABLE_CONSTRUCTION},
+    "Силовой кабель ВВГнг(А)-LS 3х2,5 другого завода. Продаётся на метры.",
+    mode="zero", unit="м",
+    picture={"kind": "cable", "section": "3х2,5", "brand": "Кабельный завод Б"},
+)
+add(
+    "Автоматический выключатель в литом корпусе NM1-250 3P 160А 35кА Chint",
+    "nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli", 45200,
+    {
+        "ARTIKULPOSTAVSHCHIKA": "971302", "TORGOVAYA_MARKA": "Chint", "SERIYA": "NM1-250",
+        "KOLICHESTVO_POLYUSOV": "3", "NOMINALNYY_TOK": "160А",
+        "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "35кА", "NOMINALNOE_NAPRYAZHENIE": "400В",
+        "TIP_RASTSEPITELYA": "термомагнитный", "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе",
+    },
+    "Автоматический выключатель NM1-250 3P 160А 35кА Chint в литом корпусе.",
+    mode="zero",
+    picture={"kind": "mccb", "brand": "Chint", "series": "NM1-250", "current": 160, "ka": "35кА"},
+)
+add(
+    "Светильник светодиодный ДПО 18W 1800Lm 4000K IP40 IEK",
+    "svetilniki_lampy/svetilniki_ofisnye", 3700,
+    {"ARTIKULPOSTAVSHCHIKA": "971303", "TORGOVAYA_MARKA": "IEK", "MOSHCHNOST": "18Вт",
+     "SVETOVOY_POTOK_LM": "1800", "TSVETOVAYA_TEMPERATURA": "4000K", "STEPEN_ZASHCHITY": "IP40",
+     "TIP_USTROYSTVA": "Светильник светодиодный"},
+    "Светодиодный светильник 18Вт 1800Лм 4000K IP40 IEK для офисов.",
+    picture={"kind": "led_panel", "brand": "IEK", "power": 18, "flux": 1800},
+)
+
+# Реальные товары ekt.kz (fetch_ekt_selection.py): название, фото ссылкой на ekt.kz,
+# раздел, характеристики и описание. ID, наши артикулы, штрихкоды, остатки и цены
+# (цена сайта ±10%) демонстрационные. Добавляются в конец, чтобы ID выше не менялись.
+SELECTION = OUT / "ekt_selection.json"
+CABLE_WORDS = ("кабель", "провод", "шнур")
+
+
+def clean_name(name: str, supplier: str | None) -> str:
+    """Убирает служебные пометки учётной системы: код в начале, *** и !!!, упаковку (12)."""
+    text = re.sub(r"^[*!\s]+|[*!\s]+$", "", html.unescape(name))
+    first, _, rest = text.partition(" ")
+    code = (supplier or "").rstrip("_")
+    is_code = first == code or (re.fullmatch(r"\d[\d\-_./]*", first) and len(re.sub(r"\D", "", first)) >= 4)
+    if rest and is_code and not re.match(r"(Вт|W|А|A|В|V|мм|м|кВт)\b", rest):
+        text = rest
+    text = re.sub(r"\s*\((?:\d+(?:/\d+)*|\d+\s*шт\.?)\)\s*", " ", text)
+    text = re.sub(r"\s*(?:!!+|\bNEW\b)\s*", " ", text)
+    text = re.sub(r"\s+", " ", text).strip(" ,.-")
+    return text[:1].upper() + text[1:]
+
+
+if SELECTION.exists():
+    for real in json.loads(SELECTION.read_text(encoding="utf-8"))["items"]:
+        props = dict(real["properties"])
+        supplier = props.get("ARTIKULPOSTAVSHCHIKA")
+        name = clean_name(real["name"], supplier)
+        base = real.get("price") or 0
+        price = int(base * rng.uniform(0.9, 1.1) // 10 * 10) if base >= 50 else int(base) or rng.randint(3, 60) * 100
+        unit = "м" if real["category"][0] == "kabel_provod" and name.lower().startswith(CABLE_WORDS) else "шт"
+        add(
+            name, "/".join(real["category"]), max(price, 10), props, real["description"],
+            # Без нулевого остатка: для таких разделов нет профилей аналогов, в демо был бы тупик.
+            mode=rng.choice(["normal"] * 7 + ["low"]), cert=rng.random() < 0.5, unit=unit,
+            image=real["image"],
+        )
 
 catalog = {
     "meta": {
         "synthetic": True,
         "note": "Синтетические данные для разработки и демо. Структура повторяет /api/products/detail ekt.kz, "
-                "значения придуманы. Поля certificates и properties.EDINITSA_IZMERENIYA добавлены для демо.",
+                "значения придуманы. Поля certificates и properties.EDINITSA_IZMERENIYA добавлены для демо. "
+                "Первые товары с собственными SVG-иллюстрациями, остальные взяты с ekt.kz: название, фото "
+                "(ссылка на ekt.kz), характеристики. Цены, остатки, ID и артикулы демонстрационные.",
         "count": len(products),
     },
     "items": products,
 }
 (OUT / "ekt_products.json").write_text(json.dumps(catalog, ensure_ascii=False, indent=1), encoding="utf-8")
+
+# Иллюстрации товаров.
+image_dir = OUT / "images"
+image_dir.mkdir(exist_ok=True)
+for pid, spec in pictures.items():
+    (image_dir / f"SYN-{pid}.svg").write_text(render(spec), encoding="utf-8")
 
 # Заглушки сертификатов, чтобы ссылки из карточек открывались.
 cert_dir = OUT / "certificates"

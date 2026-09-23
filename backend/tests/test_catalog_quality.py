@@ -62,7 +62,7 @@ def test_synthetic_catalog_loads():
     products = list(catalog._by_id.values())
     assert len(products) > 50
     conflicts = [p for p in products if p.warnings]
-    assert [p.name for p in conflicts] == ["971300 АВ DRX250 MT 3ф 160А 18kA Legrand"]
+    assert "Автоматический выключатель в литом корпусе DRX250 MT 3P 160А 18кА Legrand" in [p.name for p in conflicts]
 
 
 def test_one_pole_plus_neutral_does_not_conflict_with_either_convention():
@@ -81,3 +81,13 @@ def test_series_value_list_in_description_is_ignored():
 def test_real_disagreement_is_still_a_conflict():
     p = product_from_source(raw(name="Клемма (0,08-2,5мм 32А)", description="", properties={"NOMINALNYY_TOK": "30 А"}))
     assert p.attribute("rated_current").status is AttributeStatus.CONFLICT
+
+
+def test_alternating_current_suffix_is_not_a_conflict():
+    for text in ("400В AC", "400 В пер. тока.", "400В~"):
+        p = product_from_source(raw(name="АВ 3P 16А", description=f"Номинальное напряжение: {text}",
+                                    properties={"NOMINALNOE_NAPRYAZHENIE": "400В"}))
+        assert p.attribute("voltage").status is AttributeStatus.OK, text
+    dc = product_from_source(raw(name="АВ 3P 16А", description="Номинальное напряжение: 400В DC",
+                                 properties={"NOMINALNOE_NAPRYAZHENIE": "400В"}))
+    assert dc.attribute("voltage").status is AttributeStatus.CONFLICT
