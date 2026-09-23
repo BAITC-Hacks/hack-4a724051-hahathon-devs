@@ -3,6 +3,7 @@
 import base64
 import asyncio
 import json
+import logging
 import time
 from pathlib import Path
 from typing import Annotated, Literal
@@ -173,6 +174,8 @@ class OpenAIPlanningProvider:
                 headers={"Authorization": "Bearer " + self.api_key}, timeout=self.timeout_s,
             )
             if upstream.status_code != 200:
+                # Never log upstream bodies: they may echo document text or credentials.
+                logging.getLogger(__name__).warning("OpenAI response rejected: HTTP %s", upstream.status_code)
                 raise LlmUnavailable()
             response = upstream.json()
             if not isinstance(response, dict):

@@ -17,6 +17,7 @@ from app.contracts import ParsedDocument
 from app.core.errors import AppError, not_found
 from app.core.privacy import payment_data
 from .models import AssetView, OwnedImage
+from .scanner import scan_command
 
 MAX_FILE = 10 * 1024 * 1024
 MAX_SESSION_ASSETS = 20
@@ -163,7 +164,7 @@ class DocumentsService:
         if not self.scanner_command:
             return False, "Антивирус не настроен; файл помещён в карантин."
         try:
-            result = subprocess.run([*self.scanner_command, str(path)], stdin=subprocess.DEVNULL,
+            result = subprocess.run(scan_command(self.scanner_command, path), stdin=subprocess.DEVNULL,
                                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                                     timeout=self.scanner_timeout, shell=False, check=False,
                                     cwd=self.root_path / "quarantine", env=self._subprocess_env())
@@ -177,8 +178,9 @@ class DocumentsService:
 
     @staticmethod
     def _subprocess_env() -> dict[str, str]:
-        allowed = {"PATH", "SystemRoot", "WINDIR", "TEMP", "TMP", "LANG", "LC_ALL"}
-        return {key: value for key, value in os.environ.items() if key in allowed}
+        allowed = {"PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "LANG", "LC_ALL",
+                   "PROGRAMDATA", "PROGRAMFILES", "ALLUSERSPROFILE", "USERPROFILE", "LOCALAPPDATA", "APPDATA"}
+        return {key: value for key, value in os.environ.items() if key.upper() in allowed}
 
     def _parse(self, path: Path, extension: str) -> tuple[dict, list[bytes]]:
         parser = Path(__file__).with_name("parser.py")

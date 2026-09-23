@@ -44,3 +44,23 @@ class ClamdScanner:
         if "FOUND" in reply:
             return "infected"
         return "unavailable"
+
+
+import os
+from pathlib import Path
+
+
+def scan_command(command: tuple[str, ...], path: Path) -> list[str]:
+    if command != ("windows-defender",):
+        return [*command, str(path.resolve())]
+    if os.name != "nt":
+        raise OSError("Microsoft Defender requires Windows")
+    platform = Path(os.environ.get("ProgramData", "C:/ProgramData")) / "Microsoft/Windows Defender/Platform"
+    candidates = sorted(platform.glob("*/MpCmdRun.exe"), reverse=True)
+    candidates.append(Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "Windows Defender/MpCmdRun.exe")
+    executable = next((candidate for candidate in candidates if candidate.is_file()), None)
+    if executable is None:
+        raise OSError("Microsoft Defender not installed")
+    # DisableRemediation also ignores exclusions. Exit 0 then means no threat;
+    # exit 2 combines detections and errors and must NEVER release the file.
+    return [str(executable), "-Scan", "-ScanType", "3", "-DisableRemediation", "-File", str(path.resolve())]
