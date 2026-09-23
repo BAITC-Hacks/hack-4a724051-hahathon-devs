@@ -1,0 +1,2 @@
+# PDF cross-reference offsets depend on exact bytes; never normalize newlines.
+*.pdf binary

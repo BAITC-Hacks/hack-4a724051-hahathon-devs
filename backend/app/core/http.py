@@ -5,6 +5,7 @@ import time
 from uuid import uuid4
 
 from starlette.concurrency import run_in_threadpool
+from starlette.datastructures import Headers
 from starlette.responses import JSONResponse
 
 from app.core.errors import AppError
@@ -29,12 +30,22 @@ class RequestBoundary:
         request_id = str(uuid4())
         scope.setdefault("state", {})["request_id"] = request_id
         started = False
+        request_headers = Headers(scope=scope)
+        origin = request_headers.get("origin")
 
         async def secured_send(message):
             nonlocal started
             if message["type"] == "http.response.start":
                 started = True
                 headers = list(message.get("headers", []))
+                if (origin in self.container.settings.allowed_origins
+                        and not any(name.lower() == b"access-control-allow-origin"
+                                    for name, _ in headers)):
+                    headers.extend([
+                        (b"access-control-allow-origin", origin.encode("latin-1")),
+                        (b"access-control-allow-credentials", b"true"),
+                        (b"vary", b"Origin"),
+                    ])
                 headers.extend([
                     (b"x-request-id", request_id.encode()),
                     (b"x-content-type-options", b"nosniff"),
@@ -52,6 +63,22 @@ class RequestBoundary:
             await response(scope, receive, secured_send)
 
         try:
+            if scope["path"].startswith("/api/"):
+                # Charge before accepting a body, so a limited client cannot keep a
+                # connection occupied by slowly streaming an oversized payload.
+                peer = scope.get("client")
+                ip_hash = hashlib.sha256((peer[0] if peer else "unknown").encode()).hexdigest()
+                await run_in_threadpool(
+                    self.container.store.consume_rate, "ip:" + ip_hash,
+                    self.container.settings.requests_per_minute, time.time(),
+                )
+            content_length = request_headers.get("content-length", "")
+            if content_length.isdecimal():
+                declared = content_length.lstrip("0") or "0"
+                maximum = str(self.container.settings.max_body_bytes)
+                if len(declared) > len(maximum) or (len(declared) == len(maximum)
+                                                     and declared > maximum):
+                    return await reject("request_too_large", "Слишком большой запрос.", 413)
             chunks, total = [], 0
             while True:
                 message = await receive()
@@ -65,18 +92,9 @@ class RequestBoundary:
                 if not message.get("more_body", False):
                     break
             body = b"".join(chunks)
-            headers = dict(scope.get("headers", []))
             if body and scope["method"] in {"POST", "PUT", "PATCH"}:
-                if headers.get(b"content-type", b"").split(b";")[0].strip() != b"application/json":
+                if request_headers.get("content-type", "").split(";")[0].strip() != "application/json":
                     return await reject("unsupported_media_type", "Ожидается application/json.", 415)
-            if scope["path"].startswith("/api/"):
-                # Never trust arbitrary X-Forwarded-For. Configure the server proxy boundary explicitly.
-                peer = scope.get("client")
-                ip_hash = hashlib.sha256((peer[0] if peer else "unknown").encode()).hexdigest()
-                await run_in_threadpool(
-                    self.container.store.consume_rate, "ip:" + ip_hash,
-                    self.container.settings.requests_per_minute, time.time(),
-                )
             delivered = False
 
             async def replay():

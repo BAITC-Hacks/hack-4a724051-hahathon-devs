@@ -5,10 +5,10 @@ import time
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.modules.assistant.ports import AssistantProcessor, ProcessingContext
+from app.modules.assistant.processing import AssistantProcessor, ProcessingContext
 from app.modules.chat.ports import StateStore
 from app.modules.chat.models import AssistantOutput
-from app.modules.chat.service import resolve_documents
+from app.modules.chat.application import resolve_documents
 
 logger = logging.getLogger(__name__)
 

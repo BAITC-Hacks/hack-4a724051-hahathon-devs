@@ -1,12 +1,13 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from app.adapters.storage.sqlite import SQLiteStateStore
 from app.core.config import Settings
 from app.integrations.ports import ActionsPort, CatalogPort, DocumentsPort
 from app.integrations.unavailable import UnavailableActions, UnavailableCatalog, UnavailableDocuments
-from app.modules.assistant.runner import CatalogOnlyProcessor
+from app.modules.assistant.catalog_only import CatalogOnlyProcessor
 from app.modules.chat.ports import StateStore
-from app.modules.chat.service import ChatService
+from app.modules.chat.application import ChatService
 from app.worker import Worker
 
 
@@ -30,11 +31,23 @@ def build_container(settings: Settings, *, store: StateStore | None = None,
             "This development slice is not approved for production. "
             "Integrate PostgreSQL, deployment security and operational checks first."
         )
+    synthetic = settings.integration_mode == "synthetic"
+    if synthetic:
+        from app.adapters.memory import InMemoryCatalog
+        from app.integrations.domain import SQLiteDemoActions, SyntheticCatalogAdapter
+        demo_catalog = InMemoryCatalog.from_file(
+            Path(__file__).resolve().parents[2] / "data" / "synthetic" / "ekt_products.json"
+        )
+        # Do not mix an injected live catalog with demo action validation.
+        if catalog is not None or actions is not None:
+            raise ValueError("Synthetic mode owns both catalog and actions; use unavailable mode for injection")
+        catalog = SyntheticCatalogAdapter(demo_catalog)
+        actions = SQLiteDemoActions(settings.local_db_path, demo_catalog)
     capabilities = {
         "chat": "ready",
-        "catalog": "ready" if catalog is not None else "requires_integration",
+        "catalog": "synthetic_demo" if synthetic else "ready" if catalog is not None else "requires_integration",
         "documents": "ready" if documents is not None else "requires_integration",
-        "cart": "ready" if actions is not None else "requires_integration",
+        "cart": "synthetic_demo" if synthetic else "ready" if actions is not None else "requires_integration",
         "llm": "disabled",
         "upload": "requires_integration",
     }

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     )
 
     app_env: Literal["development", "test", "production"] = "development"
+    integration_mode: Literal["unavailable", "synthetic"] = "unavailable"
     local_db_path: Path = ROOT / "var" / "participant2.sqlite3"
     allowed_origins: list[str] = [
         "http://localhost:3000", "http://127.0.0.1:3000",
@@ -40,6 +41,9 @@ class Settings(BaseSettings):
     def validate_boundaries(self):
         if not self.allowed_origins or not self.allowed_hosts:
             raise ValueError("Explicit allowed origins and hosts are required")
+        if any(not host or "*" in host or "://" in host or "/" in host
+               for host in self.allowed_hosts):
+            raise ValueError("Allowed hosts must be explicit hostnames")
         for origin in self.allowed_origins:
             parts = urlsplit(origin)
             if (parts.scheme not in {"http", "https"} or not parts.hostname

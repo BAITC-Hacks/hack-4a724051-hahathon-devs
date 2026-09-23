@@ -1,6 +1,6 @@
 # План улучшенного MVP на 5 часов
 
-Это timebox реализации после согласования архитектуры, а не обещание production-ready системы. Стек и границы: [architecture.md](architecture.md). Выполненная текущая работа: исследование, архитектурные документы, .gitignore, .env.example. Приложение ещё не реализовано.
+Это исходный timebox реализации, а не обещание production-ready системы. Стек и границы: [architecture.md](architecture.md). Сейчас уже есть модули HTTP API, очереди и доменной логики; актуальный статус и ограничения — в [backend-integration.md](backend-integration.md). Frontend разрабатывается на Next.js + TypeScript.
 
 ## Демонстрируемый результат
 

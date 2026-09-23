@@ -5,12 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ekt-assistant-backend"
 version = "0.1.0"
-description = "Participant 2: session, chat and integration API"
+description = "EKT catalog, assistant domain services and session/chat HTTP API"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115,<1",
   "pydantic-settings>=2.6,<3",
   "uvicorn>=0.32,<1",
+  "anthropic>=1.8,<2",
 ]
 
 [project.optional-dependencies]
@@ -19,6 +20,9 @@ dev = ["httpx>=0.28,<1", "pytest>=8,<10"]
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["app*"]
+
+[tool.setuptools.package-data]
+"app.modules.assistant" = ["prompts/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
