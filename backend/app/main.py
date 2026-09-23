@@ -23,7 +23,12 @@ def create_app(settings: Settings | None = None, *, container: Container | None 
     @asynccontextmanager
     async def lifespan(app):
         await run_in_threadpool(services.store.initialize)
-        yield
+        try:
+            yield
+        finally:
+            planner = getattr(services.worker.processor, "planner", None)
+            if planner is not None:
+                await planner.aclose()
 
     app = FastAPI(
         title="EKT participant 2 API", version="0.1.0", lifespan=lifespan,

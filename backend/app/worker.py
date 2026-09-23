@@ -19,6 +19,8 @@ class Worker:
         self.documents, self.settings = documents, settings
 
     async def run_once(self) -> bool:
+        if hasattr(self.documents, "cleanup"):
+            await self.documents.cleanup()
         await asyncio.to_thread(self.store.cleanup, time.time())
         job = await asyncio.to_thread(
             self.store.claim, time.time(), self.settings.worker_lease_seconds,
@@ -47,6 +49,7 @@ class Worker:
                     return True
                 output = await self.processor.process(ProcessingContext(
                     job.session_id, job.payload, tuple(reversed(bounded)), tuple(documents),
+                    job.turn_id, job.conversation_id,
                 ))
                 output = AssistantOutput.model_validate(output)
         except TimeoutError:

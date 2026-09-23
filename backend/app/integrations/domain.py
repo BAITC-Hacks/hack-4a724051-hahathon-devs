@@ -17,7 +17,7 @@ from uuid import UUID
 
 from app.adapters.memory import InMemoryCatalog
 from app.contracts import (
-    Attribute, CartLine, CartSnapshot, Product, ProposalInput, ProposalView,
+    Attribute, Certificate, CartLine, CartSnapshot, Product, ProposalInput, ProposalView,
     SearchResult, SourceRef,
 )
 from app.core.errors import AppError
@@ -46,6 +46,10 @@ def product_view(product) -> Product:
                               status="conflict" if a.status is AttributeStatus.CONFLICT else "observed",
                               sources=[source]) for a in product.attributes],
         sources=[source], warnings=["synthetic_demo_data", *product.warnings],
+        unit=product.unit, min_order=product.min_order,
+        certificates=[Certificate(title=c.title, url="/api/v1" + c.url if c.url.startswith("/certificates/SYN-") else c.url,
+                                  number=c.number, valid_until=c.valid_until)
+                      for c in product.certificates],
     )
 
 
@@ -71,7 +75,8 @@ class SyntheticCatalogAdapter:
             raise AppError("product_not_found", "Товар не найден.", 404)
         result = self.alternative_service.find(product)
         return SearchResult(items=[product_view(a.product) for a in result.alternatives],
-                            coverage="partial", warnings=["synthetic_demo_data", *result.blocked_by])
+                            coverage="partial", warnings=["synthetic_demo_data", *result.blocked_by],
+                            reasons={a.product.id: a.reason for a in result.alternatives})
 
 
 def _encode(value):
@@ -198,7 +203,7 @@ class SQLiteDemoActions:
                               (session_id, time.time())).fetchone():
                 raise AppError("session_expired", "Сессия истекла.", 401)
             store = SQLiteDomainStores(db)
-            service = ActionService(self.catalog, store, store, cart_url="/cart")
+            service = ActionService(self.catalog, store, store, cart_url="/api/v1/cart/view")
             fingerprint = hashlib.sha256(json.dumps(
                 [proposal_id, version, payload.model_dump() if payload else None], sort_keys=True).encode()).hexdigest()
             if key:

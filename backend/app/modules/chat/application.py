@@ -29,6 +29,9 @@ class ChatService:
 
     async def submit(self, session: Session, conversation_id: str, key: str,
                      payload: TurnInput) -> TurnSubmission:
+        from app.core.privacy import payment_data
+        if payment_data(payload.text):
+            raise AppError("sensitive_data_rejected", "Не отправляйте платёжные данные или API-ключи в чат.", 422)
         replay = await asyncio.to_thread(self.store.replay, session.id, conversation_id, key, payload)
         if replay is not None:
             return replay

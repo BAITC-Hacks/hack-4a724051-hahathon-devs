@@ -1,21 +1,37 @@
 """Подбор аналогов с объяснением.
 
-Правило простое и проверяемое: аналог из той же категории, в наличии, и все
-ключевые параметры исходного товара совпадают. Если у исходного товара ключевой
-параметр спорный, автоматический подбор по нему не делаем.
+Кандидаты сравниваются только по явно заданным профилям категории и типа.
+Участник 1 поставляет проверенные данные каталога и реализацию CatalogReader.
+Пропуски и противоречия в обязательных параметрах блокируют автоматический подбор.
+Результат — кандидат для проверки, а не гарантия инженерной взаимозаменяемости.
 """
 
 from dataclasses import dataclass
+import re
 
 from app.modules.catalog.models import AttributeStatus, Product, StockStatus
 from app.modules.catalog.ports import CatalogReader
-from app.modules.catalog.quality import canonical
+from app.modules.catalog.quality import CRITICAL_ATTRIBUTES, canonical, scalar_value
 
 # Что обязано совпасть, чтобы товар был заменой. Порядок важен для текста обоснования.
 MATCH_KEYS = ["device_type", "rated_current", "poles", "leakage_current", "curve", "voltage",
               "power", "color_temperature", "cross_section"]
 # Совпадение этих параметров не обязательно, но повышает место в списке.
-BONUS_KEYS = ["breaking_capacity", "series", "color", "mounting", "ip", "luminous_flux"]
+BONUS_KEYS = ["series", "color", "mounting", "ip", "luminous_flux"]
+
+# Unknown categories deliberately have no generic "same category" fallback.
+# Cable construction must be supplied as structured facts, never guessed from a name.
+PROFILES = {
+    "modulnye_avtomaticheskie_vyklyuchateli": (
+        "автоматический выключатель", ("device_type", "rated_current", "poles", "voltage", "curve", "breaking_capacity")),
+    "silovye_avtomaticheskie_vyklyuchateli": (
+        "автоматический выключатель в литом корпусе", ("device_type", "rated_current", "poles", "voltage", "breaking_capacity", "trip_unit")),
+    "differentsialnye_avtomaty": (
+        "дифференциальный автоматический выключатель",
+        ("device_type", "rated_current", "poles", "voltage", "curve", "breaking_capacity", "leakage_current", "residual_type")),
+    "kabel_silovoy": (None, ("cross_section", "voltage", "cable_type", "conductor_material", "insulation", "fire_class")),
+}
+NUMERIC_UNITS = {"rated_current": "А", "poles": None, "voltage": "В", "breaking_capacity": "кА", "leakage_current": "мА"}
 
 
 @dataclass(frozen=True)
@@ -38,38 +54,80 @@ def _value(product: Product, key: str) -> str | None:
     return attr.value if attr and attr.status is AttributeStatus.OK else None
 
 
+def _verified(value: str | None, key: str) -> bool:
+    if not value or value.strip().lower() in {"unknown", "неизвестно", "уточняется", "n/a", "-", "нет данных"}:
+        return False
+    if key == "poles":
+        return bool(re.fullmatch(r"[1-4]", value.strip()))
+    if key == "curve":
+        return value.strip().upper() in {"B", "C", "D", "K", "Z"}
+    if key == "cross_section":
+        return bool(re.fullmatch(r"[1-9]\d*x(?:[1-9]\d*(?:\.\d+)?|0\.\d*[1-9]\d*)", canonical(value)))
+    if key in NUMERIC_UNITS:
+        number = scalar_value(value, NUMERIC_UNITS[key])
+        return number is not None and number > 0
+    return True
+
+
 class AlternativeService:
     def __init__(self, catalog: CatalogReader):
         self.catalog = catalog
 
     def find(self, product: Product, limit: int = 3) -> AlternativesResult:
-        blocked = tuple(
-            a.label for a in product.attributes if a.key in MATCH_KEYS and a.status is AttributeStatus.CONFLICT
-        )
-        if blocked or not product.category_path:
-            return AlternativesResult(product, (), blocked)
+        profile = PROFILES.get(product.category_path[-1]) if product.category_path else None
+        blocked = [a.label for a in product.attributes
+                   if a.key in CRITICAL_ATTRIBUTES and a.status is AttributeStatus.CONFLICT]
+        if profile is None:
+            return AlternativesResult(product, (), tuple([*blocked, "category_profile_unknown"]))
+        expected_type, profile_keys = profile
+        if expected_type and (_value(product, "device_type") or "").strip().casefold() != expected_type:
+            blocked.append("device_type_unverified")
+        for key in profile_keys:
+            value = _value(product, key)
+            if value is None or not value.strip():
+                blocked.append(f"missing:{key}")
+            elif not _verified(value, key):
+                blocked.append(f"unverified:{key}")
+        if blocked:
+            return AlternativesResult(product, (), tuple(dict.fromkeys(blocked)))
 
-        required = [(k, _value(product, k)) for k in MATCH_KEYS if _value(product, k)]
+        required_keys = dict.fromkeys([*profile_keys, *(k for k in MATCH_KEYS if _value(product, k))])
+        required = [(k, _value(product, k)) for k in required_keys]
         candidates = []
         for other in self.catalog.list_category(product.category_path):
-            if other.id == product.id or other.stock.status is not StockStatus.IN_STOCK:
+            if (other.id == product.id or other.stock.status is not StockStatus.IN_STOCK
+                    or not other.stock.sellable_quantity or other.stock.sellable_quantity <= 0):
                 continue
             if other.unit != product.unit:
                 continue
-            matched, ok = [], True
+            if any(a.key in CRITICAL_ATTRIBUTES and a.status is AttributeStatus.CONFLICT for a in other.attributes):
+                continue
+            matched, differences, ok = [], [], True
             for key, value in required:
                 other_value = _value(other, key)
-                if other_value is None or canonical(other_value) != canonical(value):
+                if not _verified(other_value, key):
+                    ok = False
+                    break
+                unit = product.attribute(key).unit
+                if key == "breaking_capacity":
+                    mine, theirs = scalar_value(value, "кА"), scalar_value(other_value, "кА")
+                    if mine is None or theirs is None or theirs < mine:
+                        ok = False
+                        break
+                    if theirs > mine:
+                        differences.append(f"{other.attribute(key).label}: {other_value} вместо {value}")
+                        continue
+                elif canonical(other_value, unit) != canonical(value, unit):
                     ok = False
                     break
                 matched.append(f"{other.attribute(key).label}: {other_value}")
             if not ok:
                 continue
-            differences, bonus = [], 0
+            bonus = 0
             for key in BONUS_KEYS:
                 mine, theirs = _value(product, key), _value(other, key)
                 if mine and theirs:
-                    if canonical(mine) == canonical(theirs):
+                    if canonical(mine, product.attribute(key).unit) == canonical(theirs, product.attribute(key).unit):
                         bonus += 1
                     else:
                         differences.append(f"{other.attribute(key).label}: {theirs} вместо {mine}")
@@ -85,5 +143,6 @@ class AlternativeService:
             reason += f"; в наличии {other.stock.sellable_quantity} {other.unit}"
             if differences:
                 reason += "; отличия: " + "; ".join(differences)
+            reason += "; кандидат по данным каталога, совместимость требует проверки"
             result.append(Alternative(other, tuple(matched), tuple(differences), reason))
         return AlternativesResult(product, tuple(result), ())

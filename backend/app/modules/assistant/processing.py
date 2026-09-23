@@ -11,6 +11,8 @@ class ProcessingContext:
     payload: TurnInput
     history: tuple[MessageView, ...]
     documents: tuple[ParsedDocument, ...]
+    turn_id: str = ""
+    conversation_id: str = ""
 
 
 class AssistantProcessor(Protocol):

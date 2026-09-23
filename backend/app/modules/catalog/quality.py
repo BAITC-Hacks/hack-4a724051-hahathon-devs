@@ -8,6 +8,7 @@ product_from_source() превращает сырую карточку EKT (ил
 import re
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
+from urllib.parse import unquote, urlsplit
 
 from app.modules.catalog.models import (
     Attribute, AttributeStatus, Certificate, Observation, Product, Stock, StockStatus, StoreStock,
@@ -38,25 +39,65 @@ ATTRIBUTE_RULES = [
     ("color", "Цвет", None, ("TSVET", "TSVET_1"), ("цвет",)),
     ("cross_section", "Сечение", None, ("SECHENIE",), ()),
     ("mounting", "Тип установки", None, ("TIP_USTANOVKI",), ()),
+    ("cable_type", "Марка кабеля", None, ("MARKA_KABELYA",), ()),
+    ("conductor_material", "Материал жилы", None, ("MATERIAL_ZHILY",), ()),
+    ("insulation", "Материал изоляции", None, ("MATERIAL_IZOLYATSII",), ()),
+    ("fire_class", "Класс пожарной безопасности", None, ("KLASS_POZHARNOY_BEZOPASNOSTI",), ()),
+    ("trip_unit", "Тип расцепителя", None, ("TIP_RASTSEPITELYA",), ()),
+    ("residual_type", "Тип дифференциальной защиты", None, ("TIP_DIFFERENTSIALNOY_ZASHCHITY",), ()),
 ]
 
 # Параметры, расхождение в которых делает товар непригодным для автоматического подбора.
-CRITICAL_ATTRIBUTES = {"rated_current", "poles", "voltage", "breaking_capacity", "leakage_current", "curve"}
+CRITICAL_ATTRIBUTES = {"device_type", "rated_current", "poles", "voltage", "breaking_capacity",
+                       "leakage_current", "curve", "cross_section", "cable_type", "conductor_material",
+                       "insulation", "fire_class", "trip_unit", "residual_type"}
 
 NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 
 
-def canonical(value: str) -> str:
-    """Сравнимая форма значения: число без единиц, либо текст в нижнем регистре."""
-    m = NUMBER.search(value)
-    if m:
-        return format(Decimal(m.group(0).replace(",", ".")).normalize(), "f")
-    return value.strip().lower()
+UNIT_SCALE = {
+    "а": ("current", Decimal(1)), "a": ("current", Decimal(1)),
+    "ма": ("current", Decimal("0.001")), "ma": ("current", Decimal("0.001")),
+    "ка": ("current", Decimal(1000)), "ka": ("current", Decimal(1000)),
+    "в": ("voltage", Decimal(1)), "v": ("voltage", Decimal(1)),
+    "кв": ("voltage", Decimal(1000)), "kv": ("voltage", Decimal(1000)),
+    "вт": ("power", Decimal(1)), "w": ("power", Decimal(1)),
+    "квт": ("power", Decimal(1000)), "kw": ("power", Decimal(1000)),
+    "лм": ("flux", Decimal(1)), "lm": ("flux", Decimal(1)),
+    "к": ("temperature", Decimal(1)), "k": ("temperature", Decimal(1)),
+}
+
+
+def scalar_value(value: str, unit: str | None = None) -> Decimal | None:
+    """Only a complete scalar in a compatible known unit is comparable numerically."""
+    match = re.fullmatch(r"\s*(\d+(?:[.,]\d+)?)\s*([A-Za-zА-Яа-я]*)\s*", value)
+    if not match:
+        return None
+    amount = Decimal(match[1].replace(",", "."))
+    suffix, expected = match[2].lower(), (unit or "").lower()
+    if not suffix:
+        return amount
+    actual_unit, expected_unit = UNIT_SCALE.get(suffix), UNIT_SCALE.get(expected)
+    if actual_unit is None or (expected and (expected_unit is None or actual_unit[0] != expected_unit[0])):
+        return None
+    return amount * actual_unit[1] / (expected_unit[1] if expected_unit else Decimal(1))
+
+
+def canonical(value: str, unit: str | None = None) -> str:
+    """Preserve complete compound values, ranges and model names; normalize scalars."""
+    scalar = scalar_value(value, unit)
+    if scalar is not None:
+        return format(scalar.normalize(), "f")
+    text = re.sub(r"\s+", "", value.strip().lower())
+    text = re.sub(r"(?<=\d)[х×*](?=\d)", "x", text)
+    if re.fullmatch(r"\d+(?:[.,]\d+)?(?:[x/]\d+(?:[.,]\d+)?)+", text):
+        return NUMBER.sub(lambda m: format(Decimal(m[0].replace(",", ".")).normalize(), "f"), text)
+    return text
 
 
 def _name_observations(name: str) -> dict[str, str]:
     found = {}
-    if m := re.search(r"(\d+)\s*А\b", name):
+    if m := re.search(r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*А\b", name):
         found["rated_current"] = m.group(1)
     if m := re.search(r"\b([1-4])P(\+N)?", name):
         # 1P+N это два полюса (фаза и ноль)
@@ -89,12 +130,11 @@ def extract_attributes(name: str, description: str, properties: dict) -> tuple[l
             value = properties.get(pk)
             if isinstance(value, str) and value.strip():
                 observations.append(Observation(f"properties.{pk}", value.strip()))
-                break
         if key in from_name:
             observations.append(Observation("name", from_name[key]))
         if not observations:
             continue
-        distinct = {canonical(o.value) for o in observations}
+        distinct = {canonical(o.value, unit) for o in observations}
         if len(distinct) > 1:
             status, value = AttributeStatus.CONFLICT, None
             warnings.append(f"conflict:{key}")
@@ -106,7 +146,9 @@ def extract_attributes(name: str, description: str, properties: dict) -> tuple[l
 
 def category_from_url(url: str) -> tuple[str, ...]:
     """Путь категории из url карточки, без последнего сегмента (slug товара)."""
-    path = re.sub(r"^https?://[^/]+", "", url or "")
+    if not safe_url(url):
+        return ()
+    path = urlsplit(url).path
     if "/catalog/" not in path:
         return ()
     parts = [p for p in path.split("/catalog/", 1)[1].split("/") if p]
@@ -135,7 +177,25 @@ def _price(value) -> Decimal | None:
         price = Decimal(str(value))
     except (InvalidOperation, TypeError):
         return None
-    return price if price > 0 else None
+    return price if price.is_finite() and price > 0 else None
+
+
+def safe_url(value) -> str | None:
+    """Allow ordinary HTTP(S) and same-origin paths; reject executable URLs."""
+    if not isinstance(value, str) or not value or value != value.strip():
+        return None
+    decoded = unquote(value)
+    if any(ord(c) < 32 or ord(c) == 127 for c in decoded) or "\\" in decoded:
+        return None
+    try:
+        parsed = urlsplit(value)
+        if parsed.username or parsed.password:
+            return None
+        if parsed.scheme:
+            return value if parsed.scheme.lower() in {"http", "https"} and parsed.hostname else None
+        return value if decoded.startswith("/") and not decoded.startswith("//") and not parsed.netloc else None
+    except ValueError:
+        return None
 
 
 def product_from_source(raw: dict, fetched_at: datetime | None = None) -> Product:
@@ -152,10 +212,19 @@ def product_from_source(raw: dict, fetched_at: datetime | None = None) -> Produc
     category_path = category_from_url(raw.get("url", ""))
     if not category_path:
         warnings.append("category_unknown")
-    certificates = tuple(
-        Certificate(c.get("type") or "Сертификат", c.get("number"), c.get("valid_until"), c["url"])
-        for c in raw.get("certificates") or [] if c.get("url")
-    )
+    certificates = []
+    for certificate in raw.get("certificates") or []:
+        url = safe_url(certificate.get("url"))
+        if url:
+            certificates.append(Certificate(certificate.get("type") or "Сертификат", certificate.get("number"),
+                                            certificate.get("valid_until"), url))
+        else:
+            warnings.append("unsafe_certificate_url")
+    url, image = safe_url(raw.get("url")), safe_url(raw.get("image"))
+    if raw.get("url") and not url:
+        warnings.append("unsafe_product_url")
+    if raw.get("image") and not image:
+        warnings.append("unsafe_image_url")
     reported = raw.get("quantity")
     return Product(
         id=int(raw["id"]),
@@ -167,12 +236,12 @@ def product_from_source(raw: dict, fetched_at: datetime | None = None) -> Produc
         unit=properties.get("EDINITSA_IZMERENIYA") or "шт",
         min_order=min_order,
         category_path=category_path,
-        url=str(raw.get("url") or ""),
-        image=raw.get("image"),
+        url=url or "",
+        image=image,
         description=raw.get("description") or "",
         attributes=tuple(attributes),
         stock=sellable_stock(raw.get("stores"), int(reported) if isinstance(reported, (int, float)) else None),
-        certificates=certificates,
+        certificates=tuple(certificates),
         fetched_at=fetched_at or datetime.now(timezone.utc),
         warnings=tuple(warnings),
     )

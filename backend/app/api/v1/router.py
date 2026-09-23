@@ -1,8 +1,12 @@
 import asyncio
 import time
+import re
+import html
+from pathlib import Path
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request, Response
+from fastapi.responses import FileResponse, HTMLResponse
 
 from app.api.v1.dependencies import (
     IdempotencyKey, Services, SessionRead, SessionWrite, require_origin,
@@ -15,9 +19,59 @@ from app.core.errors import AppError
 from app.core.security import csrf_token, new_token, token_hash
 from app.modules.chat.models import SessionView
 from app.modules.chat.routes import router as chat_router
+from app.modules.documents.models import AssetView
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(chat_router)
+
+
+@router.post("/assets/upload", status_code=201, response_model=Envelope[AssetView], tags=["documents"],
+             openapi_extra={"requestBody": {"required": True, "content": {
+                 "application/octet-stream": {"schema": {"type": "string", "format": "binary"}}
+             }, "description": "Raw file bytes; set the actual MIME type matching filename, not multipart."}})
+async def upload_asset(request: Request, services: Services, session: SessionWrite,
+                       filename: str = Query(min_length=1, max_length=255)):
+    if not services.settings.uploads_enabled or not hasattr(services.documents, "upload"):
+        raise AppError("uploads_disabled", "Загрузка файлов выключена.", 503)
+    return success(request, await services.documents.upload(session.id, filename,
+                   request.headers.get("content-type", ""), await request.body()))
+
+
+@router.get("/assets/{asset_id}", response_model=Envelope[AssetView], tags=["documents"])
+async def asset_status(asset_id: UUID, request: Request, services: Services, session: SessionRead):
+    if not hasattr(services.documents, "get"):
+        raise AppError("uploads_disabled", "Загрузка файлов выключена.", 503)
+    return success(request, await services.documents.get(session.id, str(asset_id)))
+
+
+@router.post("/assets/{asset_id}/delete", tags=["documents"])
+async def delete_asset(asset_id: UUID, request: Request, services: Services, session: SessionWrite):
+    if not hasattr(services.documents, "delete"):
+        raise AppError("uploads_disabled", "Загрузка файлов выключена.", 503)
+    await services.documents.delete(session.id, str(asset_id))
+    return success(request, {"deleted": True})
+
+
+@router.get("/certificates/{name}", tags=["catalog"])
+def certificate(name: str, services: Services, session: SessionRead):
+    if services.settings.integration_mode != "synthetic" or not re.fullmatch(r"SYN-[0-9]+\.pdf", name):
+        raise AppError("certificate_not_found", "Сертификат не найден.", 404)
+    path = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "certificates" / name
+    if not path.is_file():
+        raise AppError("certificate_not_found", "Сертификат не найден.", 404)
+    return FileResponse(path, media_type="application/pdf", filename=name)
+
+
+@router.get("/cart/view", response_class=HTMLResponse, tags=["actions"])
+async def cart_page(services: Services, session: SessionRead):
+    cart = await bounded_read(services.actions.get_cart(session.id))
+    lines = "".join(f"<tr><td>{html.escape(i.article_original)} — {html.escape(i.name)}</td><td>{i.quantity}</td><td>{html.escape(i.line_total_amount)}</td></tr>"
+                    for i in cart.items)
+    return HTMLResponse('<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
+                        '<title>Корзина ЭКТ</title><body><h1>Корзина</h1>'
+                        + ('<p>Демонстрационная корзина. Реальный заказ не оформляется.</p>' if cart.mode == "demo" else '')
+                        + '<table><tr><th>Товар</th><th>Количество</th><th>Сумма</th></tr>' + lines + '</table>'
+                        + f'<p>Итого: {html.escape(cart.total_amount)} {html.escape(cart.currency)}</p></body></html>')
 
 
 async def bounded_read(awaitable):

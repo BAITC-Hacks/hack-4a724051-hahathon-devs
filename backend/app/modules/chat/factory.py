@@ -19,7 +19,6 @@ def build_chat_service(catalog: CatalogReader, proposals: ProposalStore, carts: 
     actions = ActionService(catalog, proposals, carts, cart_url)
     toolbox = ToolBox(catalog, SearchService(catalog), AlternativeService(catalog), PurchaseTermsService(), actions)
     if provider is None and config.llm_enabled:
-        from app.adapters.llm.anthropic_provider import AnthropicProvider
-        provider = AnthropicProvider(config.api_key, config.model, config.effort, config.timeout_s)
+        raise ValueError("Use bootstrap.build_container for budgeted OpenAI execution. Legacy factory requires an explicit test provider.")
     runner = AssistantRunner(provider, toolbox, config, cart_url) if provider is not None else None
     return ChatService(actions, toolbox, conversations, runner, cart_url, config.history_messages)

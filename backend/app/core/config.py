@@ -33,6 +33,18 @@ class Settings(BaseSettings):
     worker_timeout_seconds: float = Field(default=25, ge=0.1, le=300)
     worker_lease_seconds: int = Field(default=60, ge=1)
     llm_enabled: bool = False
+    llm_provider: Literal["openai"] = "openai"
+    llm_model: str = "gpt-4.1-mini"
+    llm_allowed_models: list[str] = ["gpt-4.1-mini"]
+    llm_data_policy_accepted: bool = False
+    llm_timeout_seconds: float = Field(default=12, ge=1, le=20)
+    llm_max_output_tokens: int = Field(default=1200, ge=256, le=4000)
+    llm_session_daily_tokens: int = Field(default=100000, ge=1000)
+    llm_site_daily_tokens: int = Field(default=1000000, ge=1000)
+    uploads_enabled: bool = False
+    assets_root: Path = ROOT / "var" / "assets"
+    scanner_command: list[str] = []
+    max_upload_bytes: int = Field(default=10485760, ge=1024, le=10485760)
     llm_api_key: SecretStr = SecretStr("")
     ekt_api_user: SecretStr = SecretStr("")
     ekt_api_password: SecretStr = SecretStr("")
@@ -59,7 +71,12 @@ class Settings(BaseSettings):
         ):
             raise ValueError("Production origins must use HTTPS")
         if self.llm_enabled:
-            raise ValueError(
-                "Paid LLM execution is not integrated yet; keep LLM_ENABLED=false"
-            )
+            if not self.llm_api_key.get_secret_value() or not self.llm_data_policy_accepted:
+                raise ValueError("LLM requires a private API key and LLM_DATA_POLICY_ACCEPTED=true")
+            if self.llm_model not in self.llm_allowed_models:
+                raise ValueError("LLM_MODEL must be in LLM_ALLOWED_MODELS")
+            if self.llm_timeout_seconds + 5 >= self.worker_timeout_seconds:
+                raise ValueError("Worker timeout must cover the LLM deadline and local work")
+        if self.uploads_enabled and not self.scanner_command:
+            raise ValueError("Uploads require a configured malware scanner")
         return self

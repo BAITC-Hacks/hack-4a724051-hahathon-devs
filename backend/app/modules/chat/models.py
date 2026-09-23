@@ -4,14 +4,15 @@ from uuid import UUID
 
 from pydantic import Field, field_validator
 
-from app.contracts import DTO, Product
+from app.contracts import DTO, Product, ProposalView
 
 
 class TurnInput(DTO):
     text: str = Field(min_length=1, max_length=8000)
     asset_ids: list[UUID] = Field(default_factory=list, max_length=3)
-    language: Literal["ru", "kk", "en"] = "ru"
+    language: Literal["auto", "ru", "kk", "en"] = "auto"
     page_product_id: int | None = Field(default=None, gt=0, strict=True)
+    allow_external_analysis: bool = False
 
     @field_validator("text")
     @classmethod
@@ -25,8 +26,12 @@ class AssistantOutput(DTO):
     message: str = Field(max_length=8000)
     products: list[Product] = Field(default_factory=list, max_length=20)
     unknowns: list[str] = Field(default_factory=list, max_length=20)
-    mode: Literal["catalog_only", "unavailable"]
-    # Paid generation and action proposals are deliberately not enabled in this slice.
+    mode: Literal["catalog_only", "unavailable", "grounded", "action"]
+    language: Literal["ru", "kk", "en"] = "ru"
+    proposal: ProposalView | None = None
+    sources: list[str] = Field(default_factory=list, max_length=30)
+    alternative_reasons: dict[int, str] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list, max_length=30)
 
 
 class TurnView(DTO):

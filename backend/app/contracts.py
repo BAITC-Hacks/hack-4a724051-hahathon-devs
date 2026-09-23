@@ -46,6 +46,13 @@ class Attribute(DTO):
     sources: list[SourceRef] = Field(default_factory=list)
 
 
+class Certificate(DTO):
+    title: str
+    url: str
+    number: str | None = None
+    valid_until: str | None = None
+
+
 class Product(DTO):
     id: int = Field(gt=0)
     article_original: str
@@ -58,12 +65,16 @@ class Product(DTO):
     attributes: list[Attribute] = Field(default_factory=list)
     sources: list[SourceRef] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    unit: str | None = None
+    min_order: int | None = None
+    certificates: list[Certificate] = Field(default_factory=list)
 
 
 class SearchResult(DTO):
     items: list[Product] = Field(default_factory=list, max_length=20)
     coverage: Literal["partial", "complete", "unknown"] = "unknown"
     warnings: list[str] = Field(default_factory=list)
+    reasons: dict[int, str] = Field(default_factory=dict)
 
 
 class ParsedDocument(DTO):
