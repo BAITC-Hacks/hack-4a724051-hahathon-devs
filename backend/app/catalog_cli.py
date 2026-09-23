@@ -42,7 +42,10 @@ def main(argv: list[str] | None = None) -> int:
 
     url = os.environ.get("DATABASE_URL")
     if not url:
-        print("DATABASE_URL не задан", file=sys.stderr)
+        print("DATABASE_URL не задан. Эти команды нужны только для PostgreSQL "
+              "(INTEGRATION_MODE=catalog_db), пример: postgresql://postgres:ПАРОЛЬ@127.0.0.1:5432/ekt. "
+              "Для демо без базы достаточно INTEGRATION_MODE=synthetic в .env, эти команды не нужны. "
+              "См. data/db/README.md", file=sys.stderr)
         return 2
 
     from app.infrastructure.db import create_pool, migrate

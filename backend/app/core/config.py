@@ -75,7 +75,11 @@ class Settings(BaseSettings):
                     or parts.query or parts.fragment or "*" in origin):
                 raise ValueError("Origins must be explicit scheme://host[:port]")
         if self.integration_mode == "catalog_db" and not self.database_url.get_secret_value():
-            raise ValueError("INTEGRATION_MODE=catalog_db requires DATABASE_URL")
+            raise ValueError(
+                "INTEGRATION_MODE=catalog_db requires DATABASE_URL, e.g. "
+                "postgresql://postgres:PASSWORD@127.0.0.1:5432/ekt. Without PostgreSQL set "
+                "INTEGRATION_MODE=synthetic instead (no database needed). See data/db/README.md"
+            )
         if self.ekt_live_refresh and not (self.ekt_api_user.get_secret_value()
                                           and self.ekt_api_password.get_secret_value()):
             raise ValueError("EKT_LIVE_REFRESH requires EKT_API_USER and EKT_API_PASSWORD")
