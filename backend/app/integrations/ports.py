@@ -1,0 +1,29 @@
+"""Participant 1 implements these interfaces and injects them in bootstrap."""
+from typing import Protocol
+
+from app.contracts import CartSnapshot, ParsedDocument, Product, ProposalInput, ProposalView, SearchResult
+
+
+class CatalogPort(Protocol):
+    async def search(self, query: str, limit: int) -> SearchResult: ...
+    async def get_product(self, product_id: int) -> Product: ...
+    async def alternatives(self, product_id: int) -> SearchResult: ...
+
+
+class DocumentsPort(Protocol):
+    async def resolve(self, session_id: str, asset_ids: list[str]) -> list[ParsedDocument]:
+        """Verify ownership + clean scan + ready status for EVERY requested asset."""
+        ...
+
+
+class ActionsPort(Protocol):
+    """All methods MUST enforce ownership; writes require durable idempotency.
+
+    Only HTTP application services receive this port. Never pass it to an LLM.
+    Confirmation must recheck TTL, price/stock, cart version and quantity.
+    """
+    async def get_cart(self, session_id: str) -> CartSnapshot: ...
+    async def propose(self, session_id: str, payload: ProposalInput, key: str) -> ProposalView: ...
+    async def get_proposal(self, session_id: str, proposal_id: str) -> ProposalView: ...
+    async def confirm(self, session_id: str, proposal_id: str, version: int, key: str) -> ProposalView: ...
+    async def reject(self, session_id: str, proposal_id: str) -> ProposalView: ...
