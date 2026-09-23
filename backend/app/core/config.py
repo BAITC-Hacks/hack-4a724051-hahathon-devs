@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     database_url: SecretStr = SecretStr("")
     # Перечитывать цену и остаток из EKT API перед корзиной. Нужны EKT_API_USER/PASSWORD.
     ekt_live_refresh: bool = False
+    # Файлы клиентов (catalog_db). Без clamd разбор запрещён, кроме явного демо-флага.
+    assets_dir: Path = ROOT / "var" / "assets"
+    clamd_socket: str = ""
+    documents_allow_unscanned: bool = False
     local_db_path: Path = ROOT / "var" / "participant2.sqlite3"
     allowed_origins: list[str] = [
         "http://localhost:3000", "http://127.0.0.1:3000",
@@ -59,6 +63,8 @@ class Settings(BaseSettings):
         if self.ekt_live_refresh and not (self.ekt_api_user.get_secret_value()
                                           and self.ekt_api_password.get_secret_value()):
             raise ValueError("EKT_LIVE_REFRESH requires EKT_API_USER and EKT_API_PASSWORD")
+        if self.app_env == "production" and self.documents_allow_unscanned:
+            raise ValueError("Unscanned uploads are allowed only outside production")
         if self.worker_lease_seconds <= self.worker_timeout_seconds:
             raise ValueError("Worker lease must exceed processing timeout")
         if self.app_env == "production" and not self.cookie_secure:

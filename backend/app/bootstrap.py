@@ -36,11 +36,21 @@ def _catalog_db(settings: Settings):
         from app.adapters.ekt.client import EktClient
         live = EktClient(settings.ekt_api_user.get_secret_value(), settings.ekt_api_password.get_secret_value())
     reader = PostgresCatalog(pool, live)
+    documents = _documents(settings, pool)
     info = coverage(pool)
     # Реальным каталог считаем, только если в БД нет синтетических товаров.
     demo = "ekt" not in info["products"] or "synthetic" in info["products"]
     catalog = DomainCatalogAdapter(reader, "synthetic_catalog" if demo else "ekt_catalog", demo, info["coverage"])
-    return catalog, SQLiteDemoActions(settings.local_db_path, reader), demo
+    return catalog, SQLiteDemoActions(settings.local_db_path, reader), documents, demo
+
+
+def _documents(settings: Settings, pool):
+    from app.adapters.postgres.documents import LocalBlobStore, PostgresDocuments
+    from app.modules.documents.scanner import ClamdScanner, NoScanner
+
+    scanner = ClamdScanner(settings.clamd_socket) if settings.clamd_socket else NoScanner()
+    return PostgresDocuments(pool, LocalBlobStore(settings.assets_dir), scanner,
+                             allow_unscanned=settings.documents_allow_unscanned)
 
 
 def build_container(settings: Settings, *, store: StateStore | None = None,
@@ -65,9 +75,9 @@ def build_container(settings: Settings, *, store: StateStore | None = None,
         actions = SQLiteDemoActions(settings.local_db_path, demo_catalog)
     catalog_demo = synthetic
     if settings.integration_mode == "catalog_db":
-        if catalog is not None or actions is not None:
-            raise ValueError("catalog_db mode owns both catalog and actions")
-        catalog, actions, catalog_demo = _catalog_db(settings)
+        if catalog is not None or actions is not None or documents is not None:
+            raise ValueError("catalog_db mode owns catalog, actions and documents")
+        catalog, actions, documents, catalog_demo = _catalog_db(settings)
     demo_cart = synthetic or settings.integration_mode == "catalog_db"
     capabilities = {
         "chat": "ready",
