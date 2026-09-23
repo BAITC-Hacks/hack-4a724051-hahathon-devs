@@ -14,7 +14,11 @@ class Settings(BaseSettings):
     )
 
     app_env: Literal["development", "test", "production"] = "development"
-    integration_mode: Literal["unavailable", "synthetic"] = "unavailable"
+    # catalog_db: каталог из PostgreSQL (импорт через app.catalog_cli), корзина пока демо в SQLite
+    integration_mode: Literal["unavailable", "synthetic", "catalog_db"] = "unavailable"
+    database_url: SecretStr = SecretStr("")
+    # Перечитывать цену и остаток из EKT API перед корзиной. Нужны EKT_API_USER/PASSWORD.
+    ekt_live_refresh: bool = False
     local_db_path: Path = ROOT / "var" / "participant2.sqlite3"
     allowed_origins: list[str] = [
         "http://localhost:3000", "http://127.0.0.1:3000",
@@ -50,6 +54,11 @@ class Settings(BaseSettings):
                     or parts.username or parts.password or parts.path
                     or parts.query or parts.fragment or "*" in origin):
                 raise ValueError("Origins must be explicit scheme://host[:port]")
+        if self.integration_mode == "catalog_db" and not self.database_url.get_secret_value():
+            raise ValueError("INTEGRATION_MODE=catalog_db requires DATABASE_URL")
+        if self.ekt_live_refresh and not (self.ekt_api_user.get_secret_value()
+                                          and self.ekt_api_password.get_secret_value()):
+            raise ValueError("EKT_LIVE_REFRESH requires EKT_API_USER and EKT_API_PASSWORD")
         if self.worker_lease_seconds <= self.worker_timeout_seconds:
             raise ValueError("Worker lease must exceed processing timeout")
         if self.app_env == "production" and not self.cookie_secure:
