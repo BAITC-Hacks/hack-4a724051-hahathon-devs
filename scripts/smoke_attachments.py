@@ -58,7 +58,7 @@ def main():
                     print(json.dumps({"file": path.name, "status": turn["status"], "mode": output.get("mode"),
                                       "articles": sorted(articles), "warnings": output.get("warnings")}, ensure_ascii=False), flush=True)
                     assert turn["status"] == "completed" and output.get("mode") == "grounded"
-                    assert VISION[path.name] <= articles, "Recognized articles did not reach catalog lookup"
+                    assert VISION[path.name] == articles, "Recognized articles did not reach catalog lookup or unrelated items leaked in"
             finally:
                 request("POST", "/api/v1/session/logout", headers=headers)
 

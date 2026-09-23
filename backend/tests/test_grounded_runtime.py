@@ -304,6 +304,46 @@ def test_external_analysis_consent_false_keeps_documents_from_planner(grounded):
     assert any(product["id"] == 900003 for product in answer["products"])
 
 
+def test_document_articles_are_resolved_before_planning_without_generic_search(grounded, monkeypatch):
+    planner = RecordingPlanner(intent="product", product_ids=[900003])
+    grounded[0].worker.processor.planner = planner
+    original = grounded[0].catalog.search
+
+    async def only_article(query, limit):
+        assert query == "990100003_", "Generic instructions must not select unrelated catalog products"
+        return await original(query, limit)
+
+    monkeypatch.setattr(grounded[0].catalog, "search", only_article)
+    answer = turn(grounded, "Найди позиции из документа", asset_ids=[str(uuid4())], allow_external_analysis=True)
+    assert [product["id"] for product in answer["products"]] == [900003]
+    assert planner.calls[0]["payload"]["candidates"][0]["id"] == 900003
+    assert "unverified_model_product_id" not in answer["warnings"]
+
+
+def test_combined_document_context_is_bounded_and_reports_partial(grounded, monkeypatch):
+    async def large_documents(session_id, asset_ids):
+        return [ParsedDocument(asset_id=asset, status="ready", text="Описание " * 4000) for asset in asset_ids]
+
+    monkeypatch.setattr(grounded[0].documents, "resolve", large_documents)
+    planner = RecordingPlanner()
+    grounded[0].worker.processor.planner = planner
+    answer = turn(grounded, "Разбери документы", asset_ids=[str(uuid4()) for _ in range(3)], allow_external_analysis=True)
+    sent = planner.calls[0]["payload"]["documents"]
+    assert sum(len(doc["text"].encode("utf-8")) for doc in sent) <= 24000
+    assert "model_document_context_truncated" in answer["warnings"]
+    assert any(doc["status"] == "partial" for doc in sent)
+
+
+def test_image_without_model_is_explicitly_reported_unread(grounded, monkeypatch):
+    async def image_documents(session_id, asset_ids):
+        return [ParsedDocument(asset_id=asset, status="ready", text="") for asset in asset_ids]
+
+    monkeypatch.setattr(grounded[0].documents, "resolve", image_documents)
+    answer = turn(grounded, "Что на фото?", asset_ids=[str(uuid4())], allow_external_analysis=True)
+    assert answer["products"] == []
+    assert "vision_analysis_unavailable" in answer["warnings"]
+
+
 @pytest.mark.parametrize("private", ["4111 1111 1111 1111", "CVV: 123", "sk-private_test_secret_123456789"])
 def test_payment_or_secret_data_is_rejected_before_persistence(grounded, private):
     services, client, headers, conv = grounded

@@ -147,7 +147,7 @@ def parse(path: Path, extension: str, image_output: Path) -> dict:
                 image = image.convert("RGB")
                 image.save(image_output, format="JPEG", quality=90, optimize=True)
                 media_type = "image/jpeg"
-        warnings.append("Изображение очищено от метаданных; текст не распознан.")
+        warnings.append("Изображение очищено от метаданных. Для чтения маркировки нужен анализ моделью с вашим разрешением.")
     else:
         raise ValueError("Unsupported extension")
     text = clipped(text, warnings)

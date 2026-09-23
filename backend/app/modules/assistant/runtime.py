@@ -22,6 +22,24 @@ from app.modules.search.service import identifier_candidates
 
 PROMPT = (Path(__file__).parent / "prompts" / "planner.md").read_text(encoding="utf-8")
 
+
+def bounded_model_context(context, warnings):
+    """Bound combined attachments/history, not just each file, before token reservation."""
+    remaining = 24000
+    documents = []
+    for doc in context.documents:
+        encoded = doc.text.encode("utf-8")
+        text = encoded[:remaining].decode("utf-8", errors="ignore")
+        remaining -= len(text.encode("utf-8"))
+        truncated = len(text) < len(doc.text)
+        if truncated:
+            warnings.append("model_document_context_truncated")
+        documents.append({"text": text, "status": "partial" if truncated else doc.status,
+                          "warnings": doc.warnings + (["model_document_context_truncated"] if truncated else [])})
+    history = [{"role": m.role, "text": m.text.encode("utf-8")[:1000].decode("utf-8", errors="ignore")}
+               for m in context.history[-6:]]
+    return documents, history
+
 TEXT = {
     "ru": {
         "unknown": "Неизвестно", "stock": "Остаток", "price": "Цена", "attrs": "Характеристики",
@@ -194,6 +212,7 @@ class GroundedAssistant:
         candidates = {}
         coverage = "unknown"
         unavailable = False
+        document_ids = list(dict.fromkeys(token for d in context.documents for token in identifier_candidates(d.text)))
         try:
             if followup:
                 item = await self.catalog.get_product(reference_id or context.payload.page_product_id)
@@ -201,10 +220,16 @@ class GroundedAssistant:
             elif context.payload.page_product_id and not identifier_candidates(text):
                 item = await self.catalog.get_product(context.payload.page_product_id)
                 candidates[item.id] = item
-            if not followup and (not topics or identifier_candidates(text)):
+            if not followup and (not topics or identifier_candidates(text)) and (not context.documents or identifier_candidates(text)):
                 result = await self.catalog.search(text[:200], 8)
                 candidates.update((p.id, p) for p in result.items)
                 coverage = result.coverage
+            # Resolve extracted articles before planning so document items can use real IDs.
+            for query in document_ids[:20]:
+                result = await self.catalog.search(query[:200], 3)
+                candidates.update((p.id, p) for p in result.items)
+            if len(document_ids) > 20:
+                warnings.append("document_queries_truncated")
         except AppError:
             unavailable = True
 
@@ -219,12 +244,13 @@ class GroundedAssistant:
                 if len(images) > 4:
                     warnings.append("vision_pages_truncated")
                     images = images[:4]
+            model_documents, model_history = bounded_model_context(context, warnings)
             payload = {
                 "request": text, "language": lang,
-                "history": [{"role": m.role, "text": m.text} for m in context.history[-6:]],
+                "history": model_history,
                 "candidates": [{"id": p.id, "article": p.article_original, "name": p.name} for p in candidates.values()],
                 "topics": self.terms.topic_ids(),
-                "documents": [{"text": d.text, "status": d.status, "warnings": d.warnings} for d in context.documents],
+                "documents": model_documents,
             }
             try:
                 plan = await self.planner.plan(system=PROMPT, payload=payload, images=images,
@@ -235,6 +261,8 @@ class GroundedAssistant:
                 warnings.append("llm_unavailable")
         elif context.documents and self.planner:
             warnings.append("external_analysis_consent_required")
+        if context.documents and not plan and any(not d.text.strip() for d in context.documents):
+            warnings.append("vision_analysis_unavailable")
 
         intent = followup or (plan or {}).get("intent", "search")
         if plan:
@@ -249,7 +277,7 @@ class GroundedAssistant:
                 topics = self.terms.get(plan.get("topic_ids", []))
         queries = (plan or {}).get("queries", []) or ([(plan or {}).get("query")] if (plan or {}).get("query") else [])
         if not plan and context.documents:
-            queries = [line.strip()[:200] for d in context.documents for line in d.text.splitlines() if line.strip()][:20]
+            queries = document_ids[:20] or [line.strip()[:200] for d in context.documents for line in d.text.splitlines() if line.strip()][:20]
         if intent == "search" or context.documents:
             for query in queries[:20]:
                 try:

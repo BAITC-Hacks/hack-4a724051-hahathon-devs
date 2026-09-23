@@ -32,6 +32,27 @@ def run(coro):
     return asyncio.run(coro)
 
 
+def test_scanner_env_keeps_windows_paths_but_never_secrets(monkeypatch):
+    monkeypatch.setenv("SYSTEMROOT", "C:/Windows")
+    monkeypatch.setenv("ALLUSERSPROFILE", "C:/ProgramData")
+    monkeypatch.setenv("LLM_API_KEY", "must-not-inherit")
+    environment = DocumentsService._subprocess_env()
+    assert environment["SYSTEMROOT"] == "C:/Windows"
+    assert environment["ALLUSERSPROFILE"] == "C:/ProgramData"
+    assert "LLM_API_KEY" not in environment
+
+
+@pytest.mark.parametrize("code", [1, 2, 50])
+def test_scanner_nonzero_never_releases_file(tmp_path, monkeypatch, code):
+    import subprocess
+    documents = service(tmp_path, True)
+    monkeypatch.setattr(subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a[0], code))
+    asset = run(documents.upload("owner", "parts.txt", "text/plain", b"990100003_"))
+    assert asset.status == "quarantined"
+    with pytest.raises(AppError):
+        run(documents.resolve("owner", [str(asset.id)]))
+
+
 def test_scanner_disabled_quarantines_and_cannot_resolve(tmp_path):
     documents = service(tmp_path, False)
     asset = run(documents.upload("owner", "parts.txt", "text/plain", b"ABC-123"))
