@@ -7,7 +7,12 @@ from pathlib import Path
 
 if sys.platform != "win32":
     import resource
-    resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
+    try:
+        resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
+    except (ValueError, OSError):
+        # macOS не даёт опустить RLIMIT_AS ниже уже выделенного адресного пространства.
+        # Там остаются лимит CPU ниже и таймаут процесса в DocumentsService.
+        pass
     resource.setrlimit(resource.RLIMIT_CPU, (18, 18))
 
 if hasattr(sys.stdout, "reconfigure"):
