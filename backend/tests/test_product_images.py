@@ -25,6 +25,8 @@ def test_every_synthetic_product_has_an_existing_image():
     items = json.loads(CATALOG.read_text(encoding="utf-8"))["items"]
     root = CATALOG.parent / "images"
     for item in items:
+        if item["image"].startswith("https://ekt.kz/upload/"):
+            continue  # фото товара с сайта партнёра, ссылкой
         name = item["image"].rsplit("/", 1)[-1]
         assert item["image"] == f"/api/v1/product-images/SYN-{item['id']}.svg"
         svg = (root / name).read_text(encoding="utf-8")

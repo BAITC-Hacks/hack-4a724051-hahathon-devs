@@ -6,8 +6,10 @@
 Запуск: python data/synthetic/generate.py
 """
 
+import html
 import json
 import random
+import re
 from pathlib import Path
 
 from pictures import render
@@ -52,7 +54,7 @@ def stock(mode):
     return [{"id": sid, "name": name, "quantity": q[sid]} for sid, name in STORES]
 
 
-def add(name, category, price, props, description, mode="normal", cert=True, unit="шт", picture=None):
+def add(name, category, price, props, description, mode="normal", cert=True, unit="шт", picture=None, image=None):
     global next_id, next_article
     pid, article = next_id, f"{next_article}_"
     next_id += 1
@@ -84,7 +86,7 @@ def add(name, category, price, props, description, mode="normal", cert=True, uni
         "price": price,
         "quantity": sum(s["quantity"] for s in stores),
         "stores": stores,
-        "image": f"/api/v1/product-images/SYN-{pid}.svg" if picture else None,
+        "image": image or (f"/api/v1/product-images/SYN-{pid}.svg" if picture else None),
         "url": f"/catalog/{category}/{slug(name)}/",
         "offers": [],
         "properties": properties,
@@ -290,12 +292,49 @@ add(
     picture={"kind": "led_panel", "brand": "IEK", "power": 18, "flux": 1800},
 )
 
+# Реальные товары ekt.kz (fetch_ekt_selection.py): название, фото ссылкой на ekt.kz,
+# раздел, характеристики и описание. ID, наши артикулы, штрихкоды, остатки и цены
+# (цена сайта ±10%) демонстрационные. Добавляются в конец, чтобы ID выше не менялись.
+SELECTION = OUT / "ekt_selection.json"
+CABLE_WORDS = ("кабель", "провод", "шнур")
+
+
+def clean_name(name: str, supplier: str | None) -> str:
+    """Убирает служебные пометки учётной системы: код в начале, *** и !!!, упаковку (12)."""
+    text = re.sub(r"^[*!\s]+|[*!\s]+$", "", html.unescape(name))
+    first, _, rest = text.partition(" ")
+    code = (supplier or "").rstrip("_")
+    is_code = first == code or (re.fullmatch(r"\d[\d\-_./]*", first) and len(re.sub(r"\D", "", first)) >= 4)
+    if rest and is_code and not re.match(r"(Вт|W|А|A|В|V|мм|м|кВт)\b", rest):
+        text = rest
+    text = re.sub(r"\s*\((?:\d+(?:/\d+)*|\d+\s*шт\.?)\)\s*", " ", text)
+    text = re.sub(r"\s*(?:!!+|\bNEW\b)\s*", " ", text)
+    text = re.sub(r"\s+", " ", text).strip(" ,.-")
+    return text[:1].upper() + text[1:]
+
+
+if SELECTION.exists():
+    for real in json.loads(SELECTION.read_text(encoding="utf-8"))["items"]:
+        props = dict(real["properties"])
+        supplier = props.get("ARTIKULPOSTAVSHCHIKA")
+        name = clean_name(real["name"], supplier)
+        base = real.get("price") or 0
+        price = int(base * rng.uniform(0.9, 1.1) // 10 * 10) if base >= 50 else int(base) or rng.randint(3, 60) * 100
+        unit = "м" if real["category"][0] == "kabel_provod" and name.lower().startswith(CABLE_WORDS) else "шт"
+        add(
+            name, "/".join(real["category"]), max(price, 10), props, real["description"],
+            # Без нулевого остатка: для таких разделов нет профилей аналогов, в демо был бы тупик.
+            mode=rng.choice(["normal"] * 7 + ["low"]), cert=rng.random() < 0.5, unit=unit,
+            image=real["image"],
+        )
+
 catalog = {
     "meta": {
         "synthetic": True,
         "note": "Синтетические данные для разработки и демо. Структура повторяет /api/products/detail ekt.kz, "
                 "значения придуманы. Поля certificates и properties.EDINITSA_IZMERENIYA добавлены для демо. "
-                "Изображения это собственные векторные иллюстрации, не фото товаров.",
+                "Первые товары с собственными SVG-иллюстрациями, остальные взяты с ekt.kz: название, фото "
+                "(ссылка на ekt.kz), характеристики. Цены, остатки, ID и артикулы демонстрационные.",
         "count": len(products),
     },
     "items": products,
