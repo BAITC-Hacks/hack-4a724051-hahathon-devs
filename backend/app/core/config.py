@@ -22,6 +22,17 @@ class Settings(BaseSettings):
     # catalog_db: при старте применить миграции и заполнить ПУСТУЮ базу демо-каталогом.
     # Для базы с импортом из EKT ничего не меняется. false отключает автозаполнение.
     catalog_db_seed_demo: bool = True
+    # NVIDIA API Catalog (build.nvidia.com), участник 1: распознавание фото/сканов и смысловой поиск.
+    # Ключ сам ничего не включает: нужны флаги ниже и согласие оператора на передачу данных NVIDIA.
+    nvidia_api_key: SecretStr = SecretStr("")
+    nvidia_data_policy_accepted: bool = False
+    nvidia_ocr_enabled: bool = False
+    nvidia_ocr_model: str = "google/gemma-3-12b-it"
+    semantic_search_enabled: bool = False
+    nvidia_embed_model: str = "nvidia/llama-3.2-nv-embedqa-1b-v1"
+    semantic_index_path: Path = ROOT.parent / "data" / "synthetic" / "embeddings.json"
+    nvidia_site_daily_calls: int = Field(default=3000, ge=1)
+    nvidia_session_daily_calls: int = Field(default=200, ge=1)
     # Файлы клиентов (catalog_db). Без clamd разбор запрещён, кроме явного демо-флага.
     assets_dir: Path = ROOT / "var" / "assets"
     clamd_socket: str = ""
@@ -85,6 +96,9 @@ class Settings(BaseSettings):
             raise ValueError("EKT_LIVE_REFRESH requires EKT_API_USER and EKT_API_PASSWORD")
         if self.app_env == "production" and self.documents_allow_unscanned:
             raise ValueError("Unscanned uploads are allowed only outside production")
+        if (self.nvidia_ocr_enabled or self.semantic_search_enabled) and not (
+                self.nvidia_api_key.get_secret_value() and self.nvidia_data_policy_accepted):
+            raise ValueError("NVIDIA OCR/semantic search need NVIDIA_API_KEY and NVIDIA_DATA_POLICY_ACCEPTED=true")
         if self.worker_lease_seconds <= self.worker_timeout_seconds:
             raise ValueError("Worker lease must exceed processing timeout")
         if self.app_env == "production" and not self.cookie_secure:
