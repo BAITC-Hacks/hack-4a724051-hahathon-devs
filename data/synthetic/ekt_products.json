@@ -2,7 +2,7 @@
  "meta": {
   "synthetic": true,
   "note": "Синтетические данные для разработки и демо. Структура повторяет /api/products/detail ekt.kz, значения придуманы. Поля certificates и properties.EDINITSA_IZMERENIYA добавлены для демо.",
-  "count": 65
+  "count": 68
  },
  "items": [
   {
@@ -6849,6 +6849,7 @@
     "NOMINALNYY_TOK": "250 А",
     "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "18кА",
     "NOMINALNOE_NAPRYAZHENIE": "400В",
+    "TIP_RASTSEPITELYA": "термомагнитный",
     "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе"
    },
    "certificates": [
@@ -7007,6 +7008,7 @@
     "NOMINALNYY_TOK": "160А",
     "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "35кА",
     "NOMINALNOE_NAPRYAZHENIE": "400В",
+    "TIP_RASTSEPITELYA": "термомагнитный",
     "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе"
    },
    "certificates": [
@@ -7166,6 +7168,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "4,5кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -7325,6 +7329,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "4,5кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -7484,6 +7490,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "4,5кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -7643,6 +7651,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "6кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -7802,6 +7812,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "6кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -7961,6 +7973,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "6кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -8120,6 +8134,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "6кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -8279,6 +8295,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "6кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -8438,6 +8456,8 @@
     "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": "30мА",
     "KHARAKTERISTIKA_SRABATYVANIYA": "C",
     "NOMINALNOE_NAPRYAZHENIE": "230В",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "6кА",
+    "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
     "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель"
    },
    "certificates": [
@@ -9224,7 +9244,11 @@
     "ARTIKULPOSTAVSHCHIKA": "VVG-3х1,5",
     "TORGOVAYA_MARKA": "Кабельный завод",
     "SECHENIE": "3х1,5",
-    "NOMINALNOE_NAPRYAZHENIE": "660В"
+    "NOMINALNOE_NAPRYAZHENIE": "660В",
+    "MARKA_KABELYA": "ВВГнг(А)-LS",
+    "MATERIAL_ZHILY": "медь",
+    "MATERIAL_IZOLYATSII": "ПВХ пониженной пожароопасности",
+    "KLASS_POZHARNOY_BEZOPASNOSTI": "П1б.8.2.2.2"
    },
    "certificates": [
     {
@@ -9378,7 +9402,11 @@
     "ARTIKULPOSTAVSHCHIKA": "VVG-3х2,5",
     "TORGOVAYA_MARKA": "Кабельный завод",
     "SECHENIE": "3х2,5",
-    "NOMINALNOE_NAPRYAZHENIE": "660В"
+    "NOMINALNOE_NAPRYAZHENIE": "660В",
+    "MARKA_KABELYA": "ВВГнг(А)-LS",
+    "MATERIAL_ZHILY": "медь",
+    "MATERIAL_IZOLYATSII": "ПВХ пониженной пожароопасности",
+    "KLASS_POZHARNOY_BEZOPASNOSTI": "П1б.8.2.2.2"
    },
    "certificates": [
     {
@@ -9532,7 +9560,11 @@
     "ARTIKULPOSTAVSHCHIKA": "VVG-5х4",
     "TORGOVAYA_MARKA": "Кабельный завод",
     "SECHENIE": "5х4",
-    "NOMINALNOE_NAPRYAZHENIE": "660В"
+    "NOMINALNOE_NAPRYAZHENIE": "660В",
+    "MARKA_KABELYA": "ВВГнг(А)-LS",
+    "MATERIAL_ZHILY": "медь",
+    "MATERIAL_IZOLYATSII": "ПВХ пониженной пожароопасности",
+    "KLASS_POZHARNOY_BEZOPASNOSTI": "П1б.8.2.2.2"
    },
    "certificates": [
     {
@@ -9688,7 +9720,8 @@
     "MOSHCHNOST": "36Вт",
     "SVETOVOY_POTOK_LM": "3600",
     "TSVETOVAYA_TEMPERATURA": "4000K",
-    "STEPEN_ZASHCHITY": "IP40"
+    "STEPEN_ZASHCHITY": "IP40",
+    "TIP_USTROYSTVA": "Светильник светодиодный"
    },
    "certificates": [
     {
@@ -9844,7 +9877,8 @@
     "MOSHCHNOST": "18Вт",
     "SVETOVOY_POTOK_LM": "1800",
     "TSVETOVAYA_TEMPERATURA": "4000K",
-    "STEPEN_ZASHCHITY": "IP40"
+    "STEPEN_ZASHCHITY": "IP40",
+    "TIP_USTROYSTVA": "Светильник светодиодный"
    },
    "certificates": [
     {
@@ -10000,7 +10034,8 @@
     "MOSHCHNOST": "36Вт",
     "SVETOVOY_POTOK_LM": "3200",
     "TSVETOVAYA_TEMPERATURA": "4000K",
-    "STEPEN_ZASHCHITY": "IP40"
+    "STEPEN_ZASHCHITY": "IP40",
+    "TIP_USTROYSTVA": "Светильник светодиодный"
    },
    "certificates": [
     {
@@ -10156,7 +10191,8 @@
     "MOSHCHNOST": "40Вт",
     "SVETOVOY_POTOK_LM": "4000",
     "TSVETOVAYA_TEMPERATURA": "4000K",
-    "STEPEN_ZASHCHITY": "IP40"
+    "STEPEN_ZASHCHITY": "IP40",
+    "TIP_USTROYSTVA": "Светильник светодиодный"
    },
    "certificates": [
     {
@@ -10164,6 +10200,480 @@
      "number": "ЕАЭС KZ SYN.900065",
      "valid_until": "2030-02-01",
      "url": "/certificates/SYN-900065.pdf"
+    }
+   ]
+  },
+  {
+   "id": 900066,
+   "name": "Кабель ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 ГОСТ завод Б",
+   "article": "990100066_",
+   "description": "Силовой кабель ВВГнг(А)-LS 3х2,5 другого завода. Продаётся на метры.",
+   "price": 640,
+   "quantity": 0,
+   "stores": [
+    {
+     "id": 2,
+     "name": "Брак MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 3,
+     "name": "Шымкент (ул.Байдукова)",
+     "quantity": 0
+    },
+    {
+     "id": 4,
+     "name": "Маркетинг MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 5,
+     "name": "Никонов",
+     "quantity": 0
+    },
+    {
+     "id": 6,
+     "name": "РЦ MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 7,
+     "name": "Талдыкорган",
+     "quantity": 0
+    },
+    {
+     "id": 8,
+     "name": "Тастак",
+     "quantity": 0
+    },
+    {
+     "id": 9,
+     "name": "Торговый зал",
+     "quantity": 0
+    },
+    {
+     "id": 10,
+     "name": "Востановленный продукт",
+     "quantity": 0
+    },
+    {
+     "id": 11,
+     "name": "перемещение",
+     "quantity": 0
+    },
+    {
+     "id": 12,
+     "name": "Основной склад",
+     "quantity": 0
+    },
+    {
+     "id": 13,
+     "name": "Алматы",
+     "quantity": 0
+    },
+    {
+     "id": 14,
+     "name": "ЩИТОВОЕ",
+     "quantity": 0
+    },
+    {
+     "id": 15,
+     "name": "РЦ UNIT",
+     "quantity": 0
+    },
+    {
+     "id": 16,
+     "name": "Образцы Отдел Закупа",
+     "quantity": 0
+    },
+    {
+     "id": 17,
+     "name": "Витрина ТЗ",
+     "quantity": 0
+    },
+    {
+     "id": 18,
+     "name": "Усть-Каменогорск",
+     "quantity": 0
+    },
+    {
+     "id": 19,
+     "name": "Тараз",
+     "quantity": 0
+    },
+    {
+     "id": 20,
+     "name": "Атырау",
+     "quantity": 0
+    },
+    {
+     "id": 21,
+     "name": "Караганда",
+     "quantity": 0
+    },
+    {
+     "id": 22,
+     "name": "Новосибирск",
+     "quantity": 0
+    },
+    {
+     "id": 23,
+     "name": "Актау",
+     "quantity": 0
+    },
+    {
+     "id": 24,
+     "name": "Нур-Султан",
+     "quantity": 0
+    },
+    {
+     "id": 25,
+     "name": "Шымкент (Тассай)",
+     "quantity": 0
+    }
+   ],
+   "image": null,
+   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_vvgng_a_ls_3h2_5_ok_n_pe_0_66_gost_zavod_b/",
+   "offers": [],
+   "properties": {
+    "CML2_ARTICLE": "990100066_",
+    "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900066",
+    "KRATNOST_MIN": "1",
+    "EDINITSA_IZMERENIYA": "м",
+    "NOVINKA": "Нет",
+    "SPETSPREDLOZHENIE": "Нет",
+    "ARTIKULPOSTAVSHCHIKA": "VVG-B-3х2,5",
+    "TORGOVAYA_MARKA": "Кабельный завод Б",
+    "SECHENIE": "3х2,5",
+    "NOMINALNOE_NAPRYAZHENIE": "660В",
+    "MARKA_KABELYA": "ВВГнг(А)-LS",
+    "MATERIAL_ZHILY": "медь",
+    "MATERIAL_IZOLYATSII": "ПВХ пониженной пожароопасности",
+    "KLASS_POZHARNOY_BEZOPASNOSTI": "П1б.8.2.2.2"
+   },
+   "certificates": [
+    {
+     "type": "Сертификат соответствия ТР ТС 004/2011",
+     "number": "ЕАЭС KZ SYN.900066",
+     "valid_until": "2029-08-01",
+     "url": "/certificates/SYN-900066.pdf"
+    }
+   ]
+  },
+  {
+   "id": 900067,
+   "name": "971302 АВ NM1-250 3P 160А 35кА Chint",
+   "article": "990100067_",
+   "description": "Автоматический выключатель NM1-250 3P 160А 35кА Chint в литом корпусе.",
+   "price": 45200,
+   "quantity": 0,
+   "stores": [
+    {
+     "id": 2,
+     "name": "Брак MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 3,
+     "name": "Шымкент (ул.Байдукова)",
+     "quantity": 0
+    },
+    {
+     "id": 4,
+     "name": "Маркетинг MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 5,
+     "name": "Никонов",
+     "quantity": 0
+    },
+    {
+     "id": 6,
+     "name": "РЦ MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 7,
+     "name": "Талдыкорган",
+     "quantity": 0
+    },
+    {
+     "id": 8,
+     "name": "Тастак",
+     "quantity": 0
+    },
+    {
+     "id": 9,
+     "name": "Торговый зал",
+     "quantity": 0
+    },
+    {
+     "id": 10,
+     "name": "Востановленный продукт",
+     "quantity": 0
+    },
+    {
+     "id": 11,
+     "name": "перемещение",
+     "quantity": 0
+    },
+    {
+     "id": 12,
+     "name": "Основной склад",
+     "quantity": 0
+    },
+    {
+     "id": 13,
+     "name": "Алматы",
+     "quantity": 0
+    },
+    {
+     "id": 14,
+     "name": "ЩИТОВОЕ",
+     "quantity": 0
+    },
+    {
+     "id": 15,
+     "name": "РЦ UNIT",
+     "quantity": 0
+    },
+    {
+     "id": 16,
+     "name": "Образцы Отдел Закупа",
+     "quantity": 0
+    },
+    {
+     "id": 17,
+     "name": "Витрина ТЗ",
+     "quantity": 0
+    },
+    {
+     "id": 18,
+     "name": "Усть-Каменогорск",
+     "quantity": 0
+    },
+    {
+     "id": 19,
+     "name": "Тараз",
+     "quantity": 0
+    },
+    {
+     "id": 20,
+     "name": "Атырау",
+     "quantity": 0
+    },
+    {
+     "id": 21,
+     "name": "Караганда",
+     "quantity": 0
+    },
+    {
+     "id": 22,
+     "name": "Новосибирск",
+     "quantity": 0
+    },
+    {
+     "id": 23,
+     "name": "Актау",
+     "quantity": 0
+    },
+    {
+     "id": 24,
+     "name": "Нур-Султан",
+     "quantity": 0
+    },
+    {
+     "id": 25,
+     "name": "Шымкент (Тассай)",
+     "quantity": 0
+    }
+   ],
+   "image": null,
+   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/971302_av_nm1_250_3p_160a_35ka_chint/",
+   "offers": [],
+   "properties": {
+    "CML2_ARTICLE": "990100067_",
+    "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900067",
+    "KRATNOST_MIN": "1",
+    "EDINITSA_IZMERENIYA": "шт",
+    "NOVINKA": "Нет",
+    "SPETSPREDLOZHENIE": "Нет",
+    "ARTIKULPOSTAVSHCHIKA": "971302",
+    "TORGOVAYA_MARKA": "Chint",
+    "SERIYA": "NM1-250",
+    "KOLICHESTVO_POLYUSOV": "3",
+    "NOMINALNYY_TOK": "160А",
+    "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "35кА",
+    "NOMINALNOE_NAPRYAZHENIE": "400В",
+    "TIP_RASTSEPITELYA": "термомагнитный",
+    "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе"
+   },
+   "certificates": [
+    {
+     "type": "Сертификат соответствия ТР ТС 004/2011",
+     "number": "ЕАЭС KZ SYN.900067",
+     "valid_until": "2027-09-01",
+     "url": "/certificates/SYN-900067.pdf"
+    }
+   ]
+  },
+  {
+   "id": 900068,
+   "name": "971303 Светильник LED ДПО 18W 1800Lm 4000K IP40 IEK",
+   "article": "990100068_",
+   "description": "Светодиодный светильник 18Вт 1800Лм 4000K IP40 IEK для офисов.",
+   "price": 3700,
+   "quantity": 185,
+   "stores": [
+    {
+     "id": 2,
+     "name": "Брак MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 3,
+     "name": "Шымкент (ул.Байдукова)",
+     "quantity": 0
+    },
+    {
+     "id": 4,
+     "name": "Маркетинг MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 5,
+     "name": "Никонов",
+     "quantity": 0
+    },
+    {
+     "id": 6,
+     "name": "РЦ MEGALIGHT",
+     "quantity": 0
+    },
+    {
+     "id": 7,
+     "name": "Талдыкорган",
+     "quantity": 0
+    },
+    {
+     "id": 8,
+     "name": "Тастак",
+     "quantity": 0
+    },
+    {
+     "id": 9,
+     "name": "Торговый зал",
+     "quantity": 0
+    },
+    {
+     "id": 10,
+     "name": "Востановленный продукт",
+     "quantity": 0
+    },
+    {
+     "id": 11,
+     "name": "перемещение",
+     "quantity": 0
+    },
+    {
+     "id": 12,
+     "name": "Основной склад",
+     "quantity": 52
+    },
+    {
+     "id": 13,
+     "name": "Алматы",
+     "quantity": 0
+    },
+    {
+     "id": 14,
+     "name": "ЩИТОВОЕ",
+     "quantity": 0
+    },
+    {
+     "id": 15,
+     "name": "РЦ UNIT",
+     "quantity": 0
+    },
+    {
+     "id": 16,
+     "name": "Образцы Отдел Закупа",
+     "quantity": 0
+    },
+    {
+     "id": 17,
+     "name": "Витрина ТЗ",
+     "quantity": 0
+    },
+    {
+     "id": 18,
+     "name": "Усть-Каменогорск",
+     "quantity": 0
+    },
+    {
+     "id": 19,
+     "name": "Тараз",
+     "quantity": 12
+    },
+    {
+     "id": 20,
+     "name": "Атырау",
+     "quantity": 0
+    },
+    {
+     "id": 21,
+     "name": "Караганда",
+     "quantity": 5
+    },
+    {
+     "id": 22,
+     "name": "Новосибирск",
+     "quantity": 0
+    },
+    {
+     "id": 23,
+     "name": "Актау",
+     "quantity": 56
+    },
+    {
+     "id": 24,
+     "name": "Нур-Султан",
+     "quantity": 24
+    },
+    {
+     "id": 25,
+     "name": "Шымкент (Тассай)",
+     "quantity": 36
+    }
+   ],
+   "image": null,
+   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/971303_svetil_nik_led_dpo_18w_1800lm_4000k_ip40_iek/",
+   "offers": [],
+   "properties": {
+    "CML2_ARTICLE": "990100068_",
+    "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900068",
+    "KRATNOST_MIN": "1",
+    "EDINITSA_IZMERENIYA": "шт",
+    "NOVINKA": "Нет",
+    "SPETSPREDLOZHENIE": "Нет",
+    "ARTIKULPOSTAVSHCHIKA": "971303",
+    "TORGOVAYA_MARKA": "IEK",
+    "MOSHCHNOST": "18Вт",
+    "SVETOVOY_POTOK_LM": "1800",
+    "TSVETOVAYA_TEMPERATURA": "4000K",
+    "STEPEN_ZASHCHITY": "IP40",
+    "TIP_USTROYSTVA": "Светильник светодиодный"
+   },
+   "certificates": [
+    {
+     "type": "Сертификат соответствия ТР ТС 004/2011",
+     "number": "ЕАЭС KZ SYN.900068",
+     "valid_until": "2028-05-01",
+     "url": "/certificates/SYN-900068.pdf"
     }
    ]
   }

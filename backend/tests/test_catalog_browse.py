@@ -93,7 +93,7 @@ def test_category_prefix_brand_stock_and_price_filters_use_database(browse):
     assert data["brands"] == page(browse, category="nizkovoltnaya_apparatura", stock_only=True,
                                     min_price="1000", max_price="5000")["brands"]
     category = page(browse, category="kabel_provod/kabel_silovoy")
-    assert category["total"] == 3
+    assert category["total"] == 4  # три сечения завода А и 3х2,5 завода Б
     assert page(browse, category="kabel_provod/kabel")["total"] == 0
 
 

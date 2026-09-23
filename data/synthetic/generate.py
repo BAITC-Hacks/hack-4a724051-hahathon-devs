@@ -143,6 +143,7 @@ add(
         "ARTIKULPOSTAVSHCHIKA": "971300", "TORGOVAYA_MARKA": "Legrand", "SERIYA": "DRX250",
         "KOLICHESTVO_POLYUSOV": "3", "NOMINALNYY_TOK": "250 А",
         "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "18кА", "NOMINALNOE_NAPRYAZHENIE": "400В",
+        "TIP_RASTSEPITELYA": "термомагнитный",
         "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе",
     },
     "Автоматический выключатель DRX250 MT 3P 160А 18kA Legrand для распределительных сетей.\r\n\r\n"
@@ -156,6 +157,7 @@ add(
         "ARTIKULPOSTAVSHCHIKA": "971301", "TORGOVAYA_MARKA": "IEK", "SERIYA": "ВА88-35",
         "KOLICHESTVO_POLYUSOV": "3", "NOMINALNYY_TOK": "160А",
         "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "35кА", "NOMINALNOE_NAPRYAZHENIE": "400В",
+        "TIP_RASTSEPITELYA": "термомагнитный",
         "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе",
     },
     "Автоматический выключатель ВА88-35 3P 160А 35кА IEK в литом корпусе.\r\n\r\n"
@@ -164,6 +166,7 @@ add(
 )
 
 # УЗО и дифавтоматы
+RCBO_KA = {"IEK": "4,5кА", "Legrand": "6кА", "Chint": "6кА"}
 for brand, series, price in [("IEK", "АД12", 6900), ("Legrand", "DX3", 18400), ("Chint", "NXBLE-32", 7600)]:
     for current, leak in [(16, 30), (25, 30), (32, 30)]:
         code = f"{rng.randint(100000, 999999)}"
@@ -177,6 +180,7 @@ for brand, series, price in [("IEK", "АД12", 6900), ("Legrand", "DX3", 18400),
                 "KOLICHESTVO_POLYUSOV": "2", "NOMINALNYY_TOK": f"{current}А",
                 "NOMINALNYY_OTKLYUCHAYUSHCHIY_DIFFERENTSIALNYY_TOK": f"{leak}мА",
                 "KHARAKTERISTIKA_SRABATYVANIYA": "C", "NOMINALNOE_NAPRYAZHENIE": "230В",
+                "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": RCBO_KA[brand], "TIP_DIFFERENTSIALNOY_ZASHCHITY": "AC",
                 "TIP_USTROYSTVA": "Дифференциальный автоматический выключатель",
             },
             f"Дифференциальный автомат {series} 1P+N {current}А {leak}мА {brand}. Защищает от перегрузки, "
@@ -205,13 +209,16 @@ for brand, series, color, price in [
     )
 
 # Кабель: единица «м», дробное количество не округляем.
+CABLE_CONSTRUCTION = {"MARKA_KABELYA": "ВВГнг(А)-LS", "MATERIAL_ZHILY": "медь",
+                      "MATERIAL_IZOLYATSII": "ПВХ пониженной пожароопасности",
+                      "KLASS_POZHARNOY_BEZOPASNOSTI": "П1б.8.2.2.2"}
 for section, price in [("3х1,5", 410), ("3х2,5", 620), ("5х4", 1650)]:
     add(
         f"Кабель ВВГнг(А)-LS {section} ок(N,PE)-0,66 ГОСТ",
         "kabel_provod/kabel_silovoy", price,
         {
             "ARTIKULPOSTAVSHCHIKA": f"VVG-{section}", "TORGOVAYA_MARKA": "Кабельный завод",
-            "SECHENIE": section, "NOMINALNOE_NAPRYAZHENIE": "660В",
+            "SECHENIE": section, "NOMINALNOE_NAPRYAZHENIE": "660В", **CABLE_CONSTRUCTION,
         },
         f"Силовой кабель ВВГнг(А)-LS {section} с пониженным дымо- и газовыделением. Продаётся на метры.",
         unit="м",
@@ -229,10 +236,42 @@ for brand, power, flux, price, mode in [
         {
             "ARTIKULPOSTAVSHCHIKA": code, "TORGOVAYA_MARKA": brand, "MOSHCHNOST": f"{power}Вт",
             "SVETOVOY_POTOK_LM": str(flux), "TSVETOVAYA_TEMPERATURA": "4000K", "STEPEN_ZASHCHITY": "IP40",
+            "TIP_USTROYSTVA": "Светильник светодиодный",
         },
         f"Светодиодный светильник {power}Вт {flux}Лм 4000K IP40 {brand} для офисов и общественных помещений.",
         mode=mode,
     )
+
+# Добавлены позже, в конец, чтобы ID и артикулы остальных товаров не поменялись.
+# Для каждого есть проверяемый аналог по профилю категории.
+add(
+    "Кабель ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 ГОСТ завод Б",
+    "kabel_provod/kabel_silovoy", 640,
+    {"ARTIKULPOSTAVSHCHIKA": "VVG-B-3х2,5", "TORGOVAYA_MARKA": "Кабельный завод Б", "SECHENIE": "3х2,5",
+     "NOMINALNOE_NAPRYAZHENIE": "660В", **CABLE_CONSTRUCTION},
+    "Силовой кабель ВВГнг(А)-LS 3х2,5 другого завода. Продаётся на метры.",
+    mode="zero", unit="м",
+)
+add(
+    "971302 АВ NM1-250 3P 160А 35кА Chint",
+    "nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli", 45200,
+    {
+        "ARTIKULPOSTAVSHCHIKA": "971302", "TORGOVAYA_MARKA": "Chint", "SERIYA": "NM1-250",
+        "KOLICHESTVO_POLYUSOV": "3", "NOMINALNYY_TOK": "160А",
+        "NOMINALNAYA_OTKLYUCHAYUSHCHAYA_SPOSOBNOST": "35кА", "NOMINALNOE_NAPRYAZHENIE": "400В",
+        "TIP_RASTSEPITELYA": "термомагнитный", "TIP_USTROYSTVA": "Автоматический выключатель в литом корпусе",
+    },
+    "Автоматический выключатель NM1-250 3P 160А 35кА Chint в литом корпусе.",
+    mode="zero",
+)
+add(
+    "971303 Светильник LED ДПО 18W 1800Lm 4000K IP40 IEK",
+    "svetilniki_lampy/svetilniki_ofisnye", 3700,
+    {"ARTIKULPOSTAVSHCHIKA": "971303", "TORGOVAYA_MARKA": "IEK", "MOSHCHNOST": "18Вт",
+     "SVETOVOY_POTOK_LM": "1800", "TSVETOVAYA_TEMPERATURA": "4000K", "STEPEN_ZASHCHITY": "IP40",
+     "TIP_USTROYSTVA": "Светильник светодиодный"},
+    "Светодиодный светильник 18Вт 1800Лм 4000K IP40 IEK для офисов.",
+)
 
 catalog = {
     "meta": {

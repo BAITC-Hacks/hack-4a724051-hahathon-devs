@@ -30,8 +30,13 @@ PROFILES = {
         "дифференциальный автоматический выключатель",
         ("device_type", "rated_current", "poles", "voltage", "curve", "breaking_capacity", "leakage_current", "residual_type")),
     "kabel_silovoy": (None, ("cross_section", "voltage", "cable_type", "conductor_material", "insulation", "fire_class")),
+    # Розетка: ток, напряжение и тип установки определяют замену, цвет и серия только в отличиях.
+    "rozetki": ("розетка с заземлением", ("device_type", "rated_current", "voltage", "mounting")),
+    # Светильник: мощность, цветовая температура и защита; световой поток идёт бонусом.
+    "svetilniki_ofisnye": ("светильник светодиодный", ("device_type", "power", "color_temperature", "ip")),
 }
-NUMERIC_UNITS = {"rated_current": "А", "poles": None, "voltage": "В", "breaking_capacity": "кА", "leakage_current": "мА"}
+NUMERIC_UNITS = {"rated_current": "А", "poles": None, "voltage": "В", "breaking_capacity": "кА", "leakage_current": "мА",
+                 "power": "Вт", "color_temperature": "K"}
 
 
 @dataclass(frozen=True)

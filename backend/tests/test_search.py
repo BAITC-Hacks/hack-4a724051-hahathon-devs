@@ -54,3 +54,20 @@ def test_barcode_lookup(catalog):
     product = by_name(catalog, "RX3 1P 16А")
     assert product.barcode
     assert SearchService(catalog).search(product.barcode)[0].product.id == product.id
+
+
+def test_every_demo_item_without_stock_has_an_alternative(catalog):
+    """Демо-каталог обязан показывать must have 2 в каждой категории, где есть товар без наличия."""
+    missing = [p for p in catalog._by_id.values() if p.stock.status is not StockStatus.IN_STOCK]
+    assert len(missing) >= 8
+    for product in missing:
+        result = AlternativeService(catalog).find(product)
+        assert result.alternatives, (product.name, result.blocked_by)
+        assert all(a.product.stock.status is StockStatus.IN_STOCK for a in result.alternatives)
+
+
+def test_socket_alternative_keeps_current_voltage_and_mounting(catalog):
+    source = by_name(catalog, "Mosaic")
+    for alt in AlternativeService(catalog).find(source).alternatives:
+        for key in ("rated_current", "voltage", "mounting"):
+            assert alt.product.attribute(key).value == source.attribute(key).value
