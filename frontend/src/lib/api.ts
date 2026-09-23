@@ -136,6 +136,15 @@ export async function ensureConversation(): Promise<Conversation> {
   return conversationPromise;
 }
 
+export async function endSession(): Promise<void> {
+  // Server-side revocation: the cookie alone is not the session.
+  try { await request<{ ended: boolean }>("/session/logout", { method: "POST", write: true }); }
+  finally {
+    csrf = null;
+    try { sessionStorage.removeItem("ekt_conversation_id"); } catch { /* Storage may be disabled. */ }
+  }
+}
+
 export function errorMessage(error: unknown): string {
   if (error instanceof ApiError) return error.message + (error.requestId ? ` (запрос ${error.requestId})` : "");
   return "Не удалось связаться с сервером. Проверьте подключение и повторите запрос.";

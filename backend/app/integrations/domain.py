@@ -149,8 +149,10 @@ class SQLiteDomainStores:
         proposal.status, proposal.status_reason = new, reason
         if receipt:
             proposal.receipt = receipt
-        # Outer transaction owns the SQLite write lock throughout this CAS.
-        self.db.execute("UPDATE demo_proposals SET payload=? WHERE id=?", (_encode(proposal), proposal_id))
+        # Outer transaction owns the SQLite write lock throughout this CAS. The
+        # session filter keeps the write on the row whose ownership was verified.
+        self.db.execute("UPDATE demo_proposals SET payload=? WHERE id=? AND session_id=?",
+                        (_encode(proposal), proposal_id, proposal.session_id))
         return True
 
     def get_cart(self, session_id):
@@ -257,7 +259,8 @@ class SQLiteDemoActions:
                 if kind == "confirm":
                     if version != 1:
                         raise AppError("proposal_version_conflict", "Версия предложения изменилась.", 409)
-                    base = db.execute("SELECT cart_version FROM demo_proposals WHERE id=?", (proposal_id,)).fetchone()[0]
+                    base = db.execute("SELECT cart_version FROM demo_proposals WHERE id=? AND session_id=?",
+                                      (proposal_id, session_id)).fetchone()[0]
                     if proposal.status is ProposalStatus.PROPOSED and store.get_cart(session_id).version != base:
                         store.compare_and_set_status(proposal_id, ProposalStatus.PROPOSED, ProposalStatus.STALE,
                                                      reason="cart_changed")

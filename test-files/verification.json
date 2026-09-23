@@ -1,0 +1,174 @@
+{
+  "scope": "Local MIME/size/OOXML validation and isolated parser; no antivirus or LLM calls",
+  "files": [
+    {
+      "file": "01_small_spec.txt",
+      "bytes": 1114,
+      "sha256": "a779c98e9ca892c963f75aa8eef109e0f3a3740cb8b642743283147b5d73ef92",
+      "status": "ready",
+      "text_characters": 694,
+      "warnings": [],
+      "image_media_type": null,
+      "markers_present": [
+        "CHECK-START-ALFA",
+        "CHECK-END-OMEGA",
+        "TEST-NOT-IN-CATALOG"
+      ],
+      "markers_absent": [],
+      "passed": true
+    },
+    {
+      "file": "02_large_text.txt",
+      "bytes": 303540,
+      "sha256": "774d53d9c7f674f743e732d8fcf603e55033540ae6bf2cf066d169853028c837",
+      "status": "partial",
+      "text_characters": 40000,
+      "warnings": [
+        "Текст обрезан до 40 000 символов."
+      ],
+      "image_media_type": null,
+      "markers_present": [
+        "CHECK-START-ALFA"
+      ],
+      "markers_absent": [
+        "CHECK-FAR-END-LARGE-TEXT"
+      ],
+      "passed": true
+    },
+    {
+      "file": "03_spec_500_rows.csv",
+      "bytes": 15466,
+      "sha256": "e6ecf0e7625b92515b58647cd57d01dccbd4bff0518bb08b950fe7a0e3fe63d2",
+      "status": "partial",
+      "text_characters": 7098,
+      "warnings": [
+        "Показаны первые 200 строк CSV."
+      ],
+      "image_media_type": null,
+      "markers_present": [
+        "CSV-ROW-0199"
+      ],
+      "markers_absent": [
+        "CSV-ROW-0200",
+        "CSV-ROW-0500"
+      ],
+      "passed": true
+    },
+    {
+      "file": "04_spec_1200_rows.xlsx",
+      "bytes": 30777,
+      "sha256": "fb9b45a0708981d071d2b70a2b60de168d1aa4791a2b65732b10b844e5646132",
+      "status": "partial",
+      "text_characters": 7609,
+      "warnings": [
+        "Обработаны первые 200 строк таблицы."
+      ],
+      "image_media_type": null,
+      "markers_present": [
+        "SHEET-1-ROW-199"
+      ],
+      "markers_absent": [
+        "SHEET-1-ROW-200",
+        "SHEET-3-ROW-400"
+      ],
+      "passed": true
+    },
+    {
+      "file": "05_spec_22_sheets.xlsx",
+      "bytes": 20197,
+      "sha256": "b00b35e2975b30355eac5b3577376461ce035a87f7757ffddd03e38ff8c44b72",
+      "status": "partial",
+      "text_characters": 4225,
+      "warnings": [
+        "Обработаны первые 20 листов."
+      ],
+      "image_media_type": null,
+      "markers_present": [
+        "SHEET-20-ROW-4"
+      ],
+      "markers_absent": [
+        "SHEET-21-ROW-1",
+        "SHEET-22-ROW-4"
+      ],
+      "passed": true
+    },
+    {
+      "file": "06_specification.docx",
+      "bytes": 37315,
+      "sha256": "d8bdcad3d9e1396e22d971bdfd1e22d9f87bb510a570dd04a577f8bea71c4f4a",
+      "status": "ready",
+      "text_characters": 488,
+      "warnings": [],
+      "image_media_type": null,
+      "markers_present": [
+        "DOCX-START-ALFA",
+        "DOCX-END-OMEGA",
+        "990100003_"
+      ],
+      "markers_absent": [],
+      "passed": true
+    },
+    {
+      "file": "07_catalog_30_pages.pdf",
+      "bytes": 75386,
+      "sha256": "f1a3bcd85c8d6a518604d118d75af99fd02768c4da47c75e152965fad15eea43",
+      "status": "partial",
+      "text_characters": 23546,
+      "warnings": [
+        "Обработаны первые 20 страниц PDF."
+      ],
+      "image_media_type": null,
+      "markers_present": [
+        "PDF-PAGE-20-CHECK"
+      ],
+      "markers_absent": [
+        "PDF-PAGE-21-CHECK",
+        "PDF-LAST-OMEGA"
+      ],
+      "passed": true
+    },
+    {
+      "file": "08_scanned_spec.pdf",
+      "bytes": 440194,
+      "sha256": "0b3e6201b03759bad499802414184345f1c2374c6b83f472127def7f0004633c",
+      "status": "partial",
+      "text_characters": 2,
+      "warnings": [
+        "Страницы без извлекаемого текста передаются как изображения без OCR."
+      ],
+      "image_media_type": "image/png",
+      "markers_present": [],
+      "markers_absent": [
+        "SCAN-PAGE-1"
+      ],
+      "passed": true
+    },
+    {
+      "file": "09_photo_spec.jpg",
+      "bytes": 225254,
+      "sha256": "d42c11b6fc34b0c4623f1c22826fa366561e08e00f603609cd96780c4fb00e28",
+      "status": "ready",
+      "text_characters": 0,
+      "warnings": [
+        "Изображение уменьшено до 2000 пикселей по длинной стороне.",
+        "Изображение очищено от метаданных; текст не распознан."
+      ],
+      "image_media_type": "image/jpeg",
+      "markers_present": [],
+      "markers_absent": [
+        "PHOTO-CHECK-GAMMA"
+      ],
+      "passed": true
+    },
+    {
+      "file": "10_over_10MiB.png",
+      "bytes": 11796186,
+      "sha256": "b65df426f00f393169ce1ccfed76301d291e4b8f4cfa0192cdbfa23ca0cb26ff",
+      "status": "rejected",
+      "error": "file_size",
+      "http_status": 413,
+      "passed": true
+    }
+  ],
+  "passed": 10
+}

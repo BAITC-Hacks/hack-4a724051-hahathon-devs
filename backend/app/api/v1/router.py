@@ -127,6 +127,21 @@ def start_session(request: Request, response: Response, services: Services):
     return success(request, SessionView(csrf_token=csrf_token(cookie), expires_at=session.expires_at))
 
 
+@router.post("/session/logout", response_model=Envelope[dict[str, bool]], tags=["session"])
+def end_session(request: Request, response: Response, services: Services, session: SessionWrite):
+    """Drop the session server-side and clear the cookie.
+
+    Until this existed a cookie stayed valid for its whole TTL, so a shared
+    browser kept access to the previous visitor's chat history and cart.
+    Deleting the row cascades to conversations, turns, messages, uploaded
+    assets and the demo cart, so revocation is not cookie-side only.
+    """
+    services.store.delete_session(session.id)
+    response.delete_cookie(services.settings.session_cookie, path="/", httponly=True,
+                           secure=services.settings.cookie_secure, samesite="lax")
+    return success(request, {"ended": True})
+
+
 @router.get("/capabilities", response_model=Envelope[dict[str, str]], tags=["system"])
 def capabilities(request: Request, services: Services):
     return success(request, services.capabilities)

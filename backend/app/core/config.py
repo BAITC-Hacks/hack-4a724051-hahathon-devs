@@ -38,15 +38,16 @@ class Settings(BaseSettings):
     max_conversations: int = Field(default=20, ge=1)
     max_turns_per_session: int = Field(default=200, ge=1)
     worker_poll_seconds: float = Field(default=0.5, ge=0.1)
-    worker_timeout_seconds: float = Field(default=25, ge=0.1, le=300)
-    worker_lease_seconds: int = Field(default=60, ge=1)
+    worker_timeout_seconds: float = Field(default=75, ge=0.1, le=300)
+    worker_lease_seconds: int = Field(default=120, ge=1)
     llm_enabled: bool = False
     llm_provider: Literal["openai"] = "openai"
-    llm_model: str = "gpt-4.1-mini"
-    llm_allowed_models: list[str] = ["gpt-4.1-mini"]
+    llm_model: str = "gpt-6-sol"
+    llm_allowed_models: list[str] = ["gpt-6-sol"]
+    llm_reasoning_effort: Literal["none", "low", "medium", "high", "xhigh", "max"] = "medium"
     llm_data_policy_accepted: bool = False
-    llm_timeout_seconds: float = Field(default=12, ge=1, le=20)
-    llm_max_output_tokens: int = Field(default=1200, ge=256, le=4000)
+    llm_timeout_seconds: float = Field(default=45, ge=1, le=120)
+    llm_max_output_tokens: int = Field(default=8192, ge=256, le=16384)
     llm_session_daily_tokens: int = Field(default=100000, ge=1000)
     llm_site_daily_tokens: int = Field(default=1000000, ge=1000)
     uploads_enabled: bool = False

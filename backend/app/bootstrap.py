@@ -132,6 +132,7 @@ def _build_container(settings, *, store, catalog, documents, actions, resources)
             db_path=settings.local_db_path, api_key=settings.llm_api_key.get_secret_value(),
             model=settings.llm_model, timeout_s=settings.llm_timeout_seconds,
             max_output_tokens=settings.llm_max_output_tokens,
+            reasoning_effort=settings.llm_reasoning_effort,
             session_budget=settings.llm_session_daily_tokens, site_budget=settings.llm_site_daily_tokens,
         )
     return Container(

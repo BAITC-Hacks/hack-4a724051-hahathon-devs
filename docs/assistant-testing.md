@@ -11,8 +11,13 @@
 ```dotenv
 LLM_API_KEY=ваш_ключ_OpenAI
 LLM_PROVIDER=openai
-LLM_MODEL=gpt-4.1-mini
-LLM_ALLOWED_MODELS=["gpt-4.1-mini"]
+LLM_MODEL=gpt-6-sol
+LLM_ALLOWED_MODELS=["gpt-6-sol"]
+LLM_REASONING_EFFORT=medium
+LLM_MAX_OUTPUT_TOKENS=8192
+LLM_TIMEOUT_SECONDS=45
+WORKER_TIMEOUT_SECONDS=75
+WORKER_LEASE_SECONDS=120
 LLM_ENABLED=true
 LLM_DATA_POLICY_ACCEPTED=true
 INTEGRATION_MODE=synthetic
@@ -101,9 +106,11 @@ SCANNER_COMMAND=["C:/Program Files/ClamAV/clamscan.exe","--no-summary"]
 
 До каждого OpenAI-вызова резервируется верхняя оценка токенов в SQLite с суточной квотой сайта и сессии. Значения: `LLM_SESSION_DAILY_TOKENS`, `LLM_SITE_DAILY_TOKENS`. Это токенные, не денежные лимиты; отдельный бюджет проекта задайте в OpenAI. При timeout резерв сохраняется, SDK-повторов нет. Call ID связан с turn; повтор не делает новый платный вызов. После серии ошибок действует временный circuit breaker процесса.
 
-Сетевой timeout модели — 12 секунд по умолчанию, worker — 25 секунд. «Единицы секунд» остаётся целью для измерений на реальном ключе; локальные mock-тесты её не подтверждают. При недоступности модели возвращается ответ из доступных серверных данных с предупреждением.
+Для GPT-6 Sol сетевой timeout — 45 секунд, worker — 75 секунд, lease — 120 секунд. Reasoning effort — medium, лимит вывода 8192 токена включает рассуждение модели. «Единицы секунд» остаётся целью для измерений на реальном ключе; локальные mock-тесты её не подтверждают. При недоступности модели возвращается ответ из доступных серверных данных с предупреждением. Смена модели не увеличивает лимиты парсера: 200 строк, 20 страниц PDF, 40 000 символов. [Официальная модель GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol).
 
 ## Приёмка
+
+Набор из десяти файлов для ручной проверки, ожидаемые ограничения и команда локального прогона: [test-files/README.md](../test-files/README.md). Файлы находятся в `test-files/assistant/`, отчёт парсера — в `test-files/verification.json`.
 
 Автотесты покрывают пять сценариев ТЗ, изоляцию сессий/диалогов, повторные подтверждения, неизвестный товар модели, prompt injection в поддельном ответе, смену языка, разрешение на внешнюю обработку, квоты модели, таймауты, форматы/карантин/удаление файлов. Запуск: `.venv/Scripts/python.exe -m pytest`.
 

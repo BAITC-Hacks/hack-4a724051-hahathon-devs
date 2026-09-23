@@ -52,6 +52,7 @@ class OpenAIPlanningProvider:
     def __init__(
         self, *, db_path: Path, api_key: str, model: str, timeout_s: float,
         max_output_tokens: int, session_budget: int, site_budget: int,
+        reasoning_effort: str = "medium",
         image_token_reserve: int = 8192,
         failure_threshold: int = 3, circuit_cooldown_s: float = 60,
         base_url: str = "https://api.openai.com/v1",
@@ -67,6 +68,9 @@ class OpenAIPlanningProvider:
         self.model = model
         self.timeout_s = timeout_s
         self.max_output_tokens = max_output_tokens
+        if reasoning_effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
+            raise ValueError("Unsupported reasoning effort")
+        self.reasoning_effort = reasoning_effort
         self.image_token_reserve = image_token_reserve
         self.failure_threshold = failure_threshold
         self.circuit_cooldown_s = circuit_cooldown_s
@@ -161,6 +165,8 @@ class OpenAIPlanningProvider:
             "max_output_tokens": self.max_output_tokens,
             "store": False,
         }
+        if self.model == "gpt-6-sol":
+            request_body["reasoning"] = {"effort": self.reasoning_effort}
         try:
             upstream = await self._client.post(
                 self.base_url + "/responses", json=request_body,

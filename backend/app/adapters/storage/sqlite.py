@@ -111,6 +111,12 @@ class SQLiteStateStore:
             ).fetchone()
             return Session(row["id"], row["expires_at"]) if row else None
 
+    def delete_session(self, session_id: str) -> None:
+        # ON DELETE CASCADE also removes conversations, turns, messages, jobs,
+        # uploaded assets and the demo cart that belong to this session.
+        with self.connection(write=True) as db:
+            db.execute("DELETE FROM sessions WHERE id=?", (session_id,))
+
     def session_alive(self, session_id: str, now: float) -> bool:
         with self.connection() as db:
             return bool(db.execute(

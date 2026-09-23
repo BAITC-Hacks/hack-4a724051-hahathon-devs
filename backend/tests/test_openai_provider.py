@@ -22,12 +22,12 @@ PLAN = {
 }
 
 
-def provider(tmp_path, client, *, session_budget=20000, site_budget=30000):
+def provider(tmp_path, client, *, session_budget=20000, site_budget=30000, model="gpt-4.1-mini"):
     with sqlite3.connect(tmp_path / "budget.sqlite3") as db:
         db.execute("CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, expires_at REAL NOT NULL)")
         db.execute("INSERT OR IGNORE INTO sessions VALUES (?, ?)", ("session-1", time.time() + 3600))
     return OpenAIPlanningProvider(
-        db_path=tmp_path / "budget.sqlite3", api_key="test-key", model="gpt-4.1-mini",
+        db_path=tmp_path / "budget.sqlite3", api_key="test-key", model=model,
         timeout_s=1, max_output_tokens=300, session_budget=session_budget,
         site_budget=site_budget, client=client,
     )
@@ -84,6 +84,29 @@ def test_responses_request_is_strict_stateless_and_accounts_all_usage(tmp_path):
         ).fetchone() == (52, "completed")
         columns = {row[1] for row in db.execute("PRAGMA table_info(llm_token_reservations)")}
         assert columns == {"call_id", "day_utc", "session_id", "charged_tokens", "state"}
+
+
+def test_sol_uses_reasoning_with_the_existing_grounded_output_contract(tmp_path):
+    from app.core.config import Settings
+    settings = Settings(_env_file=None, llm_enabled=True, llm_api_key="test-key", llm_data_policy_accepted=True)
+    assert settings.llm_model == "gpt-6-sol"
+    assert settings.worker_lease_seconds > settings.worker_timeout_seconds > settings.llm_timeout_seconds + 5
+    assert settings.llm_max_output_tokens == 8192
+
+    def handle(request):
+        body = json.loads(request.content)
+        assert body["model"] == "gpt-6-sol"
+        assert body["reasoning"] == {"effort": "medium"}
+        assert body["text"]["format"]["strict"] is True
+        assert body["store"] is False
+        return httpx.Response(200, json=completed())
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+            adapter = provider(tmp_path, client, model="gpt-6-sol")
+            assert await adapter.plan(system="Select from known products.", payload={"text":"test"},
+                                      images=[], session_id="session-1", call_id="sol-1") == PLAN
+    asyncio.run(run())
 
 
 def test_timeout_retains_reservation_and_blocks_replay(tmp_path):
