@@ -6,16 +6,16 @@ from dataclasses import dataclass
 import httpx
 import pytest
 
-from app.adapters.nvidia.client import NvidiaBudgetExceeded, NvidiaClient, NvidiaError, NvidiaUsage
+from app.adapters.ai_services.client import AIBudgetExceeded, AIServiceError, AIServicesClient, AIUsage
 from app.contracts import ParsedDocument
-from app.modules.documents.ocr import NvidiaImageReader, clean
+from app.modules.documents.ocr import ImageReader, clean
 from app.modules.search.semantic import SemanticIndex
 from app.modules.search.service import MatchKind, SearchService
 from tests.conftest import by_name
 
 
-def client(handler, usage=None):
-    return NvidiaClient("nvapi-test", usage, transport=httpx.MockTransport(handler))
+def client(handler, usage=None, provider="nvidia"):
+    return AIServicesClient(provider, "key-test", usage, transport=httpx.MockTransport(handler))
 
 
 def test_embed_request_and_order():
@@ -28,13 +28,13 @@ def test_embed_request_and_order():
     vectors = client(handler).embed(["a", "b"], "m", "passage")
     assert vectors == [[1.0, 0.0], [0.0, 1.0]]
     assert seen["url"] == "https://integrate.api.nvidia.com/v1/embeddings"
-    assert seen["auth"] == "Bearer nvapi-test" and seen["input_type"] == "passage"
+    assert seen["auth"] == "Bearer key-test" and seen["input_type"] == "passage"
 
 
-def test_errors_are_nvidia_errors():
+def test_errors_are_service_errors():
     for response in (httpx.Response(401), httpx.Response(302, headers={"location": "https://x.example"}),
                      httpx.Response(200, content=b"<html>"), httpx.Response(200, json={"data": []})):
-        with pytest.raises(NvidiaError):
+        with pytest.raises(AIServiceError):
             client(lambda r, resp=response: resp).embed(["a"], "m", "query")
 
 
@@ -52,15 +52,15 @@ def test_read_image_sends_data_url():
 
 
 def test_daily_budget_is_shared_and_enforced(tmp_path):
-    usage = NvidiaUsage(tmp_path / "s.sqlite3", site_daily_calls=3, session_daily_calls=2)
+    usage = AIUsage(tmp_path / "s.sqlite3", site_daily_calls=3, session_daily_calls=2)
     ok = client(lambda r: httpx.Response(200, json={"data": [{"index": 0, "embedding": [1]}]}), usage)
     ok.embed(["a"], "m", "query", session_id="s1")
     ok.embed(["a"], "m", "query", session_id="s1")
-    with pytest.raises(NvidiaBudgetExceeded):
+    with pytest.raises(AIBudgetExceeded):
         ok.embed(["a"], "m", "query", session_id="s1")
     ok.embed(["a"], "m", "query", session_id="s2")
-    other_process = NvidiaUsage(tmp_path / "s.sqlite3", 3, 2)
-    with pytest.raises(NvidiaBudgetExceeded):
+    other_process = AIUsage(tmp_path / "s.sqlite3", 3, 2)
+    with pytest.raises(AIBudgetExceeded):
         other_process.reserve("s3")
 
 
@@ -76,7 +76,7 @@ class FakeVision:
 
 
 def test_image_reader_pages_and_failures():
-    result = NvidiaImageReader(FakeVision(["стр 1", NvidiaError("x"), "стр 3"]), "m").read(
+    result = ImageReader(FakeVision(["стр 1", AIServiceError("x"), "стр 3"]), "m").read(
         [("image/png", b"1"), ("image/png", b"2"), ("image/png", b"3")])
     assert result.pages_read == 2 and result.pages_failed == 1
     assert "# Страница 1\nстр 1" in result.text and "стр 3" in result.text
@@ -128,7 +128,7 @@ def test_semantic_results_are_fused_but_exact_article_wins(catalog):
 def test_semantic_failure_falls_back_to_text(catalog):
     class Broken:
         def embed(self, *a, **k):
-            raise NvidiaError("down")
+            raise AIServiceError("down")
 
     index = SemanticIndex("m", {1: [1.0]}, Broken())
     plain = SearchService(catalog).search("розетка белая")
@@ -170,7 +170,26 @@ def test_runtime_reads_images_only_with_consent(tmp_path):
                                 (), (doc,))
         out = asyncio.run(assistant._read_images(ctx))
         assert reader.calls == expected_calls
-    assert "990100001_ | 2 шт" in out.documents[0].text and "ocr_nvidia" in out.documents[0].warnings
+    assert "990100001_ | 2 шт" in out.documents[0].text and "ocr_external" in out.documents[0].warnings
+
+
+def test_openai_request_format():
+    seen = []
+
+    def handler(request):
+        seen.append((str(request.url), json.loads(request.content)))
+        if request.url.path.endswith("/embeddings"):
+            return httpx.Response(200, json={"data": [{"index": 0, "embedding": [1.0]}]})
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    c = client(handler, provider="openai")
+    c.embed(["a"], "text-embedding-3-small", "query")
+    c.read_image(b"x", "image/png", "gpt-4.1-mini", "p")
+    (emb_url, emb), (chat_url, chat) = seen
+    assert emb_url == "https://api.openai.com/v1/embeddings"
+    assert "input_type" not in emb and emb["dimensions"] == 512
+    assert chat_url == "https://api.openai.com/v1/chat/completions"
+    assert "max_completion_tokens" in chat and "max_tokens" not in chat
 
 
 def test_settings_require_key_and_policy():
@@ -178,5 +197,9 @@ def test_settings_require_key_and_policy():
     with pytest.raises(ValueError):
         Settings(_env_file=None, semantic_search_enabled=True)
     with pytest.raises(ValueError):
-        Settings(_env_file=None, nvidia_ocr_enabled=True, nvidia_api_key="nvapi-x")
-    Settings(_env_file=None, nvidia_ocr_enabled=True, nvidia_api_key="nvapi-x", nvidia_data_policy_accepted=True)
+        Settings(_env_file=None, ocr_enabled=True, llm_api_key="sk-x")
+    ok = Settings(_env_file=None, ocr_enabled=True, llm_api_key="sk-x", llm_data_policy_accepted=True)
+    assert ok.resolved_ocr_model() == "gpt-4.1-mini" and ok.resolved_embed_model() == "text-embedding-3-small"
+    nv = Settings(_env_file=None, ai_services_provider="nvidia", semantic_search_enabled=True,
+                  nvidia_api_key="nvapi-x", nvidia_data_policy_accepted=True)
+    assert nv.ai_key() == "nvapi-x"

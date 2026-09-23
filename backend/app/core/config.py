@@ -22,17 +22,18 @@ class Settings(BaseSettings):
     # catalog_db: при старте применить миграции и заполнить ПУСТУЮ базу демо-каталогом.
     # Для базы с импортом из EKT ничего не меняется. false отключает автозаполнение.
     catalog_db_seed_demo: bool = True
-    # NVIDIA API Catalog (build.nvidia.com), участник 1: распознавание фото/сканов и смысловой поиск.
-    # Ключ сам ничего не включает: нужны флаги ниже и согласие оператора на передачу данных NVIDIA.
+    # Распознавание фото/сканов и смысловой поиск (участник 1). Провайдер openai берёт LLM_API_KEY и
+    # LLM_DATA_POLICY_ACCEPTED, провайдер nvidia (build.nvidia.com) свои NVIDIA_*. Ключ сам ничего не включает.
+    ai_services_provider: Literal["openai", "nvidia"] = "openai"
     nvidia_api_key: SecretStr = SecretStr("")
     nvidia_data_policy_accepted: bool = False
-    nvidia_ocr_enabled: bool = False
-    nvidia_ocr_model: str = "google/gemma-3-12b-it"
+    ocr_enabled: bool = False
+    ocr_model: str = ""  # пусто = по умолчанию для провайдера
     semantic_search_enabled: bool = False
-    nvidia_embed_model: str = "nvidia/llama-3.2-nv-embedqa-1b-v1"
+    embed_model: str = ""  # пусто = по умолчанию для провайдера; должен совпадать с моделью индекса
     semantic_index_path: Path = ROOT.parent / "data" / "synthetic" / "embeddings.json"
-    nvidia_site_daily_calls: int = Field(default=3000, ge=1)
-    nvidia_session_daily_calls: int = Field(default=200, ge=1)
+    ai_site_daily_calls: int = Field(default=3000, ge=1)
+    ai_session_daily_calls: int = Field(default=200, ge=1)
     # Файлы клиентов (catalog_db). Без clamd разбор запрещён, кроме явного демо-флага.
     assets_dir: Path = ROOT / "var" / "assets"
     clamd_socket: str = ""
@@ -96,9 +97,11 @@ class Settings(BaseSettings):
             raise ValueError("EKT_LIVE_REFRESH requires EKT_API_USER and EKT_API_PASSWORD")
         if self.app_env == "production" and self.documents_allow_unscanned:
             raise ValueError("Unscanned uploads are allowed only outside production")
-        if (self.nvidia_ocr_enabled or self.semantic_search_enabled) and not (
-                self.nvidia_api_key.get_secret_value() and self.nvidia_data_policy_accepted):
-            raise ValueError("NVIDIA OCR/semantic search need NVIDIA_API_KEY and NVIDIA_DATA_POLICY_ACCEPTED=true")
+        if (self.ocr_enabled or self.semantic_search_enabled) and not (self.ai_key() and self.ai_policy_accepted()):
+            raise ValueError(
+                "OCR/semantic search need an API key and data policy consent for AI_SERVICES_PROVIDER: "
+                "openai -> LLM_API_KEY + LLM_DATA_POLICY_ACCEPTED=true, "
+                "nvidia -> NVIDIA_API_KEY + NVIDIA_DATA_POLICY_ACCEPTED=true")
         if self.worker_lease_seconds <= self.worker_timeout_seconds:
             raise ValueError("Worker lease must exceed processing timeout")
         if self.app_env == "production" and not self.cookie_secure:
@@ -117,3 +120,19 @@ class Settings(BaseSettings):
         if self.uploads_enabled and not self.scanner_command:
             raise ValueError("Uploads require a configured malware scanner")
         return self
+
+    # --- внешние ИИ-сервисы (распознавание, эмбеддинги) ---
+
+    def ai_key(self) -> str:
+        key = self.llm_api_key if self.ai_services_provider == "openai" else self.nvidia_api_key
+        return key.get_secret_value()
+
+    def ai_policy_accepted(self) -> bool:
+        return self.llm_data_policy_accepted if self.ai_services_provider == "openai" else self.nvidia_data_policy_accepted
+
+    def resolved_ocr_model(self) -> str:
+        return self.ocr_model or {"openai": "gpt-4.1-mini", "nvidia": "google/gemma-3-12b-it"}[self.ai_services_provider]
+
+    def resolved_embed_model(self) -> str:
+        return self.embed_model or {"openai": "text-embedding-3-small",
+                                    "nvidia": "nvidia/llama-3.2-nv-embedqa-1b-v1"}[self.ai_services_provider]

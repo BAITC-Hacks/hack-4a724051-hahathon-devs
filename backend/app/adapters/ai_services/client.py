@@ -1,8 +1,10 @@
-"""Клиент NVIDIA API Catalog (build.nvidia.com): эмбеддинги и распознавание изображений.
+"""Клиент внешних ИИ-сервисов для распознавания изображений и эмбеддингов.
 
-Адрес фиксирован в коде, ключ только из окружения (NVIDIA_API_KEY). Без редиректов,
-с таймаутами и без автоповторов платных запросов. Каждый вызов сначала списывает
-лимит в NvidiaUsage, поэтому API и worker вместе не выходят за дневной бюджет.
+Провайдеры: OpenAI (api.openai.com) и NVIDIA API Catalog (build.nvidia.com). У обоих
+формат OpenAI (/chat/completions, /embeddings), отличия учтены ниже. Адреса
+фиксированы в коде, ключ только из окружения. Без редиректов, с таймаутами и без
+автоповторов платных запросов. Каждый вызов сначала списывает дневной лимит в
+AIUsage, поэтому API и worker вместе не выходят за бюджет.
 """
 
 import base64
@@ -13,19 +15,21 @@ from pathlib import Path
 
 import httpx
 
-BASE_URL = "https://integrate.api.nvidia.com/v1"
+BASE_URLS = {"openai": "https://api.openai.com/v1", "nvidia": "https://integrate.api.nvidia.com/v1"}
+# Размер вектора у OpenAI text-embedding-3 можно сократить без заметной потери качества.
+OPENAI_EMBED_DIMENSIONS = 512
 MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 
 
-class NvidiaError(Exception):
+class AIServiceError(Exception):
     """Сервис недоступен, отказал или вернул неожиданный ответ. Вызывающий код продолжает без него."""
 
 
-class NvidiaBudgetExceeded(NvidiaError):
+class AIBudgetExceeded(AIServiceError):
     pass
 
 
-class NvidiaUsage:
+class AIUsage:
     """Дневные лимиты вызовов в общей SQLite-базе состояния (одна на API и worker)."""
 
     def __init__(self, db_path: Path, site_daily_calls: int, session_daily_calls: int):
@@ -34,7 +38,7 @@ class NvidiaUsage:
         self.session_daily_calls = session_daily_calls
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         with closing(sqlite3.connect(self.db_path, timeout=5)) as db, db:
-            db.execute("CREATE TABLE IF NOT EXISTS nvidia_usage (day TEXT NOT NULL, scope TEXT NOT NULL, "
+            db.execute("CREATE TABLE IF NOT EXISTS ai_service_usage (day TEXT NOT NULL, scope TEXT NOT NULL, "
                        "calls INTEGER NOT NULL, PRIMARY KEY (day, scope))")
 
     def reserve(self, session_id: str | None, calls: int = 1) -> None:
@@ -45,22 +49,25 @@ class NvidiaUsage:
         with closing(sqlite3.connect(self.db_path, timeout=5)) as db, db:
             db.execute("BEGIN IMMEDIATE")
             for scope, limit in scopes:
-                row = db.execute("SELECT calls FROM nvidia_usage WHERE day=? AND scope=?", (day, scope)).fetchone()
+                row = db.execute("SELECT calls FROM ai_service_usage WHERE day=? AND scope=?", (day, scope)).fetchone()
                 if (row[0] if row else 0) + calls > limit:
-                    raise NvidiaBudgetExceeded(scope)
+                    raise AIBudgetExceeded(scope)
             for scope, _ in scopes:
-                db.execute("INSERT INTO nvidia_usage VALUES (?, ?, ?) ON CONFLICT(day, scope) "
+                db.execute("INSERT INTO ai_service_usage VALUES (?, ?, ?) ON CONFLICT(day, scope) "
                            "DO UPDATE SET calls = calls + excluded.calls", (day, scope, calls))
 
 
-class NvidiaClient:
-    def __init__(self, api_key: str, usage: NvidiaUsage | None = None, timeout_s: float = 30.0,
+class AIServicesClient:
+    def __init__(self, provider: str, api_key: str, usage: AIUsage | None = None, timeout_s: float = 30.0,
                  transport: httpx.BaseTransport | None = None):
+        if provider not in BASE_URLS:
+            raise ValueError(f"unknown provider {provider}")
         if not api_key:
-            raise ValueError("NVIDIA_API_KEY не задан")
+            raise ValueError(f"API key for {provider} is not set")
+        self.provider = provider
         self.usage = usage
         self._http = httpx.Client(
-            base_url=BASE_URL, timeout=httpx.Timeout(timeout_s, connect=5.0), follow_redirects=False,
+            base_url=BASE_URLS[provider], timeout=httpx.Timeout(timeout_s, connect=5.0), follow_redirects=False,
             headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"}, transport=transport,
         )
 
@@ -73,43 +80,46 @@ class NvidiaClient:
         try:
             response = self._http.post(path, json=body)
         except httpx.HTTPError as e:
-            raise NvidiaError(type(e).__name__) from e
+            raise AIServiceError(type(e).__name__) from e
         if response.status_code != 200:
-            raise NvidiaError(f"HTTP {response.status_code}")
+            raise AIServiceError(f"HTTP {response.status_code}")
         if len(response.content) > MAX_RESPONSE_BYTES:
-            raise NvidiaError("response_too_large")
+            raise AIServiceError("response_too_large")
         try:
             data = response.json()
         except ValueError as e:
-            raise NvidiaError("invalid_json") from e
+            raise AIServiceError("invalid_json") from e
         if not isinstance(data, dict):
-            raise NvidiaError("bad_response")
+            raise AIServiceError("bad_response")
         return data
 
     def embed(self, texts: list[str], model: str, input_type: str, session_id: str | None = None) -> list[list[float]]:
         """input_type: "query" для запроса клиента, "passage" для карточек каталога."""
         if not texts:
             return []
-        data = self._post("/embeddings", {
-            "model": model, "input": texts, "input_type": input_type,
-            "encoding_format": "float", "truncate": "END",
-        }, session_id)
+        body = {"model": model, "input": texts, "encoding_format": "float"}
+        if self.provider == "nvidia":
+            body.update(input_type=input_type, truncate="END")  # у NVIDIA запрос и карточка кодируются по-разному
+        elif model.startswith("text-embedding-3"):
+            body["dimensions"] = OPENAI_EMBED_DIMENSIONS
+        data = self._post("/embeddings", body, session_id)
         items = data.get("data")
         if not isinstance(items, list) or len(items) != len(texts):
-            raise NvidiaError("bad_embeddings")
+            raise AIServiceError("bad_embeddings")
         vectors = [None] * len(texts)
         for item in items:
             index, vector = item.get("index"), item.get("embedding")
             if not isinstance(index, int) or not 0 <= index < len(texts) or not isinstance(vector, list):
-                raise NvidiaError("bad_embeddings")
+                raise AIServiceError("bad_embeddings")
             vectors[index] = [float(x) for x in vector]
         return vectors
 
     def read_image(self, image: bytes, media_type: str, model: str, prompt: str, max_tokens: int = 2048,
                    session_id: str | None = None) -> str:
         """Текст с изображения через модель, понимающую картинки (chat completions)."""
+        limit = {"max_completion_tokens" if self.provider == "openai" else "max_tokens": max_tokens}
         data = self._post("/chat/completions", {
-            "model": model, "max_tokens": max_tokens, "temperature": 0,
+            "model": model, **limit, "temperature": 0,
             "messages": [{"role": "user", "content": [
                 {"type": "text", "text": prompt},
                 {"type": "image_url", "image_url": {
@@ -119,7 +129,7 @@ class NvidiaClient:
         try:
             text = data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as e:
-            raise NvidiaError("bad_completion") from e
+            raise AIServiceError("bad_completion") from e
         if not isinstance(text, str):
-            raise NvidiaError("bad_completion")
+            raise AIServiceError("bad_completion")
         return text

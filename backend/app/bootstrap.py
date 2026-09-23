@@ -76,27 +76,31 @@ def _catalog_db(settings: Settings):
 
 
 def _attach_nvidia(settings: Settings, resources, catalog_port, processor, capabilities) -> None:
-    """Распознавание фото/сканов и смысловой поиск через NVIDIA (участник 1). Выключено по умолчанию."""
-    if not (settings.nvidia_ocr_enabled or settings.semantic_search_enabled):
+    """Распознавание фото/сканов и смысловой поиск (участник 1). Выключено по умолчанию."""
+    if not (settings.ocr_enabled or settings.semantic_search_enabled):
         return
-    from app.adapters.nvidia.client import NvidiaClient, NvidiaUsage
-    client = NvidiaClient(settings.nvidia_api_key.get_secret_value(),
-                          NvidiaUsage(settings.local_db_path, settings.nvidia_site_daily_calls,
-                                      settings.nvidia_session_daily_calls))
+    from app.adapters.ai_services.client import AIServicesClient, AIUsage
+    provider = settings.ai_services_provider
+    client = AIServicesClient(provider, settings.ai_key(),
+                              AIUsage(settings.local_db_path, settings.ai_site_daily_calls,
+                                      settings.ai_session_daily_calls))
     resources.stack.callback(client.close)
-    if settings.nvidia_ocr_enabled:
-        from app.modules.documents.ocr import NvidiaImageReader
-        processor.image_reader = NvidiaImageReader(client, settings.nvidia_ocr_model)
-        capabilities["ocr"] = "nvidia"
+    if settings.ocr_enabled:
+        from app.modules.documents.ocr import ImageReader
+        processor.image_reader = ImageReader(client, settings.resolved_ocr_model())
+        capabilities["ocr"] = provider
     service = getattr(catalog_port, "search_service", None)
     if settings.semantic_search_enabled and service is not None:
         from app.modules.search.semantic import SemanticIndex
         index = SemanticIndex.load(settings.semantic_index_path, client)
         if index is None:
             capabilities["semantic_search"] = "index_missing"
+        elif index.model != settings.resolved_embed_model():
+            # Векторы запроса и карточек должны быть из одной модели, иначе сравнение бессмысленно.
+            capabilities["semantic_search"] = "index_model_mismatch"
         else:
             service.semantic = index
-            capabilities["semantic_search"] = "nvidia"
+            capabilities["semantic_search"] = provider
 
 
 def build_container(settings: Settings, *, store: StateStore | None = None,
