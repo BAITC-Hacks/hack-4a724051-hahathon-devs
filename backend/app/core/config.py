@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     database_url: SecretStr = SecretStr("")
     # Перечитывать цену и остаток из EKT API перед корзиной. Нужны EKT_API_USER/PASSWORD.
     ekt_live_refresh: bool = False
+    # catalog_db: при старте применить миграции и заполнить ПУСТУЮ базу демо-каталогом.
+    # Для базы с импортом из EKT ничего не меняется. false отключает автозаполнение.
+    catalog_db_seed_demo: bool = True
     # Файлы клиентов (catalog_db). Без clamd разбор запрещён, кроме явного демо-флага.
     assets_dir: Path = ROOT / "var" / "assets"
     clamd_socket: str = ""

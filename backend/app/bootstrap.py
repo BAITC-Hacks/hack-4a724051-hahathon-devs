@@ -52,10 +52,11 @@ def _catalog_db(settings: Settings):
     from app.adapters.postgres.catalog import PostgresCatalog
     from app.infrastructure.db import create_pool
     from app.integrations.domain import DomainCatalogAdapter, SQLiteDemoActions
-    from app.modules.catalog.sync import coverage
+    from app.modules.catalog.sync import coverage, prepare_catalog
 
+    url = settings.database_url.get_secret_value()
     with ExitStack() as cleanup:
-        pool = create_pool(settings.database_url.get_secret_value())
+        pool = create_pool(url)
         cleanup.callback(pool.close)
         live = None
         if settings.ekt_live_refresh:
@@ -63,6 +64,9 @@ def _catalog_db(settings: Settings):
             live = EktClient(settings.ekt_api_user.get_secret_value(), settings.ekt_api_password.get_secret_value())
             cleanup.callback(live.close)
         reader = PostgresCatalog(pool, live)
+        # Миграции и заполнение идемпотентны и под блокировкой: безопасно при старте API и worker.
+        seed = Path(__file__).resolve().parents[2] / "data" / "synthetic" / "ekt_products.json"
+        prepare_catalog(pool, url, seed if settings.catalog_db_seed_demo else None)
         info = coverage(pool)
         # Реальным каталог считаем, только если в БД нет синтетических товаров.
         demo = "ekt" not in info["products"] or "synthetic" in info["products"]

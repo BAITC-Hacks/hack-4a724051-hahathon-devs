@@ -35,6 +35,7 @@ def database_container(monkeypatch, tmp_path, events, *, coverage_fails=False):
     monkeypatch.setattr(db, "create_pool", lambda url: Pool())
     monkeypatch.setattr(client, "EktClient", Live)
     monkeypatch.setattr(sync, "coverage", coverage)
+    monkeypatch.setattr(sync, "prepare_catalog", lambda *args: None)  # фейковый пул, без миграций
     return build_container(Settings(_env_file=None, app_env="test", integration_mode="catalog_db",
                                     database_url="postgresql://unused", ekt_live_refresh=True,
                                     ekt_api_user="test-user", ekt_api_password="test-password",
