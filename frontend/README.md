@@ -4,6 +4,8 @@
 
 ## Локальный запуск (PowerShell, три терминала)
 
+Требуются Python 3.11+ и Node.js 22.18+ (проверено на Node 24). Если внешний reverse proxy завершает HTTPS, задайте точный публичный `FRONTEND_ORIGIN` в серверном окружении Next.js и тот же origin в backend `ALLOWED_ORIGINS`; не доверяйте пользовательскому X-Forwarded-Host.
+
 Если зависимости ещё не установлены, из корня репозитория:
 
 ```powershell
@@ -62,6 +64,7 @@ npm run dev -- --hostname 127.0.0.1
 ```powershell
 # frontend
 npm run typecheck
+npm run test:proxy
 npm run build
 # backend (из каталога backend)
 .venv/Scripts/python.exe -m pytest

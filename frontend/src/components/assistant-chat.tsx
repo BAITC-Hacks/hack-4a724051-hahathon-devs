@@ -74,6 +74,14 @@ const WARNING_LABELS: Record<string, string> = {
 function attributeLabel(key: string): string {
   return ATTRIBUTE_KEYS.has(key) ? displayAttribute(key) : "Дополнительная характеристика";
 }
+function attributeValue(attribute: Product["attributes"][number]): string {
+  if (attribute.status === "conflict") return "данные расходятся";
+  if (!attribute.value) return "неизвестно";
+  if (!attribute.unit) return attribute.value;
+  const normalized = (text: string) => text.trim().toLocaleLowerCase().replaceAll("а", "a").replaceAll("в", "v");
+  return normalized(attribute.value).endsWith(normalized(attribute.unit))
+    ? attribute.value : `${attribute.value} ${attribute.unit}`;
+}
 function readableWarning(warning: string): string {
   if (warning.startsWith("conflict:")) {
     return `Данные о характеристике «${attributeLabel(warning.slice(9))}» расходятся.`;
@@ -141,7 +149,7 @@ function ProductMini({ product, demo }: { product: Product; demo: boolean }) {
     <div className="assistant-chat-product-price">{money(product.price_amount, product.price_currency)}</div>
     <p>{product.stock_status === "available" ? `Остаток: ${product.sellable_quantity ?? "не указан"}` : product.stock_status === "out_of_stock" ? "Нет в наличии" : "Остаток неизвестен"}</p>
     {product.attributes.slice(0, 4).map((attribute, index) => <p key={`${attribute.key}-${index}`}>
-      {attributeLabel(attribute.key)}: {attribute.status === "conflict" ? "данные расходятся" : attribute.value || "неизвестно"}{attribute.unit && attribute.value ? ` ${attribute.unit}` : ""}
+      {attributeLabel(attribute.key)}: {attributeValue(attribute)}
     </p>)}
     {certificates.map((certificate, index) => {
       const href = sameOriginCertificate(certificate.url);
@@ -262,12 +270,16 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
   useEffect(() => {
     if (!open || !currentTurn || TERMINAL_TURN.has(currentTurn.status) || !conversationId) return;
     let cancelled = false;
+    let polling = false;
     const timer = window.setInterval(async () => {
+      if (polling) return;
+      polling = true;
+      let terminal = false;
       try {
         const latest = await api.turn(currentTurn.id);
         if (cancelled) return;
-        setCurrentTurn(latest);
         if (TERMINAL_TURN.has(latest.status)) {
+          terminal = true;
           window.clearInterval(timer);
           setCurrentText("");
           if (latest.output) {
@@ -276,8 +288,13 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
           }
           if (latest.status === "failed") setError(`Ответ не завершён${latest.error_code ? `: ${readableWarning(latest.error_code)}` : ""}.`);
           await refresh(conversationId, () => !cancelled);
+        } else setCurrentTurn(latest);
+      } catch (caught) {
+        if (!cancelled) {
+          setError(errorMessage(caught));
+          if (terminal) setCurrentTurn(null);
         }
-      } catch (caught) { if (!cancelled) setError(errorMessage(caught)); }
+      } finally { polling = false; }
     }, 1500);
     return () => { cancelled = true; window.clearInterval(timer); };
   }, [open, currentTurn?.id, currentTurn?.status, conversationId, refresh]);
