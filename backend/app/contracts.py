@@ -57,6 +57,8 @@ class Product(DTO):
     id: int = Field(gt=0)
     article_original: str
     name: str
+    brand: str | None = None
+    image_url: str | None = None
     category_path: list[str] | None = None
     price_amount: str | None = Field(default=None, pattern=r"^\d+(\.\d+)?$")
     price_currency: str | None = None

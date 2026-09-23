@@ -25,6 +25,7 @@ from app.modules.actions.models import Cart, Proposal, ProposalItem, ProposalSta
 from app.modules.actions.ports import CartVersionConflict
 from app.modules.actions.service import ActionService
 from app.modules.catalog.models import AttributeStatus, StockStatus
+from app.modules.catalog.quality import safe_url
 from app.modules.search.alternatives import AlternativeService
 from app.modules.search.service import SearchService
 
@@ -34,6 +35,7 @@ def product_view(product) -> Product:
                        fetched_at=product.fetched_at.isoformat())
     return Product(
         id=product.id, article_original=product.article, name=product.name,
+        brand=product.brand, image_url=safe_url(product.image),
         category_path=list(product.category_path),
         price_amount=str(product.price) if product.price is not None else None,
         price_currency="KZT", stock_status={

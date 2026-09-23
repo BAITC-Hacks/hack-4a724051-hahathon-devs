@@ -32,6 +32,11 @@ async def submit_turn(conversation_id: UUID, payload: TurnInput, request: Reques
     return success(request, await services.chat.submit(session, str(conversation_id), key, payload))
 
 
+@router.get("/conversations/{conversation_id}/turns", response_model=Envelope[list[TurnView]])
+def conversation_turns(conversation_id: UUID, request: Request, services: Services, session: SessionRead):
+    return success(request, services.store.turns(session.id, str(conversation_id), 50))
+
+
 @router.get("/turns/{turn_id}", response_model=Envelope[TurnView])
 def get_turn(turn_id: UUID, request: Request, services: Services, session: SessionRead):
     return success(request, services.store.get_turn(session.id, str(turn_id)))

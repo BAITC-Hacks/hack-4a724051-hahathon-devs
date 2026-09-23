@@ -159,6 +159,13 @@ class SQLiteStateStore:
             error_code=row["error_code"], created_at=row["created_at"],
         )
 
+    def turns(self, session_id: str, conversation_id: str, limit: int = 50) -> list[TurnView]:
+        with self.connection() as db:
+            self._owned(db, session_id, conversation_id)
+            rows = db.execute("SELECT * FROM turns WHERE conversation_id=? ORDER BY created_at DESC,rowid DESC LIMIT ?",
+                              (conversation_id, min(max(limit, 1), 50))).fetchall()
+        return [self._view(row) for row in reversed(rows)]
+
     @staticmethod
     def _payload_hash(conversation_id: str, payload: TurnInput) -> str:
         canonical = json.dumps(

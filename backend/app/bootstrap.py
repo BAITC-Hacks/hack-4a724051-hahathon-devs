@@ -37,9 +37,10 @@ def build_container(settings: Settings, *, store: StateStore | None = None,
         documents = DocumentsService(settings.local_db_path, settings.assets_root, settings.scanner_command)
         documents.initialize()
     if synthetic:
-        from app.adapters.memory import InMemoryCatalog
+        from app.adapters.storage.catalog import SQLiteCatalog
         from app.integrations.domain import SQLiteDemoActions, SyntheticCatalogAdapter
-        demo_catalog = InMemoryCatalog.from_file(
+        demo_catalog = SQLiteCatalog(settings.local_db_path)
+        demo_catalog.seed_if_empty(
             Path(__file__).resolve().parents[2] / "data" / "synthetic" / "ekt_products.json"
         )
         # Do not mix an injected live catalog with demo action validation.

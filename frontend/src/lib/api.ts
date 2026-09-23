@@ -8,6 +8,11 @@ export type Product = {
   id: number;
   article_original: string;
   name: string;
+  brand: string | null;
+  image_url: string | null;
+  unit: string | null;
+  min_order: number | null;
+  certificates: { title: string; url: string; number: string | null; valid_until: string | null }[];
   category_path: string[] | null;
   price_amount: string | null;
   price_currency: string | null;
@@ -17,10 +22,16 @@ export type Product = {
   sources: Source[];
   warnings: string[];
 };
-export type SearchResult = { items: Product[]; coverage: "partial" | "complete" | "unknown"; warnings: string[] };
+export type SearchResult = { items: Product[]; coverage: "partial" | "complete" | "unknown"; warnings: string[]; reasons: Record<string, string> };
+export type Category = { path: string[]; name: string; count: number; children: Category[] };
+export type CategoriesPage = { items: Category[]; coverage: "partial" };
+export type CatalogPage = SearchResult & { total: number; page: number; page_size: number; pages: number; brands: string[] };
+export type BrowseParams = { query?: string; category?: string; brand?: string; stock_only?: boolean; min_price?: string | number; max_price?: string | number; sort?: "relevance" | "price_asc" | "price_desc" | "name"; page?: number; page_size?: number };
+export type Asset = { id: string; name: string; content_type: string; size_bytes: number; status: "ready" | "partial" | "quarantined"; warnings: string[]; created_at: number };
+export type TurnOptions = { asset_ids?: string[]; language?: "auto" | "ru" | "kk" | "en"; allow_external_analysis?: boolean; page_product_id?: number | null };
 export type Conversation = { id: string; created_at: number };
 export type Message = { id: string; role: "user" | "assistant"; text: string; created_at: number };
-export type AssistantOutput = { message: string; products: Product[]; unknowns: string[]; mode: "catalog_only" | "unavailable" };
+export type AssistantOutput = { message: string; products: Product[]; unknowns: string[]; mode: "catalog_only" | "unavailable" | "grounded" | "action"; language: "ru" | "kk" | "en"; proposal: Proposal | null; sources: string[]; alternative_reasons: Record<string, string>; warnings: string[] };
 export type Turn = { id: string; conversation_id: string; status: "queued" | "running" | "completed" | "failed" | "cancelled"; output: AssistantOutput | null; error_code: string | null; created_at: number };
 export type TurnSubmission = { turn: Turn; created: boolean };
 export type CartLine = { product_id: number; quantity: number; article_original: string; name: string; unit_price_amount: string; line_total_amount: string };
@@ -37,6 +48,8 @@ export class ApiError extends Error {
 const apiRoot = "/api/v1";
 let csrf: string | null = null;
 let sessionPromise: Promise<Session> | null = null;
+let expiresAt = 0;
+let conversationPromise: Promise<Conversation> | null = null;
 
 async function parse<T>(response: Response): Promise<T> {
   let payload: unknown;
@@ -56,27 +69,35 @@ async function request<T>(path: string, options: { method?: "GET" | "POST"; body
   if (options.body !== undefined) headers.set("content-type", "application/json");
   if (options.write && csrf) headers.set("x-csrf-token", csrf);
   if (options.key) headers.set("idempotency-key", options.key);
-  const response = await fetch(`${apiRoot}${path}`, { method: options.method || "GET", credentials: "same-origin", headers, body: options.body === undefined ? undefined : JSON.stringify(options.body), signal: options.signal, cache: "no-store" });
+  const response = await fetch(`${apiRoot}${path}`, { method: options.method || "GET", credentials: "same-origin", headers, body: options.body === undefined ? undefined : JSON.stringify(options.body), signal: options.signal || AbortSignal.timeout(15000), cache: "no-store" });
+  if (response.status === 401) { csrf = null; expiresAt = 0; }
   return parse<T>(response);
 }
 
 export async function ensureSession(): Promise<Session> {
-  if (csrf) return { csrf_token: csrf, expires_at: 0 };
+  if (csrf && expiresAt > Date.now() / 1000 + 5) return { csrf_token: csrf, expires_at: expiresAt };
   if (!sessionPromise) {
-    sessionPromise = request<Session>("/session", { method: "POST" }).then(session => { csrf = session.csrf_token; return session; }).finally(() => { sessionPromise = null; });
+    sessionPromise = request<Session>("/session", { method: "POST" }).then(session => { csrf = session.csrf_token; expiresAt = session.expires_at; return session; }).finally(() => { sessionPromise = null; });
   }
   return sessionPromise;
 }
 
 export function newKey(): string { return crypto.randomUUID().replaceAll("-", ""); }
 export const api = {
+  categories: () => request<CategoriesPage>("/catalog/categories"),
+  browse: (params: BrowseParams = {}) => {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) if (value !== undefined && value !== "") query.set(key, String(value));
+    return request<CatalogPage>(`/catalog/products?${query}`);
+  },
   capabilities: () => request<Capabilities>("/capabilities"),
   search: (query: string) => request<SearchResult>(`/products?query=${encodeURIComponent(query)}&limit=12`),
   product: (id: number) => request<Product>(`/products/${id}`),
   alternatives: (id: number) => request<SearchResult>(`/products/${id}/alternatives`),
   createConversation: () => request<Conversation>("/conversations", { method: "POST", write: true }),
   messages: (id: string) => request<Message[]>(`/conversations/${id}/messages`),
-  submitTurn: (id: string, text: string, key: string) => request<TurnSubmission>(`/conversations/${id}/turns`, { method: "POST", write: true, key, body: { text, asset_ids: [], language: "ru" } }),
+  submitTurn: (id: string, text: string, key: string, options: TurnOptions = {}) => request<TurnSubmission>(`/conversations/${id}/turns`, { method: "POST", write: true, key, body: { text, asset_ids: [], language: "auto", ...options } }),
+  turns: (id: string) => request<Turn[]>(`/conversations/${id}/turns`),
   turn: (id: string, signal?: AbortSignal) => request<Turn>(`/turns/${id}`, { signal }),
   cancelTurn: (id: string) => request<Turn>(`/turns/${id}/cancel`, { method: "POST", write: true }),
   cart: () => request<Cart>("/cart"),
@@ -84,7 +105,32 @@ export const api = {
   proposal: (id: string) => request<Proposal>(`/proposals/${id}`),
   confirm: (id: string, version: number, key: string) => request<Proposal>(`/proposals/${id}/confirm`, { method: "POST", write: true, key, body: { version } }),
   reject: (id: string) => request<Proposal>(`/proposals/${id}/reject`, { method: "POST", write: true }),
+  asset: (id: string) => request<Asset>(`/assets/${id}`),
+  deleteAsset: async (id: string): Promise<void> => { await request(`/assets/${id}/delete`, { method: "POST", write: true }); },
+  upload: async (file: File, signal?: AbortSignal): Promise<Asset> => {
+    await ensureSession();
+    const mime: Record<string, string> = {pdf:"application/pdf",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",txt:"text/plain",csv:"text/csv"};
+    const type = mime[file.name.split(".").pop()?.toLowerCase() || ""];
+    if (!type || file.size > 10485760 || !file.size) throw new ApiError("invalid_file", "Поддерживаются PDF, DOCX, XLSX, JPG, PNG, TXT, CSV до 10 МиБ.", 422, false);
+    const response = await fetch(`${apiRoot}/assets/upload?filename=${encodeURIComponent(file.name)}`, {method:"POST",credentials:"same-origin",body:file,headers:{"content-type":type,"x-csrf-token":csrf!},signal:signal || AbortSignal.timeout(60000)});
+    return parse<Asset>(response);
+  },
 };
+
+export async function ensureConversation(): Promise<Conversation> {
+  if (!conversationPromise) conversationPromise = (async () => {
+    await ensureSession();
+    const id = sessionStorage.getItem("ekt_conversation_id");
+    if (id) {
+      try { await api.turns(id); return {id, created_at:0}; }
+      catch (error) { if (!(error instanceof ApiError) || ![401,404].includes(error.status)) throw error; }
+    }
+    const conversation = await api.createConversation();
+    sessionStorage.setItem("ekt_conversation_id", conversation.id);
+    return conversation;
+  })().finally(() => { conversationPromise = null; });
+  return conversationPromise;
+}
 
 export function errorMessage(error: unknown): string {
   if (error instanceof ApiError) return error.message + (error.requestId ? ` (запрос ${error.requestId})` : "");
