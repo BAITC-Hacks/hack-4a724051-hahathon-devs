@@ -5,6 +5,7 @@ provide prices, stock, certificates or URLs. Search coverage stays explicit.
 """
 import asyncio
 import base64
+import dataclasses
 import re
 from pathlib import Path
 
@@ -115,13 +116,44 @@ def purchase_request(text):
 
 
 class GroundedAssistant:
-    def __init__(self, catalog, actions, documents, path, planner=None):
+    def __init__(self, catalog, actions, documents, path, planner=None, image_reader=None):
         self.catalog, self.actions, self.documents = catalog, actions, documents
         self.state = AssistantState(path)
         self.terms = PurchaseTermsService()
         self.planner = planner
+        # Распознавание фото и сканов (NVIDIA), участник 1: app/modules/documents/ocr.py
+        self.image_reader = image_reader
+
+    async def _read_images(self, context):
+        """Фото и сканы превращаются в текст до поиска, только с согласия клиента на внешнюю обработку.
+
+        Текст дописывается к своему файлу, поэтому дальше работает обычный путь:
+        строки файла ищутся в каталоге и без модели OpenAI, а с моделью попадают в её план.
+        """
+        if not (self.image_reader and context.documents and context.payload.allow_external_analysis
+                and hasattr(self.documents, "images")):
+            return context
+        owned = await self.documents.images(context.session_id, [str(d.asset_id) for d in context.documents])
+        by_asset: dict = {}
+        for image in owned:
+            by_asset.setdefault(image.asset_id, []).append((image.mime_type, image.content))
+        if not by_asset:
+            return context
+        documents = []
+        for doc in context.documents:
+            pages = by_asset.pop(doc.asset_id, None)
+            if not pages:
+                documents.append(doc)
+                continue
+            result = await self.image_reader.aread(pages, context.session_id)
+            warnings = list(doc.warnings) + ["ocr_nvidia"] + (["ocr_pages_failed"] if result.pages_failed else [])
+            text = "\n".join(x for x in (doc.text, result.text) if x)[:40000]
+            status = "partial" if result.pages_failed or not result.text else doc.status
+            documents.append(doc.model_copy(update={"text": text, "status": status, "warnings": warnings}))
+        return dataclasses.replace(context, documents=tuple(documents))
 
     async def process(self, context):
+        context = await self._read_images(context)
         previous = await asyncio.to_thread(self.state.previous, context.session_id, context.conversation_id)
         text = context.payload.text.strip()
         lang = language(text, context.payload.language, previous.get("language", "ru"))
