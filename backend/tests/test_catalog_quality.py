@@ -63,3 +63,21 @@ def test_synthetic_catalog_loads():
     assert len(products) > 50
     conflicts = [p for p in products if p.warnings]
     assert [p.name for p in conflicts] == ["971300 АВ DRX250 MT 3ф 160А 18kA Legrand"]
+
+
+def test_one_pole_plus_neutral_does_not_conflict_with_either_convention():
+    for poles in ("1", "2"):
+        p = product_from_source(raw(name="УЗО АВДТ (1P+N) 16А (30мА)", description="",
+                                    properties={"KOLICHESTVO_POLYUSOV": poles, "NOMINALNYY_TOK": "16А"}))
+        assert p.attribute("poles").status is AttributeStatus.OK, poles
+
+
+def test_series_value_list_in_description_is_ignored():
+    p = product_from_source(raw(name="УЗО АД63 (2ф) 40А (300мА)", description="Номинальный ток: 16, 25, 40 А.",
+                                properties={"NOMINALNYY_TOK": "40А"}))
+    assert p.attribute("rated_current").status is AttributeStatus.OK
+
+
+def test_real_disagreement_is_still_a_conflict():
+    p = product_from_source(raw(name="Клемма (0,08-2,5мм 32А)", description="", properties={"NOMINALNYY_TOK": "30 А"}))
+    assert p.attribute("rated_current").status is AttributeStatus.CONFLICT
