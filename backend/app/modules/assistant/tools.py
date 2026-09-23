@@ -177,6 +177,9 @@ class ToolBox:
         result = self.alternatives.find(product)
         for alt in result.alternatives:
             facts.remember(alt.product)
+        if result.not_matched_reason == "no_attributes":
+            return {"alternatives": [], "reason": "У товара в каталоге нет характеристик, по которым можно доказать "
+                    "замену. Уточни у клиента нужные параметры или предложи связаться с менеджером."}
         if result.blocked_by:
             return {"alternatives": [], "reason": "У исходного товара противоречивые данные: "
                     + ", ".join(result.blocked_by) + ". Автоматический подбор по ним небезопасен, уточни у клиента "

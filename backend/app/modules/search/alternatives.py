@@ -31,6 +31,8 @@ class AlternativesResult:
     source: Product
     alternatives: tuple[Alternative, ...]
     blocked_by: tuple[str, ...]  # спорные параметры исходного товара
+    # conflict | no_attributes | no_category, если подбор не делался
+    not_matched_reason: str | None = None
 
 
 def _value(product: Product, key: str) -> str | None:
@@ -46,10 +48,15 @@ class AlternativeService:
         blocked = tuple(
             a.label for a in product.attributes if a.key in MATCH_KEYS and a.status is AttributeStatus.CONFLICT
         )
-        if blocked or not product.category_path:
-            return AlternativesResult(product, (), blocked)
+        if blocked:
+            return AlternativesResult(product, (), blocked, "conflict")
+        if not product.category_path:
+            return AlternativesResult(product, (), (), "no_category")
 
         required = [(k, _value(product, k)) for k in MATCH_KEYS if _value(product, k)]
+        # Без ключевых характеристик нельзя доказать, что товар подходит на замену.
+        if not required:
+            return AlternativesResult(product, (), (), "no_attributes")
         candidates = []
         for other in self.catalog.list_category(product.category_path):
             if other.id == product.id or other.stock.status is not StockStatus.IN_STOCK:

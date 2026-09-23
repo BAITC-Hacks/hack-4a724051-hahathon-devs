@@ -47,10 +47,13 @@ NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 
 
 def canonical(value: str) -> str:
-    """Сравнимая форма значения: число без единиц, либо текст в нижнем регистре."""
-    m = NUMBER.search(value)
-    if m:
-        return format(Decimal(m.group(0).replace(",", ".")).normalize(), "f")
+    """Сравнимая форма значения: все числа без единиц, либо текст в нижнем регистре.
+
+    Берём все числа, а не первое: у кабеля 3х2,5 и 3х4 первое число одинаковое.
+    """
+    numbers = NUMBER.findall(value)
+    if numbers:
+        return "x".join(format(Decimal(n.replace(",", ".")).normalize(), "f") for n in numbers)
     return value.strip().lower()
 
 
@@ -175,4 +178,5 @@ def product_from_source(raw: dict, fetched_at: datetime | None = None) -> Produc
         certificates=certificates,
         fetched_at=fetched_at or datetime.now(timezone.utc),
         warnings=tuple(warnings),
+        barcode=properties.get("CML2_BAR_CODE") or None,
     )

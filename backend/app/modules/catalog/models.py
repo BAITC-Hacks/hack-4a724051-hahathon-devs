@@ -83,6 +83,7 @@ class Product:
     certificates: tuple[Certificate, ...]
     fetched_at: datetime
     warnings: tuple[str, ...] = field(default=())
+    barcode: str | None = None  # CML2_BAR_CODE
 
     def attribute(self, key: str) -> Attribute | None:
         return next((a for a in self.attributes if a.key == key), None)
