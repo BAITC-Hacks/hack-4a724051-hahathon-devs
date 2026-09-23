@@ -1,4 +1,4 @@
-"""Сборка чата из портов. Участник 2 передаёт сюда свои реализации хранилищ."""
+"""Сборка доменного чата из портов каталога, корзины и истории."""
 
 from app.modules.actions.ports import CartStore, ProposalStore
 from app.modules.actions.service import ActionService
