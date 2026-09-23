@@ -102,6 +102,31 @@ def import_ekt(pool: ConnectionPool, client: EktClient, max_pages: int = 5, star
     return _finish(pool, report, page)
 
 
+def seed_if_empty(pool: ConnectionPool, path: Path) -> SyncReport | None:
+    """Пустую базу один раз заполняет демо-каталогом. Непустую не трогает.
+
+    API и worker стартуют одновременно, поэтому проверка и загрузка идут под
+    advisory lock: второй процесс дождётся первого и увидит уже заполненную таблицу.
+    """
+    with pool.connection() as conn:
+        conn.execute("SELECT pg_advisory_lock(4715002)")
+        try:
+            if conn.execute("SELECT EXISTS (SELECT 1 FROM products)").fetchone()[0]:
+                return None
+            conn.commit()
+            return import_file(pool, path)
+        finally:
+            conn.execute("SELECT pg_advisory_unlock(4715002)")
+
+
+def prepare_catalog(pool: ConnectionPool, database_url: str, seed_path: Path | None) -> None:
+    """Старт в режиме catalog_db: миграции, затем демо-каталог, если база пустая."""
+    from app.infrastructure.db import migrate
+    migrate(database_url)
+    if seed_path is not None:
+        seed_if_empty(pool, seed_path)
+
+
 def coverage(pool: ConnectionPool) -> dict:
     """Что сейчас лежит в каталоге и насколько полон последний импорт."""
     with pool.connection() as conn:

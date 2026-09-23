@@ -171,3 +171,65 @@ def test_http_api_reads_catalog_from_postgres(catalog, tmp_path):
                               headers={**headers, "Idempotency-Key": "confirm-0001"})
         assert applied.json()["data"]["status"] == "applied"
         assert client.get("/api/v1/cart").json()["data"]["items"][0]["quantity"] == 2
+
+
+@pytest.fixture
+def empty_db():
+    """Совсем пустая база: без таблиц и без миграций, как у нового участника или проверяющего."""
+    with psycopg.connect(URL, autocommit=True) as conn:
+        conn.execute("DROP SCHEMA public CASCADE")
+        conn.execute("CREATE SCHEMA public")
+    return URL
+
+
+def _container(tmp_path, **extra):
+    from app.bootstrap import build_container
+    from app.core.config import Settings
+    return build_container(Settings(_env_file=None, app_env="test", integration_mode="catalog_db", database_url=URL,
+                                    local_db_path=tmp_path / "state.sqlite3", **extra))
+
+
+def _count(sql):
+    with psycopg.connect(URL) as conn:
+        return conn.execute(sql).fetchone()[0]
+
+
+def test_catalog_db_starts_on_empty_database(empty_db, tmp_path):
+    import asyncio
+    services = _container(tmp_path)
+    assert _count("SELECT count(*) FROM products") == 281
+    assert asyncio.run(services.catalog.search("990100015_", 3)).items[0].article_original == "990100015_"
+    _container(tmp_path)  # повторный старт не грузит ещё раз
+    assert _count("SELECT count(*) FROM catalog_sync_runs") == 1
+
+
+def test_seed_does_not_touch_imported_catalog(empty_db, tmp_path):
+    from app.adapters.postgres.catalog import upsert_product
+    from app.infrastructure.db import migrate
+    migrate(URL)
+    with psycopg.connect(URL) as conn:
+        upsert_product(conn, raw(7), "ekt")
+    services = _container(tmp_path)
+    assert _count("SELECT count(*) FROM products") == 1
+    assert services.capabilities["catalog"] == "ready"
+
+
+def test_seed_can_be_disabled(empty_db, tmp_path):
+    _container(tmp_path, catalog_db_seed_demo=False)
+    assert _count("SELECT count(*) FROM products") == 0
+
+
+def test_parallel_seed_loads_once(empty_db):
+    from concurrent.futures import ThreadPoolExecutor
+    from app.infrastructure.db import create_pool, migrate
+    from app.modules.catalog.sync import seed_if_empty
+    migrate(URL)
+    pools = [create_pool(URL) for _ in range(3)]
+    try:
+        with ThreadPoolExecutor(3) as ex:
+            reports = list(ex.map(lambda p: seed_if_empty(p, SYNTHETIC_CATALOG), pools))
+    finally:
+        for p in pools:
+            p.close()
+    assert sum(r is not None for r in reports) == 1
+    assert _count("SELECT count(*) FROM catalog_sync_runs") == 1
