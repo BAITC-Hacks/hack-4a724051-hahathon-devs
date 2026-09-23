@@ -33,3 +33,24 @@ def test_no_auto_alternative_for_conflicting_product(catalog):
     result = AlternativeService(catalog).find(source)
     assert result.alternatives == ()
     assert "Номинальный ток" in result.blocked_by
+
+
+def test_no_alternatives_without_key_attributes(catalog):
+    from dataclasses import replace
+    source = replace(by_name(catalog, "Mosaic"), attributes=())
+    result = AlternativeService(catalog).find(source)
+    assert result.alternatives == ()
+    assert result.not_matched_reason == "no_attributes"
+
+
+def test_cable_cross_sections_are_different():
+    from app.modules.catalog.quality import canonical
+    assert canonical("3х2,5") != canonical("3х4")
+    assert canonical("3х2,5") == canonical("3x2.5")
+    assert canonical("4,5кА") == canonical("4.5 кА")
+
+
+def test_barcode_lookup(catalog):
+    product = by_name(catalog, "RX3 1P 16А")
+    assert product.barcode
+    assert SearchService(catalog).search(product.barcode)[0].product.id == product.id

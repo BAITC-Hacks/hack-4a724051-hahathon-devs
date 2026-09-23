@@ -25,7 +25,7 @@ export type Product = {
 export type SearchResult = { items: Product[]; coverage: "partial" | "complete" | "unknown"; warnings: string[]; reasons: Record<string, string> };
 export type Category = { path: string[]; name: string; count: number; children: Category[] };
 export type CategoriesPage = { items: Category[]; coverage: "partial" };
-export type CatalogPage = SearchResult & { total: number; page: number; page_size: number; pages: number; brands: string[] };
+export type CatalogPage = Omit<SearchResult, "reasons"> & { total: number; page: number; page_size: number; pages: number; brands: string[] };
 export type BrowseParams = { query?: string; category?: string; brand?: string; stock_only?: boolean; min_price?: string | number; max_price?: string | number; sort?: "relevance" | "price_asc" | "price_desc" | "name"; page?: number; page_size?: number };
 export type Asset = { id: string; name: string; content_type: string; size_bytes: number; status: "ready" | "partial" | "quarantined"; warnings: string[]; created_at: number };
 export type TurnOptions = { asset_ids?: string[]; language?: "auto" | "ru" | "kk" | "en"; allow_external_analysis?: boolean; page_product_id?: number | null };
@@ -50,6 +50,7 @@ let csrf: string | null = null;
 let sessionPromise: Promise<Session> | null = null;
 let expiresAt = 0;
 let conversationPromise: Promise<Conversation> | null = null;
+let memoryConversationId: string | null = null;
 
 async function parse<T>(response: Response): Promise<T> {
   let payload: unknown;
@@ -113,6 +114,7 @@ export const api = {
     const type = mime[file.name.split(".").pop()?.toLowerCase() || ""];
     if (!type || file.size > 10485760 || !file.size) throw new ApiError("invalid_file", "Поддерживаются PDF, DOCX, XLSX, JPG, PNG, TXT, CSV до 10 МиБ.", 422, false);
     const response = await fetch(`${apiRoot}/assets/upload?filename=${encodeURIComponent(file.name)}`, {method:"POST",credentials:"same-origin",body:file,headers:{"content-type":type,"x-csrf-token":csrf!},signal:signal || AbortSignal.timeout(60000)});
+    if (response.status === 401) { csrf = null; expiresAt = 0; }
     return parse<Asset>(response);
   },
 };
@@ -120,13 +122,15 @@ export const api = {
 export async function ensureConversation(): Promise<Conversation> {
   if (!conversationPromise) conversationPromise = (async () => {
     await ensureSession();
-    const id = sessionStorage.getItem("ekt_conversation_id");
+    let id = memoryConversationId;
+    try { id = sessionStorage.getItem("ekt_conversation_id") || id; } catch { /* Use memory when storage is disabled. */ }
     if (id) {
       try { await api.turns(id); return {id, created_at:0}; }
       catch (error) { if (!(error instanceof ApiError) || ![401,404].includes(error.status)) throw error; }
     }
     const conversation = await api.createConversation();
-    sessionStorage.setItem("ekt_conversation_id", conversation.id);
+    memoryConversationId = conversation.id;
+    try { sessionStorage.setItem("ekt_conversation_id", conversation.id); } catch { /* This tab can still chat without persistent storage. */ }
     return conversation;
   })().finally(() => { conversationPromise = null; });
   return conversationPromise;

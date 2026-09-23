@@ -140,6 +140,7 @@
    "properties": {
     "CML2_ARTICLE": "990100001_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900001",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -291,6 +292,7 @@
    "properties": {
     "CML2_ARTICLE": "990100002_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900002",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -442,6 +444,7 @@
    "properties": {
     "CML2_ARTICLE": "990100003_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900003",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -600,6 +603,7 @@
    "properties": {
     "CML2_ARTICLE": "990100004_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900004",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -751,6 +755,7 @@
    "properties": {
     "CML2_ARTICLE": "990100005_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900005",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -909,6 +914,7 @@
    "properties": {
     "CML2_ARTICLE": "990100006_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900006",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1067,6 +1073,7 @@
    "properties": {
     "CML2_ARTICLE": "990100007_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900007",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1218,6 +1225,7 @@
    "properties": {
     "CML2_ARTICLE": "990100008_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900008",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1376,6 +1384,7 @@
    "properties": {
     "CML2_ARTICLE": "990100009_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900009",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1527,6 +1536,7 @@
    "properties": {
     "CML2_ARTICLE": "990100010_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900010",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1685,6 +1695,7 @@
    "properties": {
     "CML2_ARTICLE": "990100011_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900011",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1836,6 +1847,7 @@
    "properties": {
     "CML2_ARTICLE": "990100012_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900012",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -1987,6 +1999,7 @@
    "properties": {
     "CML2_ARTICLE": "990100013_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900013",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -2145,6 +2158,7 @@
    "properties": {
     "CML2_ARTICLE": "990100014_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900014",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -2303,6 +2317,7 @@
    "properties": {
     "CML2_ARTICLE": "990100015_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900015",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -2454,6 +2469,7 @@
    "properties": {
     "CML2_ARTICLE": "990100016_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900016",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -2612,6 +2628,7 @@
    "properties": {
     "CML2_ARTICLE": "990100017_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900017",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -2770,6 +2787,7 @@
    "properties": {
     "CML2_ARTICLE": "990100018_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900018",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -2921,6 +2939,7 @@
    "properties": {
     "CML2_ARTICLE": "990100019_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900019",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3072,6 +3091,7 @@
    "properties": {
     "CML2_ARTICLE": "990100020_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900020",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3223,6 +3243,7 @@
    "properties": {
     "CML2_ARTICLE": "990100021_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900021",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3374,6 +3395,7 @@
    "properties": {
     "CML2_ARTICLE": "990100022_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900022",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3532,6 +3554,7 @@
    "properties": {
     "CML2_ARTICLE": "990100023_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900023",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3690,6 +3713,7 @@
    "properties": {
     "CML2_ARTICLE": "990100024_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900024",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3841,6 +3865,7 @@
    "properties": {
     "CML2_ARTICLE": "990100025_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900025",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -3992,6 +4017,7 @@
    "properties": {
     "CML2_ARTICLE": "990100026_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900026",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -4150,6 +4176,7 @@
    "properties": {
     "CML2_ARTICLE": "990100027_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900027",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -4308,6 +4335,7 @@
    "properties": {
     "CML2_ARTICLE": "990100028_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900028",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -4459,6 +4487,7 @@
    "properties": {
     "CML2_ARTICLE": "990100029_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900029",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -4617,6 +4646,7 @@
    "properties": {
     "CML2_ARTICLE": "990100030_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900030",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -4775,6 +4805,7 @@
    "properties": {
     "CML2_ARTICLE": "990100031_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900031",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -4926,6 +4957,7 @@
    "properties": {
     "CML2_ARTICLE": "990100032_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900032",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -5077,6 +5109,7 @@
    "properties": {
     "CML2_ARTICLE": "990100033_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900033",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -5228,6 +5261,7 @@
    "properties": {
     "CML2_ARTICLE": "990100034_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900034",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -5386,6 +5420,7 @@
    "properties": {
     "CML2_ARTICLE": "990100035_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900035",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -5544,6 +5579,7 @@
    "properties": {
     "CML2_ARTICLE": "990100036_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900036",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -5702,6 +5738,7 @@
    "properties": {
     "CML2_ARTICLE": "990100037_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900037",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -5860,6 +5897,7 @@
    "properties": {
     "CML2_ARTICLE": "990100038_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900038",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6011,6 +6049,7 @@
    "properties": {
     "CML2_ARTICLE": "990100039_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900039",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6169,6 +6208,7 @@
    "properties": {
     "CML2_ARTICLE": "990100040_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900040",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6327,6 +6367,7 @@
    "properties": {
     "CML2_ARTICLE": "990100041_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900041",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6478,6 +6519,7 @@
    "properties": {
     "CML2_ARTICLE": "990100042_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900042",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6636,6 +6678,7 @@
    "properties": {
     "CML2_ARTICLE": "990100043_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900043",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6794,6 +6837,7 @@
    "properties": {
     "CML2_ARTICLE": "990100044_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900044",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -6951,6 +6995,7 @@
    "properties": {
     "CML2_ARTICLE": "990100045_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900045",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -7108,6 +7153,7 @@
    "properties": {
     "CML2_ARTICLE": "990100046_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900046",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -7266,6 +7312,7 @@
    "properties": {
     "CML2_ARTICLE": "990100047_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900047",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -7424,6 +7471,7 @@
    "properties": {
     "CML2_ARTICLE": "990100048_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900048",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -7582,6 +7630,7 @@
    "properties": {
     "CML2_ARTICLE": "990100049_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900049",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -7740,6 +7789,7 @@
    "properties": {
     "CML2_ARTICLE": "990100050_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900050",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -7898,6 +7948,7 @@
    "properties": {
     "CML2_ARTICLE": "990100051_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900051",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -8056,6 +8107,7 @@
    "properties": {
     "CML2_ARTICLE": "990100052_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900052",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -8214,6 +8266,7 @@
    "properties": {
     "CML2_ARTICLE": "990100053_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900053",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -8372,6 +8425,7 @@
    "properties": {
     "CML2_ARTICLE": "990100054_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900054",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -8530,6 +8584,7 @@
    "properties": {
     "CML2_ARTICLE": "990100055_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900055",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -8687,6 +8742,7 @@
    "properties": {
     "CML2_ARTICLE": "990100056_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900056",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -8844,6 +8900,7 @@
    "properties": {
     "CML2_ARTICLE": "990100057_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900057",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -9001,6 +9058,7 @@
    "properties": {
     "CML2_ARTICLE": "990100058_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900058",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -9158,6 +9216,7 @@
    "properties": {
     "CML2_ARTICLE": "990100059_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900059",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "м",
     "NOVINKA": "Нет",
@@ -9311,6 +9370,7 @@
    "properties": {
     "CML2_ARTICLE": "990100060_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900060",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "м",
     "NOVINKA": "Нет",
@@ -9464,6 +9524,7 @@
    "properties": {
     "CML2_ARTICLE": "990100061_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900061",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "м",
     "NOVINKA": "Нет",
@@ -9617,6 +9678,7 @@
    "properties": {
     "CML2_ARTICLE": "990100062_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900062",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -9772,6 +9834,7 @@
    "properties": {
     "CML2_ARTICLE": "990100063_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900063",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -9927,6 +9990,7 @@
    "properties": {
     "CML2_ARTICLE": "990100064_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900064",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",
@@ -10082,6 +10146,7 @@
    "properties": {
     "CML2_ARTICLE": "990100065_",
     "CML2_TAXES": "16",
+    "CML2_BAR_CODE": "2900000900065",
     "KRATNOST_MIN": "1",
     "EDINITSA_IZMERENIYA": "шт",
     "NOVINKA": "Нет",

@@ -174,7 +174,7 @@
 - `EktCatalogAdapter` читает реальный каталог.
 - `DemoCartAdapter` работает с собственной явно обозначенной демонстрационной корзиной.
 - `EktCartAdapter` имеет статус `requires_integration`; реальное добавление недоступно до получения контракта и прохождения проверок.
-- Ссылка демо ведёт на наш `/cart`; она не выдаётся за корзину ekt.kz.
+- Ссылка текущего HTTP runtime ведёт на наш `/api/v1/cart/view`; она не выдаётся за корзину ekt.kz.
 
 ## Ошибки и защитные пределы адаптера
 
@@ -191,6 +191,23 @@
 | Частичная синхронизация | Сохранить последнюю пригодную версию индекса; пометить покрытие как частичное |
 
 На запуске: connection timeout 2 с, общий deadline интерактивного GET 5 с, не более двух одновременных запросов к EKT на экземпляр. Это стартовые настройки для измерений; глобальный предел согласовать до горизонтального масштабирования. Проверка TLS включена.
+
+## API нашей витрины (отдельно от исходного EKT API)
+
+Next.js вызывает same-origin `/api/v1/*`; маршруты проксируются в FastAPI. Успешный ответ: `{ "data": ..., "meta": { "request_id": "...", "warnings": [] } }`. Ошибка: `{ "error": { "code": "...", "message": "...", "retryable": false }, "meta": ... }`. Точная схема всех DTO — [openapi.json](openapi.json).
+
+| Маршрут | Данные |
+| --- | --- |
+| `POST /api/v1/session` | HttpOnly cookie, CSRF-токен и срок сессии |
+| `GET /api/v1/catalog/categories` | `{items:[{path,name,count,children}],coverage:"partial"}` |
+| `GET /api/v1/catalog/products` | `{items:Product[],total,page,page_size,pages,brands,coverage,warnings}` |
+| `GET /api/v1/products/{id}` | Product с ценой, остатком, характеристиками, сертификатами и источниками |
+| `GET /api/v1/products/{id}/alternatives` | Товары и объяснения прошедших проверку аналогов |
+| `GET /api/v1/conversations/{id}/turns` | Последние 50 задач своего диалога и их структурированные ответы для восстановления чата |
+| `POST /api/v1/assets/upload?filename=...` | Сырые байты; AssetView со статусом ready/partial/quarantined |
+| `GET /api/v1/cart/view` | HTML текущей демо-корзины своей сессии |
+
+Параметры витрины: `query`, `category` (путь через `/`), `brand`, `stock_only`, `min_price`, `max_price`, `sort=relevance|price_asc|price_desc|name`, `page`, `page_size` (1–24). Денежные значения Product передаются десятичными строками. `brand` и `image_url` могут быть null; отсутствие изображения не заменяется фотографией другого товара. Все цены и изменения корзины вычисляются backend.
 
 ## Что уточнить у партнёра
 

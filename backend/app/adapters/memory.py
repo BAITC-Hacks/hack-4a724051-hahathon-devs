@@ -40,7 +40,7 @@ class InMemoryCatalog:
     def find_by_identifier(self, value: str) -> list[Product]:
         v = value.strip().lower()
         return [p for p in self._by_id.values()
-                if v in {p.article.lower(), (p.supplier_article or "").lower()}]
+                if v in {p.article.lower(), (p.supplier_article or "").lower(), (p.barcode or "").lower()}]
 
     def search_text(self, query: str, limit: int = 20) -> list[Product]:
         q = _tokens(query)

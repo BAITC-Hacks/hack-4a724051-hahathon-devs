@@ -58,6 +58,7 @@ def add(name, category, price, props, description, mode="normal", cert=True, uni
     properties = {
         "CML2_ARTICLE": article,
         "CML2_TAXES": "16",
+        "CML2_BAR_CODE": f"29{pid:011d}",
         "KRATNOST_MIN": "1",
         "EDINITSA_IZMERENIYA": unit,
         "NOVINKA": "Нет",

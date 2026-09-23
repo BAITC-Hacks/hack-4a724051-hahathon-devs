@@ -1,5 +1,5 @@
 """Read-only storefront browsing over the same catalog used by the assistant."""
-from app.adapters.storage.catalog import SQLiteCatalog
+from typing import Protocol, runtime_checkable
 from app.integrations.domain import product_view
 from app.modules.catalog.dto import CatalogPage, CategoriesPage, CategoryNode
 
@@ -29,9 +29,19 @@ SUBCATEGORY_LABELS = {
 }
 
 
+@runtime_checkable
+class CatalogBrowseReader(Protocol):
+    """Read a category snapshot or a consistent filtered page from any database."""
+    def category_counts(self) -> list[tuple[tuple[str, ...], int]]: ...
+
+    def browse(self, *, query="", category="", brand="", stock_only=False, min_price=None, max_price=None,
+               sort="relevance", page=1, page_size=12): ...
+
+
 class CatalogBrowseService:
-    def __init__(self, catalog: SQLiteCatalog):
+    def __init__(self, catalog: CatalogBrowseReader, *, source_ref="synthetic_catalog", demo=True):
         self.catalog = catalog
+        self.source_ref, self.demo = source_ref, demo
 
     def categories(self) -> CategoriesPage:
         roots = {slug: {"path": [slug], "name": title, "count": 0, "children": {}}
@@ -52,6 +62,7 @@ class CatalogBrowseService:
     def products(self, **filters) -> CatalogPage:
         items, total, brands = self.catalog.browse(**filters)
         page, size = filters.get("page", 1), filters.get("page_size", 12)
-        return CatalogPage(items=[product_view(product) for product in items], total=total,
+        return CatalogPage(items=[product_view(product, self.source_ref, self.demo) for product in items], total=total,
                            page=page, page_size=size, pages=(total + size - 1) // size, brands=brands,
-                           warnings=["synthetic_demo_data", "catalog_coverage_is_partial_or_unknown"])
+                           warnings=[*(["synthetic_demo_data"] if self.demo else []),
+                                     "catalog_coverage_is_partial_or_unknown"])

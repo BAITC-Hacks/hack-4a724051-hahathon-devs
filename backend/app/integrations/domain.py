@@ -30,8 +30,8 @@ from app.modules.search.alternatives import AlternativeService
 from app.modules.search.service import SearchService
 
 
-def product_view(product) -> Product:
-    source = SourceRef(ref="synthetic_catalog", path=f"/products/{product.id}",
+def product_view(product, source_ref: str = "synthetic_catalog", demo: bool = True) -> Product:
+    source = SourceRef(ref=source_ref, path=f"/products/{product.id}",
                        fetched_at=product.fetched_at.isoformat())
     return Product(
         id=product.id, article_original=product.article, name=product.name,
@@ -47,7 +47,7 @@ def product_view(product) -> Product:
         attributes=[Attribute(key=a.key, value=a.value, unit=a.unit,
                               status="conflict" if a.status is AttributeStatus.CONFLICT else "observed",
                               sources=[source]) for a in product.attributes],
-        sources=[source], warnings=["synthetic_demo_data", *product.warnings],
+        sources=[source], warnings=[*(["synthetic_demo_data"] if demo else []), *product.warnings],
         unit=product.unit, min_order=product.min_order,
         certificates=[Certificate(title=c.title, url="/api/v1" + c.url if c.url.startswith("/certificates/SYN-") else c.url,
                                   number=c.number, valid_until=c.valid_until)
@@ -55,30 +55,46 @@ def product_view(product) -> Product:
     )
 
 
-class SyntheticCatalogAdapter:
-    def __init__(self, catalog: InMemoryCatalog):
+class DomainCatalogAdapter:
+    """CatalogPort поверх любого CatalogReader: файл в памяти или PostgreSQL."""
+
+    def __init__(self, catalog, source_ref: str = "synthetic_catalog", demo: bool = True,
+                 coverage: str = "partial"):
         self.catalog = catalog
+        self.source_ref, self.demo, self.coverage = source_ref, demo, coverage
         self.search_service = SearchService(catalog)
         self.alternative_service = AlternativeService(catalog)
 
+    def _view(self, product) -> Product:
+        return product_view(product, self.source_ref, self.demo)
+
+    @property
+    def _warnings(self) -> list[str]:
+        return ["synthetic_demo_data"] if self.demo else []
+
     async def search(self, query: str, limit: int) -> SearchResult:
-        return SearchResult(items=[product_view(m.product) for m in self.search_service.search(query, limit)],
-                            coverage="partial", warnings=["synthetic_demo_data"])
+        matches = await asyncio.to_thread(self.search_service.search, query, limit)
+        return SearchResult(items=[self._view(m.product) for m in matches],
+                            coverage=self.coverage, warnings=self._warnings)
 
     async def get_product(self, product_id: int) -> Product:
-        product = self.catalog.get_product(product_id)
+        product = await asyncio.to_thread(self.catalog.get_product, product_id)
         if product is None:
             raise AppError("product_not_found", "Товар не найден.", 404)
-        return product_view(product)
+        return self._view(product)
 
     async def alternatives(self, product_id: int) -> SearchResult:
-        product = self.catalog.get_product(product_id)
+        product = await asyncio.to_thread(self.catalog.get_product, product_id)
         if product is None:
             raise AppError("product_not_found", "Товар не найден.", 404)
-        result = self.alternative_service.find(product)
-        return SearchResult(items=[product_view(a.product) for a in result.alternatives],
-                            coverage="partial", warnings=["synthetic_demo_data", *result.blocked_by],
+        result = await asyncio.to_thread(self.alternative_service.find, product)
+        reasons = [result.not_matched_reason] if result.not_matched_reason else []
+        return SearchResult(items=[self._view(a.product) for a in result.alternatives],
+                            coverage=self.coverage, warnings=[*self._warnings, *reasons, *result.blocked_by],
                             reasons={a.product.id: a.reason for a in result.alternatives})
+
+
+SyntheticCatalogAdapter = DomainCatalogAdapter
 
 
 def _encode(value):

@@ -19,10 +19,12 @@ from app.core.errors import AppError
 from app.core.security import csrf_token, new_token, token_hash
 from app.modules.chat.models import SessionView
 from app.modules.chat.routes import router as chat_router
+from app.modules.catalog.routes import router as catalog_router
 from app.modules.documents.models import AssetView
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(chat_router)
+router.include_router(catalog_router)
 
 
 @router.post("/assets/upload", status_code=201, response_model=Envelope[AssetView], tags=["documents"],

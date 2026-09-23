@@ -22,13 +22,11 @@ def create_app(settings: Settings | None = None, *, container: Container | None 
 
     @asynccontextmanager
     async def lifespan(app):
-        await run_in_threadpool(services.store.initialize)
         try:
+            await run_in_threadpool(services.store.initialize)
             yield
         finally:
-            planner = getattr(services.worker.processor, "planner", None)
-            if planner is not None:
-                await planner.aclose()
+            await services.aclose()
 
     app = FastAPI(
         title="EKT participant 2 API", version="0.1.0", lifespan=lifespan,
@@ -59,7 +57,13 @@ def create_app(settings: Settings | None = None, *, container: Container | None 
 
     @app.get("/health/ready", response_model=Envelope[dict[str, str]], tags=["system"])
     def ready(request: Request):
-        services.store.ping()
+        try:
+            services.store.ping()
+            catalog_reader = getattr(services.catalog, "catalog", None)
+            if catalog_reader is not None and hasattr(catalog_reader, "ping"):
+                catalog_reader.ping()
+        except Exception:
+            raise AppError("storage_unavailable", "Хранилище временно недоступно.", 503, True) from None
         return success(request, {"status": "ready", "mode": "development"})
 
     app.include_router(router)

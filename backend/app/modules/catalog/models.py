@@ -1,6 +1,6 @@
 """Доменная модель товара.
 
-Это контракт между импортом каталога (участник 2) и логикой ассистента (участник 1).
+Это контракт между импортом каталога и остальным кодом (поиск, аналоги, ассистент).
 Импорт заполняет Product из ответа EKT API или синтетического файла, дальше код
 ассистента работает только с этими полями.
 """
@@ -83,6 +83,7 @@ class Product:
     certificates: tuple[Certificate, ...]
     fetched_at: datetime
     warnings: tuple[str, ...] = field(default=())
+    barcode: str | None = None  # CML2_BAR_CODE
 
     def attribute(self, key: str) -> Attribute | None:
         return next((a for a in self.attributes if a.key == key), None)

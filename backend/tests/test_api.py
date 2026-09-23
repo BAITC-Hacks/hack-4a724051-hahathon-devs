@@ -66,6 +66,7 @@ def test_isolation_between_two_sessions(client, services):
         other_headers = authenticate(stranger)
         assert stranger.get(f"/api/v1/turns/{turn_id}").status_code == 404
         assert stranger.get(f"/api/v1/conversations/{conv}/messages").status_code == 404
+        assert stranger.get(f"/api/v1/conversations/{conv}/turns").status_code == 404
         assert stranger.post(f"/api/v1/turns/{turn_id}/cancel", headers=other_headers).status_code == 404
         assert submit(stranger, conv, other_headers).status_code == 404
 
@@ -82,6 +83,10 @@ def test_worker_completes_and_persists_no_llm_fallback(client, services):
     assert asyncio.run(services.worker.run_once()) is False
     history = client.get(f"/api/v1/conversations/{conv}/messages").json()["data"]
     assert [message["role"] for message in history] == ["user", "assistant"]
+    restored = client.get(f"/api/v1/conversations/{conv}/turns").json()["data"]
+    assert len(restored) == 1
+    assert restored[0]["id"] == turn_id
+    assert restored[0]["output"] == output["output"]
 
 
 @pytest.mark.parametrize("payload", [

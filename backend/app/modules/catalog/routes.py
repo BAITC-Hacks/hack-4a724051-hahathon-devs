@@ -4,12 +4,11 @@ from typing import Literal
 
 from fastapi import APIRouter, Query, Request
 
-from app.adapters.storage.catalog import SQLiteCatalog
 from app.api.v1.dependencies import Services, SessionRead
 from app.api.v1.responses import success
 from app.contracts import Envelope
 from app.core.errors import AppError
-from app.modules.catalog.browse import CatalogBrowseService
+from app.modules.catalog.browse import CatalogBrowseReader, CatalogBrowseService
 from app.modules.catalog.dto import CatalogPage, CategoriesPage
 
 router = APIRouter(prefix="/catalog", tags=["catalog"])
@@ -17,9 +16,10 @@ router = APIRouter(prefix="/catalog", tags=["catalog"])
 
 def _browse(services):
     catalog = getattr(services.catalog, "catalog", None)
-    if not isinstance(catalog, SQLiteCatalog):
+    if not isinstance(catalog, CatalogBrowseReader):
         raise AppError("requires_integration", "Каталог пока не подключён.", 503, True)
-    return CatalogBrowseService(catalog)
+    return CatalogBrowseService(catalog, source_ref=getattr(services.catalog, "source_ref", "catalog"),
+                                demo=getattr(services.catalog, "demo", False))
 
 
 @router.get("/categories", response_model=Envelope[CategoriesPage])

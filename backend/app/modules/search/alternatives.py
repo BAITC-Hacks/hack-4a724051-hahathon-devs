@@ -47,6 +47,8 @@ class AlternativesResult:
     source: Product
     alternatives: tuple[Alternative, ...]
     blocked_by: tuple[str, ...]  # спорные параметры исходного товара
+    # conflict | no_attributes | no_category, если подбор не делался
+    not_matched_reason: str | None = None
 
 
 def _value(product: Product, key: str) -> str | None:
@@ -74,11 +76,17 @@ class AlternativeService:
         self.catalog = catalog
 
     def find(self, product: Product, limit: int = 3) -> AlternativesResult:
-        profile = PROFILES.get(product.category_path[-1]) if product.category_path else None
+        profile = next((PROFILES[part] for part in reversed(product.category_path) if part in PROFILES), None)
         blocked = [a.label for a in product.attributes
                    if a.key in CRITICAL_ATTRIBUTES and a.status is AttributeStatus.CONFLICT]
+        if blocked:
+            return AlternativesResult(product, (), tuple(blocked), "conflict")
+        if not product.category_path:
+            return AlternativesResult(product, (), ("category_profile_unknown",), "no_category")
+        if not any(_value(product, key) for key in MATCH_KEYS):
+            return AlternativesResult(product, (), ("required_attributes_unknown",), "no_attributes")
         if profile is None:
-            return AlternativesResult(product, (), tuple([*blocked, "category_profile_unknown"]))
+            return AlternativesResult(product, (), ("category_profile_unknown",), "unsupported_category")
         expected_type, profile_keys = profile
         if expected_type and (_value(product, "device_type") or "").strip().casefold() != expected_type:
             blocked.append("device_type_unverified")
@@ -89,7 +97,7 @@ class AlternativeService:
             elif not _verified(value, key):
                 blocked.append(f"unverified:{key}")
         if blocked:
-            return AlternativesResult(product, (), tuple(dict.fromkeys(blocked)))
+            return AlternativesResult(product, (), tuple(dict.fromkeys(blocked)), "no_attributes")
 
         required_keys = dict.fromkeys([*profile_keys, *(k for k in MATCH_KEYS if _value(product, k))])
         required = [(k, _value(product, k)) for k in required_keys]

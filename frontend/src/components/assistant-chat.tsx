@@ -6,6 +6,7 @@ import {
   type Asset, type AssistantOutput, type Capabilities, type Message,
   type Product, type Proposal, type Turn,
 } from "@/lib/api";
+import { displayAttribute } from "./storefront/types";
 import "./assistant-chat.css";
 
 type Language = "auto" | "ru" | "kk" | "en";
@@ -38,6 +39,58 @@ const TERMINAL_TURN = new Set<Turn["status"]>(["completed", "failed", "cancelled
 const TERMINAL_PROPOSAL = new Set<Proposal["status"]>(["applied", "rejected", "expired", "stale", "failed"]);
 const ALLOWED_EXTENSIONS = new Set(["pdf", "docx", "xlsx", "jpg", "jpeg", "png", "txt", "csv"]);
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ATTRIBUTE_KEYS = new Set([
+  "rated_current", "poles", "voltage", "breaking_capacity", "curve", "leakage_current",
+  "series", "device_type", "power", "luminous_flux", "color_temperature", "ip", "color",
+  "cross_section", "mounting", "cable_type", "conductor_material", "insulation",
+  "fire_class", "trip_unit", "residual_type",
+]);
+const WARNING_LABELS: Record<string, string> = {
+  synthetic_demo_data: "Демонстрационные данные: проверьте условия перед заказом.",
+  price_missing: "Цена не указана в источнике.",
+  category_unknown: "Категория товара не определена.",
+  unsafe_image_url: "Изображение товара недоступно.",
+  unsafe_product_url: "Ссылка на товар недоступна.",
+  unsafe_certificate_url: "Ссылка на сертификат недоступна.",
+  catalog_coverage_is_partial_or_unknown: "Каталог может содержать не все подходящие товары.",
+  catalog_requires_integration: "Каталог пока не подключён.",
+  attachment_analysis_requires_llm_integration: "Анализ вложений помощником пока недоступен.",
+  partial_document_extraction: "Часть содержимого файла не удалось прочитать.",
+  vision_pages_truncated: "Для анализа взяты только первые страницы изображений.",
+  external_analysis_consent_required: "Для анализа файлов моделью требуется ваше разрешение.",
+  unverified_model_product_id: "Не удалось подтвердить выбранный товар в каталоге.",
+  unmatched_document_or_query_item: "Некоторые позиции из запроса или файла не найдены в каталоге.",
+  translation_source_changed: "Условия могли измениться; проверьте исходный текст.",
+  response_truncated: "Ответ сокращён из-за ограничения длины.",
+  document_or_request_needs_clarification: "Уточните некоторые позиции запроса или файла.",
+  required_attributes_unknown: "Не хватает характеристик для надёжного подбора аналога.",
+  llm_unavailable: "Модель временно недоступна; показаны доступные данные каталога.",
+  llm_budget_exhausted: "Лимит анализа моделью исчерпан; показаны доступные данные каталога.",
+  llm_budget_unavailable: "Анализ моделью временно недоступен; показаны доступные данные каталога.",
+  llm_call_replayed: "Повторный анализ этого запроса недоступен.",
+  session_expired: "Сессия истекла. Обновите страницу и повторите запрос.",
+};
+
+function attributeLabel(key: string): string {
+  return ATTRIBUTE_KEYS.has(key) ? displayAttribute(key) : "Дополнительная характеристика";
+}
+function readableWarning(warning: string): string {
+  if (warning.startsWith("conflict:")) {
+    return `Данные о характеристике «${attributeLabel(warning.slice(9))}» расходятся.`;
+  }
+  if (WARNING_LABELS[warning]) return WARNING_LABELS[warning];
+  return /^[a-z][a-z0-9_]*(?::[a-z][a-z0-9_]*)?$/.test(warning)
+    ? "Есть ограничения данных; проверьте информацию перед заказом."
+    : warning;
+}
+function readableAssistantMessage(message: string): string {
+  return message.split("\n").map(line => {
+    const match = /^([a-z][a-z0-9_]*):\s*/.exec(line);
+    if (match && ATTRIBUTE_KEYS.has(match[1])) return `${attributeLabel(match[1])}: ${line.slice(match[0].length)}`;
+    if (match?.[1] === "min") return `Минимальный заказ: ${line.slice(match[0].length)}`;
+    return line;
+  }).join("\n");
+}
 
 function storageGet(key: string): string | null {
   try { return window.sessionStorage.getItem(key); } catch { return null; }
@@ -88,14 +141,14 @@ function ProductMini({ product, demo }: { product: Product; demo: boolean }) {
     <div className="assistant-chat-product-price">{money(product.price_amount, product.price_currency)}</div>
     <p>{product.stock_status === "available" ? `Остаток: ${product.sellable_quantity ?? "не указан"}` : product.stock_status === "out_of_stock" ? "Нет в наличии" : "Остаток неизвестен"}</p>
     {product.attributes.slice(0, 4).map((attribute, index) => <p key={`${attribute.key}-${index}`}>
-      {attribute.key}: {attribute.status === "conflict" ? "данные расходятся" : attribute.value || "неизвестно"}{attribute.unit && attribute.value ? ` ${attribute.unit}` : ""}
+      {attributeLabel(attribute.key)}: {attribute.status === "conflict" ? "данные расходятся" : attribute.value || "неизвестно"}{attribute.unit && attribute.value ? ` ${attribute.unit}` : ""}
     </p>)}
     {certificates.map((certificate, index) => {
       const href = sameOriginCertificate(certificate.url);
       return href ? <a key={index} href={href} target="_blank" rel="noopener noreferrer">Сертификат: {certificate.title}</a>
         : <span key={index}>Сертификат: {certificate.title}</span>;
     })}
-    {product.warnings.length > 0 && <p className="assistant-chat-warning">{product.warnings.join(" · ")}</p>}
+    {product.warnings.length > 0 && <p className="assistant-chat-warning">{product.warnings.map(readableWarning).join(" · ")}</p>}
   </article>;
 }
 
@@ -114,11 +167,15 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
   const [consent, setConsent] = useState(false);
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [booting, setBooting] = useState(false);
+  const [assetsRestored, setAssetsRestored] = useState(false);
   const [sending, setSending] = useState(false);
   const [proposalBusy, setProposalBusy] = useState(false);
+  const [now, setNow] = useState(Date.now());
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const initialized = useRef(false);
+  const pendingRef = useRef<PendingRequest | null>(null);
+  pendingRef.current = pending;
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   const fileInput = useRef<HTMLInputElement>(null);
@@ -127,8 +184,9 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
   const scroll = useRef<HTMLDivElement>(null);
   const uploadControllers = useRef(new Map<string, AbortController>());
 
-  const refresh = useCallback(async (id: string) => {
+  const refresh = useCallback(async (id: string, shouldApply: () => boolean = () => true) => {
     const [latestMessages, turns] = await Promise.all([api.messages(id), api.turns(id)]);
+    if (!shouldApply()) return null;
     setMessages(latestMessages);
     const newestCompleted = [...turns].reverse().find(turn => turn.status === "completed" && turn.output);
     if (newestCompleted?.output) {
@@ -145,26 +203,32 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
     initialized.current = true;
     let cancelled = false;
     const boot = async () => {
-      setBooting(true); setError("");
+      setBooting(true); setAssetsRestored(false); setError("");
       try {
         const previousId = storageGet(STORAGE.conversation);
         const conversation = await ensureConversation();
         const id = conversation.id;
-        const active = await refresh(id);
+        const active = await refresh(id, () => !cancelled);
         if (previousId !== id) {
           setMessages([]); setLastOutput(null); setProposal(null);
           storageSet(STORAGE.pending, null); storageSet(STORAGE.assets, null); storageSet(STORAGE.selected, null);
         }
         if (cancelled) return;
         setConversationId(id);
-        const saved = storedJson<PendingRequest | null>(STORAGE.pending, null);
+        setPending(null);
+        const saved = storedJson<PendingRequest | null>(STORAGE.pending, null) || pendingRef.current;
         if (saved?.conversationId === id && !active) { setPending(saved); setDraft(saved.text); }
-        else if (active) storageSet(STORAGE.pending, null);
+        else {
+          if (active) storageSet(STORAGE.pending, null);
+          setPending(null);
+        }
         const savedAssets = storedJson<string[]>(STORAGE.assets, []).slice(0, 3);
+        const savedSelection = storedJson<string[]>(STORAGE.selected, []);
         const retrieved = await Promise.all(savedAssets.map(assetId => api.asset(assetId).catch(() => null)));
         if (!cancelled) {
           setAssets(retrieved.filter((asset): asset is Asset => asset !== null));
-          setSelectedIds(storedJson<string[]>(STORAGE.selected, []).filter(assetId => retrieved.some(asset => asset?.id === assetId)));
+          setSelectedIds(savedSelection.filter(assetId => retrieved.some(asset => asset?.id === assetId)));
+          setAssetsRestored(true);
         }
       } catch (caught) {
         if (!cancelled) { setError(errorMessage(caught)); initialized.current = false; }
@@ -174,8 +238,8 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
     return () => { cancelled = true; initialized.current = false; };
   }, [open, refresh]);
 
-  useEffect(() => { if (conversationId) storageSet(STORAGE.assets, JSON.stringify(assets.map(asset => asset.id))); }, [assets, conversationId]);
-  useEffect(() => { if (conversationId) storageSet(STORAGE.selected, JSON.stringify(selectedIds)); }, [selectedIds, conversationId]);
+  useEffect(() => { if (conversationId && assetsRestored) storageSet(STORAGE.assets, JSON.stringify(assets.map(asset => asset.id))); }, [assets, conversationId, assetsRestored]);
+  useEffect(() => { if (conversationId && assetsRestored) storageSet(STORAGE.selected, JSON.stringify(selectedIds)); }, [selectedIds, conversationId, assetsRestored]);
   useEffect(() => { scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: "smooth" }); }, [messages, currentTurn?.status, pending, lastOutput]);
 
   useEffect(() => {
@@ -196,7 +260,7 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
   }, [open]);
 
   useEffect(() => {
-    if (!currentTurn || TERMINAL_TURN.has(currentTurn.status) || !conversationId) return;
+    if (!open || !currentTurn || TERMINAL_TURN.has(currentTurn.status) || !conversationId) return;
     let cancelled = false;
     const timer = window.setInterval(async () => {
       try {
@@ -210,16 +274,16 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
             setLastOutput(latest.output);
             if (latest.output.proposal) setProposal(latest.output.proposal);
           }
-          if (latest.status === "failed") setError(`Ответ не завершён${latest.error_code ? `: ${latest.error_code}` : ""}.`);
-          await refresh(conversationId);
+          if (latest.status === "failed") setError(`Ответ не завершён${latest.error_code ? `: ${readableWarning(latest.error_code)}` : ""}.`);
+          await refresh(conversationId, () => !cancelled);
         }
       } catch (caught) { if (!cancelled) setError(errorMessage(caught)); }
     }, 1500);
     return () => { cancelled = true; window.clearInterval(timer); };
-  }, [currentTurn?.id, currentTurn?.status, conversationId, refresh]);
+  }, [open, currentTurn?.id, currentTurn?.status, conversationId, refresh]);
 
   useEffect(() => {
-    if (!proposal || proposal.status === "proposed" || TERMINAL_PROPOSAL.has(proposal.status)) return;
+    if (!open || !proposal || proposal.status === "proposed" || TERMINAL_PROPOSAL.has(proposal.status)) return;
     let cancelled = false;
     const timer = window.setInterval(async () => {
       try {
@@ -233,7 +297,22 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
       } catch (caught) { if (!cancelled) setError(errorMessage(caught)); }
     }, 1500);
     return () => { cancelled = true; window.clearInterval(timer); };
-  }, [proposal?.id, proposal?.status, onCartChanged]);
+  }, [open, proposal?.id, proposal?.status, onCartChanged]);
+
+  useEffect(() => {
+    if (!open || !proposal || proposal.status !== "proposed") return;
+    let cancelled = false;
+    const check = async () => {
+      setNow(Date.now());
+      try {
+        const latest = await api.proposal(proposal.id);
+        if (!cancelled) setProposal(latest);
+      } catch (caught) { if (!cancelled) setError(errorMessage(caught)); }
+    };
+    void check();
+    const timer = window.setInterval(() => void check(), 20000);
+    return () => { cancelled = true; window.clearInterval(timer); };
+  }, [open, proposal?.id, proposal?.status]);
 
   async function addFiles(event: ChangeEvent<HTMLInputElement>) {
     const chosen = Array.from(event.target.files || []);
@@ -265,6 +344,7 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
   }
 
   async function removeAsset(asset: Asset) {
+    if (pending || currentTurn || booting) return;
     try {
       await api.deleteAsset(asset.id);
       setAssets(items => items.filter(item => item.id !== asset.id));
@@ -302,7 +382,7 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
 
   function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!conversationId || sending || currentTurn || pending || uploading.length) return;
+    if (!conversationId || booting || sending || currentTurn || pending || uploading.length) return;
     const selected = assets.filter(asset => selectedIds.includes(asset.id));
     if (selected.some(asset => asset.status === "quarantined")) return;
     const text = draft.trim() || (selected.length ? "Проанализируй прикреплённые файлы и помоги подобрать позиции." : "");
@@ -335,7 +415,7 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
   }
 
   async function confirm() {
-    if (!proposal || proposal.status !== "proposed" || proposalBusy) return;
+    if (!proposal || proposal.status !== "proposed" || proposal.expires_at * 1000 <= Date.now() || proposalBusy) return;
     setProposalBusy(true); setError("");
     const keys = storedJson<Record<string, string>>(STORAGE.confirm, {});
     const key = keys[proposal.id] || newKey();
@@ -371,10 +451,11 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
 
   if (!open) return null;
   const selected = assets.filter(asset => selectedIds.includes(asset.id));
+  const shownProposalStatus: Proposal["status"] = proposal?.status === "proposed" && proposal.expires_at * 1000 <= now ? "expired" : proposal?.status || "proposed";
   const uploadReady = capabilities?.upload === "ready";
   const llmReady = capabilities?.llm === "openai";
   const demo = capabilities?.catalog === "synthetic_demo" || capabilities?.cart === "synthetic_demo";
-  const canSend = Boolean(conversationId && !sending && !pending && !currentTurn && !uploading.length
+  const canSend = Boolean(conversationId && !booting && !sending && !pending && !currentTurn && !uploading.length
     && (draft.trim() || selected.length) && !selected.some(asset => asset.status === "quarantined"));
 
   return <div className="assistant-chat-overlay" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
@@ -393,7 +474,7 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
           <p>Опишите товар, артикул или прикрепите список. Покажу только данные из доступных источников.</p>
         </div>}
         {messages.map(message => <div key={message.id} className={`assistant-chat-message assistant-chat-${message.role}`}>
-          <div className="assistant-chat-bubble">{message.text}</div>
+          <div className="assistant-chat-bubble">{message.role === "assistant" ? readableAssistantMessage(message.text) : message.text}</div>
           <time dateTime={new Date(message.created_at * 1000).toISOString()}>{message.role === "user" ? "Вы" : "Помощник"} · {clock(message.created_at)}</time>
         </div>)}
         {pending && <div className="assistant-chat-message assistant-chat-user">
@@ -408,11 +489,11 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
         {lastOutput && <div className="assistant-chat-facts">
           <div className="assistant-chat-facts-title">Данные последнего ответа {demo && <span>ДЕМО</span>}</div>
           {lastOutput.products.map(product => <ProductMini key={product.id} product={product} demo={demo}/>)}
-          {lastOutput.unknowns.length > 0 && <p>Нужно уточнить: {lastOutput.unknowns.join(" · ")}</p>}
-          {lastOutput.warnings?.length > 0 && <p className="assistant-chat-warning">{lastOutput.warnings.join(" · ")}</p>}
+          {lastOutput.unknowns.length > 0 && <p>Нужно уточнить: {lastOutput.unknowns.map(readableWarning).join(" · ")}</p>}
+          {lastOutput.warnings?.length > 0 && <p className="assistant-chat-warning">{lastOutput.warnings.map(readableWarning).join(" · ")}</p>}
         </div>}
         {proposal && <div className="assistant-chat-proposal">
-          <div className="assistant-chat-proposal-heading"><strong>Предложение для корзины</strong><span>{proposalStatus(proposal.status)}</span></div>
+          <div className="assistant-chat-proposal-heading"><strong>Предложение для корзины</strong><span>{proposalStatus(shownProposalStatus)}</span></div>
           {proposal.mode === "demo" && <p className="assistant-chat-demo">Демонстрационная корзина. Реальный заказ не создаётся.</p>}
           <div className="assistant-chat-proposal-lines">{proposal.items.map(line => <div key={line.product_id}>
             <span>{line.name}<small>{line.article_original} · {line.quantity} × {money(line.unit_price_amount, proposal.currency)}</small></span>
@@ -420,12 +501,12 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
           </div>)}</div>
           <div className="assistant-chat-proposal-total"><span>Итого</span><strong>{money(proposal.total_amount, proposal.currency)}</strong></div>
           <p className="assistant-chat-proposal-meta">Версия {proposal.version} · корзина {proposal.cart_version} · до {dateTime(proposal.expires_at)}</p>
-          {proposal.status === "proposed" && <div className="assistant-chat-proposal-actions">
+          {shownProposalStatus === "proposed" && <div className="assistant-chat-proposal-actions">
             <button type="button" onClick={() => void confirm()} disabled={proposalBusy}>Подтвердить добавление</button>
             <button type="button" onClick={() => void reject()} disabled={proposalBusy}>Отклонить</button>
           </div>}
           {proposal.status === "outcome_unknown" && <button type="button" className="assistant-chat-link" onClick={() => void api.proposal(proposal.id).then(setProposal).catch(caught => setError(errorMessage(caught)))}>Проверить результат</button>}
-          {(["expired", "stale", "failed"] as Proposal["status"][]).includes(proposal.status) && <p className="assistant-chat-warning">Проверьте данные и создайте новое предложение.</p>}
+          {(["expired", "stale", "failed"] as Proposal["status"][]).includes(shownProposalStatus) && <p className="assistant-chat-warning">Проверьте данные и создайте новое предложение.</p>}
           {proposal.status === "applied" && proposal.cart_url?.startsWith("/") && !proposal.cart_url.startsWith("//") && <a href={proposal.cart_url}>Открыть корзину →</a>}
         </div>}
         {error && <div className="assistant-chat-alert" role="alert">{error}</div>}
@@ -434,20 +515,20 @@ export default function AssistantChat({ open, onClose, pageProductId, onCartChan
 
       <div className="assistant-chat-composer">
         {assets.length > 0 && <div className="assistant-chat-assets" aria-label="Загруженные файлы">{assets.map(asset => <div className="assistant-chat-asset" key={asset.id}>
-          <label><input type="checkbox" checked={selectedIds.includes(asset.id)} disabled={asset.status === "quarantined" || Boolean(pending)} onChange={event => setSelectedIds(ids => event.target.checked ? [...ids, asset.id] : ids.filter(id => id !== asset.id))}/>
+          <label><input type="checkbox" checked={selectedIds.includes(asset.id)} disabled={asset.status === "quarantined" || Boolean(pending || currentTurn || booting)} onChange={event => setSelectedIds(ids => event.target.checked ? [...ids, asset.id] : ids.filter(id => id !== asset.id))}/>
             <span className="assistant-chat-asset-name">{asset.name}</span><small>{assetStatus(asset.status)}</small></label>
-          <button type="button" onClick={() => void removeAsset(asset)} disabled={Boolean(pending)} aria-label={`Удалить файл ${asset.name}`}>×</button>
-          {asset.warnings.length > 0 && <p>{asset.warnings.join(" · ")}</p>}
+          <button type="button" onClick={() => void removeAsset(asset)} disabled={Boolean(pending || currentTurn || booting)} aria-label={`Удалить файл ${asset.name}`}>×</button>
+          {asset.warnings.length > 0 && <p>{asset.warnings.map(readableWarning).join(" · ")}</p>}
         </div>)}</div>}
         {uploading.map(item => <div className="assistant-chat-uploading" key={item.id}>{item.name} · загружаем…</div>)}
         {llmReady && selected.length > 0 && <label className="assistant-chat-consent"><input type="checkbox" checked={consent} onChange={event => setConsent(event.target.checked)} disabled={Boolean(pending)}/><span>Разрешаю передать содержимое выбранных файлов в OpenAI для анализа. Без разрешения файлы обрабатываются локально.</span></label>}
         <form onSubmit={send}>
           <label className="assistant-chat-sr-only" htmlFor="assistant-chat-text">Сообщение помощнику</label>
-          <textarea id="assistant-chat-text" ref={textInput} rows={2} maxLength={8000} value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={composeKey} placeholder="Напишите, что нужно найти…" disabled={!conversationId || Boolean(pending) || Boolean(currentTurn)}/>
+          <textarea id="assistant-chat-text" ref={textInput} rows={2} maxLength={8000} value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={composeKey} placeholder="Напишите, что нужно найти…" disabled={!conversationId || booting || Boolean(pending) || Boolean(currentTurn)}/>
           <div className="assistant-chat-controls">
             <div className="assistant-chat-controls-left">
               <input ref={fileInput} className="assistant-chat-sr-only" type="file" multiple accept=".pdf,.docx,.xlsx,.jpg,.jpeg,.png,.txt,.csv" onChange={event => void addFiles(event)}/>
-              <button type="button" className="assistant-chat-attach" onClick={() => fileInput.current?.click()} disabled={!uploadReady || assets.length + uploading.length >= 3 || Boolean(pending)} title={uploadReady ? "Прикрепить до трёх файлов" : "Загрузка файлов не подключена"} aria-label="Прикрепить файлы">⌁</button>
+              <button type="button" className="assistant-chat-attach" onClick={() => fileInput.current?.click()} disabled={!uploadReady || booting || currentTurn !== null || assets.length + uploading.length >= 3 || Boolean(pending)} title={uploadReady ? "Прикрепить до трёх файлов" : "Загрузка файлов не подключена"} aria-label="Прикрепить файлы">⌁</button>
               <label className="assistant-chat-language">Язык <select value={language} onChange={event => setLanguage(event.target.value as Language)} disabled={Boolean(pending)}><option value="auto">Авто</option><option value="ru">Русский</option><option value="kk">Қазақша</option><option value="en">English</option></select></label>
             </div>
             <button className="assistant-chat-send" type="submit" disabled={!canSend} aria-label="Отправить сообщение">↑</button>

@@ -53,6 +53,8 @@ CRITICAL_ATTRIBUTES = {"device_type", "rated_current", "poles", "voltage", "brea
                        "insulation", "fire_class", "trip_unit", "residual_type"}
 
 NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
+# Значения, где несколько чисел это норма: сечение 3х2,5, серия ВА47-29.
+MULTI_NUMBER_KEYS = {"cross_section", "series", "device_type", "color_temperature", "ip"}
 
 
 UNIT_SCALE = {
@@ -99,9 +101,9 @@ def _name_observations(name: str) -> dict[str, str]:
     found = {}
     if m := re.search(r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*А\b", name):
         found["rated_current"] = m.group(1)
-    if m := re.search(r"\b([1-4])P(\+N)?", name):
-        # 1P+N это два полюса (фаза и ноль)
-        found["poles"] = str(int(m.group(1)) + (1 if m.group(2) else 0))
+    # «1P+N» в каталоге записан то как 1, то как 2 полюса, поэтому из такого названия полюса не берём.
+    if m := re.search(r"\b([1-4])P\b(?!\s*\+\s*N)", name):
+        found["poles"] = m.group(1)
     return found
 
 
@@ -114,6 +116,9 @@ def _description_observations(description: str) -> dict[str, str]:
         label = label.lower()
         for key, _, _, _, labels in ATTRIBUTE_RULES:
             if key not in found and label in labels and value:
+                # «16, 25, 40 А» это перечень значений серии, а не значение этого товара.
+                if key not in MULTI_NUMBER_KEYS and len(NUMBER.findall(value)) > 1:
+                    continue
                 found[key] = value
     return found
 
@@ -244,4 +249,5 @@ def product_from_source(raw: dict, fetched_at: datetime | None = None) -> Produc
         certificates=tuple(certificates),
         fetched_at=fetched_at or datetime.now(timezone.utc),
         warnings=tuple(warnings),
+        barcode=properties.get("CML2_BAR_CODE") or None,
     )

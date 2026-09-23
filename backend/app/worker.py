@@ -74,15 +74,24 @@ class Worker:
                 await asyncio.sleep(self.settings.worker_poll_seconds)
 
 
+async def run_container(container, *, once: bool = False):
+    """Keep initialization, execution and cleanup within the same event loop."""
+    try:
+        await asyncio.to_thread(container.store.initialize)
+        if once:
+            return await container.worker.run_once()
+        await container.worker.run_forever()
+    finally:
+        await container.aclose()
+
+
 def main():
     from app.bootstrap import build_container
     parser = argparse.ArgumentParser()
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
     container = build_container(Settings())
-    container.store.initialize()
-    worker = container.worker
-    asyncio.run(worker.run_once() if args.once else worker.run_forever())
+    asyncio.run(run_container(container, once=args.once))
 
 
 if __name__ == "__main__":

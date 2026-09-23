@@ -92,7 +92,7 @@ class SQLiteCatalog:
                     _fold(product.name), _fold(product.description), "/".join(product.category_path),
                     product.brand, _fold(product.brand), str(product.price) if product.price is not None else None,
                     product.stock.status.value, product.stock.sellable_quantity))
-        identifiers = {_fold(product.article), _fold(product.supplier_article)}
+        identifiers = {_fold(product.article), _fold(product.supplier_article), _fold(product.barcode)}
         props = raw.get("properties") or {}
         for value in (raw.get("barcode"), raw.get("barcodes"), props.get("SHTRIKH_KOD"), props.get("SHTRIKHKOD")):
             identifiers.update(_fold(item) for item in value) if isinstance(value, list) else identifiers.add(_fold(value))
