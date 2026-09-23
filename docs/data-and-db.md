@@ -69,3 +69,13 @@ TEST_DATABASE_URL=postgresql:///ekt_test python -m pytest
 - Перенос единого HTTP DocumentsService в PostgreSQL с сохранением ownership, квот, карантина, удаления и vision-контракта.
 - Внешняя приёмка фото/сканов на реальном ключе OpenAI и настоящем антивирусе. Локальный HTTP путь уже подготавливает изображения и страницы PDF для vision.
 - Реальная корзина ekt.kz: нет API от партнёра.
+
+## Распознавание фото и сканов, смысловой поиск
+
+Провайдер выбирается в `.env`: `AI_SERVICES_PROVIDER=openai` (ключ `LLM_API_KEY`, согласие `LLM_DATA_POLICY_ACCEPTED=true`) или `nvidia` (`NVIDIA_API_KEY` с build.nvidia.com, `NVIDIA_DATA_POLICY_ACCEPTED=true`). По умолчанию обе функции выключены.
+
+- `OCR_ENABLED=true`: фото и страницы сканов переводятся в текст перед поиском, только если клиент в чате разрешил внешнюю обработку файлов. Текст дописывается к своему файлу, поэтому артикулы из фото ищутся в каталоге даже без модели-планировщика. Модель по умолчанию: `gpt-4.1-mini` (OpenAI) или `google/gemma-3-12b-it` (NVIDIA).
+- `SEMANTIC_SEARCH_ENABLED=true`: поиск понимает запросы по смыслу («свет для офиса», «камера для наблюдения за двором»). Индекс карточек `data/synthetic/embeddings.json` уже посчитан моделью `text-embedding-3-small`. После изменения каталога его нужно пересчитать: `cd backend && python -m app.catalog_cli embed` (для PostgreSQL `--source db`). Модель индекса должна совпадать с `EMBED_MODEL` провайдера, иначе в `/api/v1/capabilities` будет `index_model_mismatch`.
+- Дневной лимит вызовов общий для API и worker: `AI_SITE_DAILY_CALLS` (3000) и `AI_SESSION_DAILY_CALLS` (200). Без ключа или при сбое сервиса поиск и чат работают как раньше.
+
+Проверено вживую на OpenAI: индекс 281 товара строится за 10 секунд, фото спецификации распознаётся за ~4 секунды, все позиции находятся в каталоге, для позиций без остатка подбираются аналоги.
