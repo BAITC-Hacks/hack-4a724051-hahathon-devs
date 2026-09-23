@@ -4,6 +4,7 @@ python -m app.catalog_cli migrate
 python -m app.catalog_cli import-synthetic
 python -m app.catalog_cli import-ekt --pages 3
 python -m app.catalog_cli status
+python -m app.catalog_cli embed [--source synthetic|db]   # индекс смыслового поиска (NVIDIA)
 
 Адрес БД берётся из DATABASE_URL, доступ к EKT из EKT_API_USER / EKT_API_PASSWORD.
 """
@@ -38,7 +39,12 @@ def main(argv: list[str] | None = None) -> int:
     ekt.add_argument("--pages", type=int, default=3)
     ekt.add_argument("--start-page", type=int, default=1)
     sub.add_parser("status")
+    embed = sub.add_parser("embed")
+    embed.add_argument("--source", choices=["synthetic", "db"], default="synthetic")
+    embed.add_argument("--out", type=Path, default=None)
     args = parser.parse_args(argv)
+    if args.command == "embed":
+        return _embed(args)
 
     url = os.environ.get("DATABASE_URL")
     if not url:
@@ -72,6 +78,37 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if report.status in ("complete", "partial") else 1
     finally:
         pool.close()
+
+
+def _embed(args) -> int:
+    """Считает эмбеддинги всех карточек и сохраняет индекс для SEMANTIC_SEARCH_ENABLED."""
+    from app.adapters.nvidia.client import NvidiaClient
+    from app.core.config import Settings
+    from app.modules.catalog.quality import product_from_source
+    from app.modules.search.semantic import SemanticIndex
+
+    settings = Settings()
+    key = settings.nvidia_api_key.get_secret_value()
+    if not key:
+        print("NVIDIA_API_KEY не задан в .env", file=sys.stderr)
+        return 2
+    if args.source == "synthetic":
+        products = [product_from_source(raw) for raw in json.loads(SYNTHETIC.read_text(encoding="utf-8"))["items"]]
+    else:
+        from app.infrastructure.db import create_pool
+        pool = create_pool(settings.database_url.get_secret_value())
+        with pool.connection() as conn:
+            products = [product_from_source(raw, ts) for raw, ts in conn.execute("SELECT raw, fetched_at FROM products")]
+        pool.close()
+    client = NvidiaClient(key)
+    try:
+        index = SemanticIndex.build(products, client, settings.nvidia_embed_model)
+    finally:
+        client.close()
+    out = args.out or settings.semantic_index_path
+    index.save(out)
+    print(json.dumps({"model": index.model, "products": len(index.vectors), "file": str(out)}, ensure_ascii=False))
+    return 0
 
 
 if __name__ == "__main__":

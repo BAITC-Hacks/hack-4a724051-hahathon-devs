@@ -12,6 +12,7 @@ class MatchKind(str, Enum):
     EXACT = "exact"  # совпал артикул или ID как есть
     NORMALIZED = "normalized"  # совпал после удаления разделителей, это кандидат
     TEXT = "text"
+    SEMANTIC = "semantic"  # похож по смыслу (эмбеддинги), без совпадения слов
 
 
 @dataclass(frozen=True)
@@ -29,9 +30,13 @@ def identifier_candidates(query: str) -> list[str]:
     return [t for t in tokens if IDENTIFIER.match(t) and any(c.isdigit() for c in t)]
 
 
+RRF_K = 60  # константа reciprocal rank fusion: сглаживает разницу между первыми местами двух списков
+
+
 class SearchService:
-    def __init__(self, catalog: CatalogReader):
+    def __init__(self, catalog: CatalogReader, semantic=None):
         self.catalog = catalog
+        self.semantic = semantic  # SemanticIndex или None
 
     def search(self, query: str, limit: int = 8) -> list[SearchMatch]:
         query = query.strip()[:200]
@@ -52,9 +57,31 @@ class SearchService:
                 for product in self.catalog.find_by_identifier(stripped):
                     seen.setdefault(product.id, SearchMatch(product, MatchKind.NORMALIZED))
 
-        if not any(m.kind is MatchKind.EXACT for m in seen.values()):
-            for product in self.catalog.search_text(query, limit=limit):
-                seen.setdefault(product.id, SearchMatch(product, MatchKind.TEXT))
+        if any(m.kind is MatchKind.EXACT for m in seen.values()):
+            order = {MatchKind.EXACT: 0, MatchKind.NORMALIZED: 1}
+            return sorted(seen.values(), key=lambda m: order[m.kind])[:limit]
 
-        order = {MatchKind.EXACT: 0, MatchKind.NORMALIZED: 1, MatchKind.TEXT: 2}
-        return sorted(seen.values(), key=lambda m: order[m.kind])[:limit]
+        found = [m for m in seen.values()]
+        lexical = self.catalog.search_text(query, limit=limit)
+        semantic = self.semantic.search(query, limit=limit) if self.semantic is not None else []
+        if not semantic:
+            for product in lexical:
+                if product.id not in seen:
+                    found.append(SearchMatch(product, MatchKind.TEXT))
+            return found[:limit]
+
+        # Слияние двух выдач по местам (RRF): товар высоко в обеих поднимается выше всех.
+        scores: dict[int, float] = {}
+        for rank, product in enumerate(lexical):
+            scores[product.id] = scores.get(product.id, 0) + 1 / (RRF_K + rank)
+        for rank, (pid, _) in enumerate(semantic):
+            scores[pid] = scores.get(pid, 0) + 1 / (RRF_K + rank)
+        by_id = {p.id: p for p in lexical}
+        lexical_ids = set(by_id)
+        for pid, _ in sorted(scores.items(), key=lambda s: (-s[1], s[0])):
+            if pid in seen:
+                continue
+            product = by_id.get(pid) or self.catalog.get_product(pid)
+            if product is not None:
+                found.append(SearchMatch(product, MatchKind.TEXT if pid in lexical_ids else MatchKind.SEMANTIC))
+        return found[:limit]

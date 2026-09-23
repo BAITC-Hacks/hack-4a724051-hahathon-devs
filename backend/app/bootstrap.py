@@ -75,6 +75,30 @@ def _catalog_db(settings: Settings):
         return catalog, actions, cleanup.pop_all(), demo
 
 
+def _attach_nvidia(settings: Settings, resources, catalog_port, processor, capabilities) -> None:
+    """Распознавание фото/сканов и смысловой поиск через NVIDIA (участник 1). Выключено по умолчанию."""
+    if not (settings.nvidia_ocr_enabled or settings.semantic_search_enabled):
+        return
+    from app.adapters.nvidia.client import NvidiaClient, NvidiaUsage
+    client = NvidiaClient(settings.nvidia_api_key.get_secret_value(),
+                          NvidiaUsage(settings.local_db_path, settings.nvidia_site_daily_calls,
+                                      settings.nvidia_session_daily_calls))
+    resources.stack.callback(client.close)
+    if settings.nvidia_ocr_enabled:
+        from app.modules.documents.ocr import NvidiaImageReader
+        processor.image_reader = NvidiaImageReader(client, settings.nvidia_ocr_model)
+        capabilities["ocr"] = "nvidia"
+    service = getattr(catalog_port, "search_service", None)
+    if settings.semantic_search_enabled and service is not None:
+        from app.modules.search.semantic import SemanticIndex
+        index = SemanticIndex.load(settings.semantic_index_path, client)
+        if index is None:
+            capabilities["semantic_search"] = "index_missing"
+        else:
+            service.semantic = index
+            capabilities["semantic_search"] = "nvidia"
+
+
 def build_container(settings: Settings, *, store: StateStore | None = None,
                     catalog: CatalogPort | None = None, documents: DocumentsPort | None = None,
                     actions: ActionsPort | None = None) -> Container:
@@ -124,12 +148,15 @@ def _build_container(settings, *, store, catalog, documents, actions, resources)
         "cart": "synthetic_demo" if demo_cart else "ready" if actions is not None else "requires_integration",
         "llm": "openai" if settings.llm_enabled else "disabled",
         "upload": "ready" if settings.uploads_enabled else "requires_integration",
+        "ocr": "disabled",
+        "semantic_search": "disabled",
     }
     state = store if store is not None else SQLiteStateStore(settings.local_db_path)
     catalog_port = catalog if catalog is not None else UnavailableCatalog()
     documents_port = documents if documents is not None else UnavailableDocuments()
     actions_port = actions if actions is not None else UnavailableActions()
     processor = GroundedAssistant(catalog_port, actions_port, documents_port, settings.local_db_path)
+    _attach_nvidia(settings, resources, catalog_port, processor, capabilities)
     if settings.llm_enabled:
         from app.adapters.llm.openai_provider import OpenAIPlanningProvider
         processor.planner = OpenAIPlanningProvider(
