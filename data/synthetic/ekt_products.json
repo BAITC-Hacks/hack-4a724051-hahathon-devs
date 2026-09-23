@@ -1,13 +1,13 @@
 {
  "meta": {
   "synthetic": true,
-  "note": "Синтетические данные для разработки и демо. Структура повторяет /api/products/detail ekt.kz, значения придуманы. Поля certificates и properties.EDINITSA_IZMERENIYA добавлены для демо.",
+  "note": "Синтетические данные для разработки и демо. Структура повторяет /api/products/detail ekt.kz, значения придуманы. Поля certificates и properties.EDINITSA_IZMERENIYA добавлены для демо. Изображения это собственные векторные иллюстрации, не фото товаров.",
   "count": 68
  },
  "items": [
   {
    "id": 900001,
-   "name": "778636 АВ ВА47-29 1P 10А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 1P 10А C 4,5кА IEK",
    "article": "990100001_",
    "description": "Автоматический выключатель ВА47-29 1P 10А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: IEK",
    "price": 1350,
@@ -134,8 +134,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/778636_av_va47_29_1p_10a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900001.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_1p_10a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100001_",
@@ -159,7 +159,7 @@
   },
   {
    "id": 900002,
-   "name": "674421 АВ ВА47-29 1P 16А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 1P 16А C 4,5кА IEK",
    "article": "990100002_",
    "description": "Автоматический выключатель ВА47-29 1P 16А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 16А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: IEK",
    "price": 1300,
@@ -286,8 +286,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/674421_av_va47_29_1p_16a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900002.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_1p_16a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100002_",
@@ -311,7 +311,7 @@
   },
   {
    "id": 900003,
-   "name": "818461 АВ ВА47-29 1P 20А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 1P 20А C 4,5кА IEK",
    "article": "990100003_",
    "description": "Автоматический выключатель ВА47-29 1P 20А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 20А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: IEK",
    "price": 1350,
@@ -438,8 +438,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/818461_av_va47_29_1p_20a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900003.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_1p_20a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100003_",
@@ -470,7 +470,7 @@
   },
   {
    "id": 900004,
-   "name": "473960 АВ ВА47-29 1P 32А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 1P 32А C 4,5кА IEK",
    "article": "990100004_",
    "description": "Автоматический выключатель ВА47-29 1P 32А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 32А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: IEK",
    "price": 1600,
@@ -597,8 +597,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/473960_av_va47_29_1p_32a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900004.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_1p_32a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100004_",
@@ -622,7 +622,7 @@
   },
   {
    "id": 900005,
-   "name": "768695 АВ ВА47-29 1P 40А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 1P 40А C 4,5кА IEK",
    "article": "990100005_",
    "description": "Автоматический выключатель ВА47-29 1P 40А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 40А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: IEK",
    "price": 2100,
@@ -749,8 +749,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/768695_av_va47_29_1p_40a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900005.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_1p_40a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100005_",
@@ -781,7 +781,7 @@
   },
   {
    "id": 900006,
-   "name": "481201 АВ ВА47-29 1P 63А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 1P 63А C 4,5кА IEK",
    "article": "990100006_",
    "description": "Автоматический выключатель ВА47-29 1P 63А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 63А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: IEK",
    "price": 3400,
@@ -908,8 +908,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/481201_av_va47_29_1p_63a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900006.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_1p_63a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100006_",
@@ -940,7 +940,7 @@
   },
   {
    "id": 900007,
-   "name": "729318 АВ ВА47-29 3P 6А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 3P 6А C 4,5кА IEK",
    "article": "990100007_",
    "description": "Автоматический выключатель ВА47-29 3P 6А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 6А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: IEK",
    "price": 4050,
@@ -1067,8 +1067,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/729318_av_va47_29_3p_6a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900007.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_3p_6a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100007_",
@@ -1092,7 +1092,7 @@
   },
   {
    "id": 900008,
-   "name": "637866 АВ ВА47-29 3P 16А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 3P 16А C 4,5кА IEK",
    "article": "990100008_",
    "description": "Автоматический выключатель ВА47-29 3P 16А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 16А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: IEK",
    "price": 3630,
@@ -1219,8 +1219,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/637866_av_va47_29_3p_16a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900008.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_3p_16a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100008_",
@@ -1251,7 +1251,7 @@
   },
   {
    "id": 900009,
-   "name": "207559 АВ ВА47-29 3P 20А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 3P 20А C 4,5кА IEK",
    "article": "990100009_",
    "description": "Автоматический выключатель ВА47-29 3P 20А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 20А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: IEK",
    "price": 3770,
@@ -1378,8 +1378,8 @@
      "quantity": 41
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/207559_av_va47_29_3p_20a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900009.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_3p_20a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100009_",
@@ -1403,7 +1403,7 @@
   },
   {
    "id": 900010,
-   "name": "672136 АВ ВА47-29 3P 25А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 3P 25А C 4,5кА IEK",
    "article": "990100010_",
    "description": "Автоматический выключатель ВА47-29 3P 25А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 25А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: IEK",
    "price": 3910,
@@ -1530,8 +1530,8 @@
      "quantity": 57
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/672136_av_va47_29_3p_25a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900010.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_3p_25a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100010_",
@@ -1562,7 +1562,7 @@
   },
   {
    "id": 900011,
-   "name": "580486 АВ ВА47-29 3P 40А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 3P 40А C 4,5кА IEK",
    "article": "990100011_",
    "description": "Автоматический выключатель ВА47-29 3P 40А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 40А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: IEK",
    "price": 5880,
@@ -1689,8 +1689,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/580486_av_va47_29_3p_40a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900011.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_3p_40a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100011_",
@@ -1714,7 +1714,7 @@
   },
   {
    "id": 900012,
-   "name": "135253 АВ ВА47-29 3P 63А C 4,5кА IEK",
+   "name": "Автоматический выключатель ВА47-29 3P 63А C 4,5кА IEK",
    "article": "990100012_",
    "description": "Автоматический выключатель ВА47-29 3P 63А характеристика C IEK для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: ВА47-29\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 63А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: IEK",
    "price": 9520,
@@ -1841,8 +1841,8 @@
      "quantity": 12
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/135253_av_va47_29_3p_63a_c_4_5ka_iek/",
+   "image": "/api/v1/product-images/SYN-900012.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_va47_29_3p_63a_c_4_5ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100012_",
@@ -1866,7 +1866,7 @@
   },
   {
    "id": 900013,
-   "name": "167418 АВ RX3 1P 6А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 6А C 6кА Legrand",
    "article": "990100013_",
    "description": "Автоматический выключатель RX3 1P 6А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 6А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 3040,
@@ -1993,8 +1993,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/167418_av_rx3_1p_6a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900013.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_6a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100013_",
@@ -2025,7 +2025,7 @@
   },
   {
    "id": 900014,
-   "name": "187100 АВ RX3 1P 10А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 10А C 6кА Legrand",
    "article": "990100014_",
    "description": "Автоматический выключатель RX3 1P 10А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 2830,
@@ -2152,8 +2152,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/187100_av_rx3_1p_10a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900014.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_10a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100014_",
@@ -2184,7 +2184,7 @@
   },
   {
    "id": 900015,
-   "name": "672992 АВ RX3 1P 16А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 16А C 6кА Legrand",
    "article": "990100015_",
    "description": "Автоматический выключатель RX3 1P 16А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 16А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 2730,
@@ -2311,8 +2311,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/672992_av_rx3_1p_16a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900015.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_16a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100015_",
@@ -2336,7 +2336,7 @@
   },
   {
    "id": 900016,
-   "name": "474604 АВ RX3 1P 20А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 20А C 6кА Legrand",
    "article": "990100016_",
    "description": "Автоматический выключатель RX3 1P 20А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 20А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 2830,
@@ -2463,8 +2463,8 @@
      "quantity": 35
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/474604_av_rx3_1p_20a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900016.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_20a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100016_",
@@ -2495,7 +2495,7 @@
   },
   {
    "id": 900017,
-   "name": "404800 АВ RX3 1P 25А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 25А C 6кА Legrand",
    "article": "990100017_",
    "description": "Автоматический выключатель RX3 1P 25А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 25А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 2940,
@@ -2622,8 +2622,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/404800_av_rx3_1p_25a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900017.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_25a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100017_",
@@ -2654,7 +2654,7 @@
   },
   {
    "id": 900018,
-   "name": "114818 АВ RX3 1P 32А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 32А C 6кА Legrand",
    "article": "990100018_",
    "description": "Автоматический выключатель RX3 1P 32А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 32А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 3360,
@@ -2781,8 +2781,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/114818_av_rx3_1p_32a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900018.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_32a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100018_",
@@ -2806,7 +2806,7 @@
   },
   {
    "id": 900019,
-   "name": "441880 АВ RX3 1P 40А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 40А C 6кА Legrand",
    "article": "990100019_",
    "description": "Автоматический выключатель RX3 1P 40А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 40А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 4410,
@@ -2933,8 +2933,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/441880_av_rx3_1p_40a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900019.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_40a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100019_",
@@ -2958,7 +2958,7 @@
   },
   {
    "id": 900020,
-   "name": "811457 АВ RX3 1P 63А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 1P 63А C 6кА Legrand",
    "article": "990100020_",
    "description": "Автоматический выключатель RX3 1P 63А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 63А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Legrand",
    "price": 7140,
@@ -3085,8 +3085,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/811457_av_rx3_1p_63a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900020.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_1p_63a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100020_",
@@ -3110,7 +3110,7 @@
   },
   {
    "id": 900021,
-   "name": "607343 АВ RX3 3P 6А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 3P 6А C 6кА Legrand",
    "article": "990100021_",
    "description": "Автоматический выключатель RX3 3P 6А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 6А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Legrand",
    "price": 8520,
@@ -3237,8 +3237,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/607343_av_rx3_3p_6a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900021.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_3p_6a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100021_",
@@ -3262,7 +3262,7 @@
   },
   {
    "id": 900022,
-   "name": "268181 АВ RX3 3P 10А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 3P 10А C 6кА Legrand",
    "article": "990100022_",
    "description": "Автоматический выключатель RX3 3P 10А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Legrand",
    "price": 7930,
@@ -3389,8 +3389,8 @@
      "quantity": 56
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/268181_av_rx3_3p_10a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900022.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_3p_10a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100022_",
@@ -3421,7 +3421,7 @@
   },
   {
    "id": 900023,
-   "name": "954583 АВ RX3 3P 32А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 3P 32А C 6кА Legrand",
    "article": "990100023_",
    "description": "Автоматический выключатель RX3 3P 32А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 32А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Legrand",
    "price": 9400,
@@ -3548,8 +3548,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/954583_av_rx3_3p_32a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900023.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_3p_32a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100023_",
@@ -3580,7 +3580,7 @@
   },
   {
    "id": 900024,
-   "name": "652863 АВ RX3 3P 40А C 6кА Legrand",
+   "name": "Автоматический выключатель RX3 3P 40А C 6кА Legrand",
    "article": "990100024_",
    "description": "Автоматический выключатель RX3 3P 40А характеристика C Legrand для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: RX3\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 40А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Legrand",
    "price": 12340,
@@ -3707,8 +3707,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/652863_av_rx3_3p_40a_c_6ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900024.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_rx3_3p_40a_c_6ka_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100024_",
@@ -3732,7 +3732,7 @@
   },
   {
    "id": 900025,
-   "name": "990758 АВ Easy9 1P 6А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 1P 6А C 4,5кА Schneider Electric",
    "article": "990100025_",
    "description": "Автоматический выключатель Easy9 1P 6А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 6А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Schneider Electric",
    "price": 2460,
@@ -3859,8 +3859,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/990758_av_easy9_1p_6a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900025.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_1p_6a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100025_",
@@ -3884,7 +3884,7 @@
   },
   {
    "id": 900026,
-   "name": "468785 АВ Easy9 1P 10А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 1P 10А C 4,5кА Schneider Electric",
    "article": "990100026_",
    "description": "Автоматический выключатель Easy9 1P 10А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Schneider Electric",
    "price": 2290,
@@ -4011,8 +4011,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/468785_av_easy9_1p_10a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900026.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_1p_10a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100026_",
@@ -4043,7 +4043,7 @@
   },
   {
    "id": 900027,
-   "name": "557234 АВ Easy9 1P 16А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 1P 16А C 4,5кА Schneider Electric",
    "article": "990100027_",
    "description": "Автоматический выключатель Easy9 1P 16А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 16А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Schneider Electric",
    "price": 2210,
@@ -4170,8 +4170,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/557234_av_easy9_1p_16a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900027.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_1p_16a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100027_",
@@ -4202,7 +4202,7 @@
   },
   {
    "id": 900028,
-   "name": "405173 АВ Easy9 1P 25А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 1P 25А C 4,5кА Schneider Electric",
    "article": "990100028_",
    "description": "Автоматический выключатель Easy9 1P 25А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 25А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Schneider Electric",
    "price": 2380,
@@ -4329,8 +4329,8 @@
      "quantity": 27
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/405173_av_easy9_1p_25a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900028.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_1p_25a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100028_",
@@ -4354,7 +4354,7 @@
   },
   {
    "id": 900029,
-   "name": "369528 АВ Easy9 1P 32А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 1P 32А C 4,5кА Schneider Electric",
    "article": "990100029_",
    "description": "Автоматический выключатель Easy9 1P 32А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 32А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Schneider Electric",
    "price": 2720,
@@ -4481,8 +4481,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/369528_av_easy9_1p_32a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900029.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_1p_32a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100029_",
@@ -4513,7 +4513,7 @@
   },
   {
    "id": 900030,
-   "name": "999091 АВ Easy9 3P 6А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 3P 6А C 4,5кА Schneider Electric",
    "article": "990100030_",
    "description": "Автоматический выключатель Easy9 3P 6А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 6А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Schneider Electric",
    "price": 6900,
@@ -4640,8 +4640,8 @@
      "quantity": 14
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/999091_av_easy9_3p_6a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900030.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_3p_6a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100030_",
@@ -4672,7 +4672,7 @@
   },
   {
    "id": 900031,
-   "name": "814503 АВ Easy9 3P 10А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 3P 10А C 4,5кА Schneider Electric",
    "article": "990100031_",
    "description": "Автоматический выключатель Easy9 3P 10А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Schneider Electric",
    "price": 6420,
@@ -4799,8 +4799,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/814503_av_easy9_3p_10a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900031.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_3p_10a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100031_",
@@ -4824,7 +4824,7 @@
   },
   {
    "id": 900032,
-   "name": "862447 АВ Easy9 3P 20А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 3P 20А C 4,5кА Schneider Electric",
    "article": "990100032_",
    "description": "Автоматический выключатель Easy9 3P 20А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 20А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Schneider Electric",
    "price": 6420,
@@ -4951,8 +4951,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/862447_av_easy9_3p_20a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900032.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_3p_20a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100032_",
@@ -4976,7 +4976,7 @@
   },
   {
    "id": 900033,
-   "name": "668492 АВ Easy9 3P 25А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 3P 25А C 4,5кА Schneider Electric",
    "article": "990100033_",
    "description": "Автоматический выключатель Easy9 3P 25А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 25А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Schneider Electric",
    "price": 6660,
@@ -5103,8 +5103,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/668492_av_easy9_3p_25a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900033.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_3p_25a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100033_",
@@ -5128,7 +5128,7 @@
   },
   {
    "id": 900034,
-   "name": "749037 АВ Easy9 3P 63А C 4,5кА Schneider Electric",
+   "name": "Автоматический выключатель Easy9 3P 63А C 4,5кА Schneider Electric",
    "article": "990100034_",
    "description": "Автоматический выключатель Easy9 3P 63А характеристика C Schneider Electric для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: Easy9\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 63А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 4,5кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Schneider Electric",
    "price": 16180,
@@ -5255,8 +5255,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/749037_av_easy9_3p_63a_c_4_5ka_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900034.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_easy9_3p_63a_c_4_5ka_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100034_",
@@ -5287,7 +5287,7 @@
   },
   {
    "id": 900035,
-   "name": "473263 АВ NXB-63 1P 6А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 1P 6А C 6кА Chint",
    "article": "990100035_",
    "description": "Автоматический выключатель NXB-63 1P 6А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 6А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Chint",
    "price": 1880,
@@ -5414,8 +5414,8 @@
      "quantity": 43
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/473263_av_nxb_63_1p_6a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900035.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_1p_6a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100035_",
@@ -5446,7 +5446,7 @@
   },
   {
    "id": 900036,
-   "name": "124496 АВ NXB-63 1P 10А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 1P 10А C 6кА Chint",
    "article": "990100036_",
    "description": "Автоматический выключатель NXB-63 1P 10А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Chint",
    "price": 1750,
@@ -5573,8 +5573,8 @@
      "quantity": 3
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/124496_av_nxb_63_1p_10a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900036.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_1p_10a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100036_",
@@ -5605,7 +5605,7 @@
   },
   {
    "id": 900037,
-   "name": "879188 АВ NXB-63 1P 16А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 1P 16А C 6кА Chint",
    "article": "990100037_",
    "description": "Автоматический выключатель NXB-63 1P 16А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 16А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Chint",
    "price": 1690,
@@ -5732,8 +5732,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/879188_av_nxb_63_1p_16a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900037.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_1p_16a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100037_",
@@ -5764,7 +5764,7 @@
   },
   {
    "id": 900038,
-   "name": "881391 АВ NXB-63 1P 32А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 1P 32А C 6кА Chint",
    "article": "990100038_",
    "description": "Автоматический выключатель NXB-63 1P 32А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 32А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Chint",
    "price": 2080,
@@ -5891,8 +5891,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/881391_av_nxb_63_1p_32a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900038.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_1p_32a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100038_",
@@ -5916,7 +5916,7 @@
   },
   {
    "id": 900039,
-   "name": "950853 АВ NXB-63 1P 40А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 1P 40А C 6кА Chint",
    "article": "990100039_",
    "description": "Автоматический выключатель NXB-63 1P 40А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 40А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Chint",
    "price": 2730,
@@ -6043,8 +6043,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/950853_av_nxb_63_1p_40a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900039.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_1p_40a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100039_",
@@ -6075,7 +6075,7 @@
   },
   {
    "id": 900040,
-   "name": "413562 АВ NXB-63 1P 63А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 1P 63А C 6кА Chint",
    "article": "990100040_",
    "description": "Автоматический выключатель NXB-63 1P 63А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 1\r\n\tНоминальный ток: 63А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 230В\r\n\tПроизводитель: Chint",
    "price": 4420,
@@ -6202,8 +6202,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/413562_av_nxb_63_1p_63a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900040.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_1p_63a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100040_",
@@ -6234,7 +6234,7 @@
   },
   {
    "id": 900041,
-   "name": "641690 АВ NXB-63 3P 10А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 3P 10А C 6кА Chint",
    "article": "990100041_",
    "description": "Автоматический выключатель NXB-63 3P 10А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 10А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Chint",
    "price": 4910,
@@ -6361,8 +6361,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/641690_av_nxb_63_3p_10a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900041.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_3p_10a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100041_",
@@ -6386,7 +6386,7 @@
   },
   {
    "id": 900042,
-   "name": "298995 АВ NXB-63 3P 32А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 3P 32А C 6кА Chint",
    "article": "990100042_",
    "description": "Автоматический выключатель NXB-63 3P 32А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 32А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Chint",
    "price": 5820,
@@ -6513,8 +6513,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/298995_av_nxb_63_3p_32a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900042.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_3p_32a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100042_",
@@ -6545,7 +6545,7 @@
   },
   {
    "id": 900043,
-   "name": "760411 АВ NXB-63 3P 63А C 6кА Chint",
+   "name": "Автоматический выключатель NXB-63 3P 63А C 6кА Chint",
    "article": "990100043_",
    "description": "Автоматический выключатель NXB-63 3P 63А характеристика C Chint для защиты линий от перегрузки и короткого замыкания.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: NXB-63\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 63А\r\n\tХарактеристика срабатывания: C\r\n\tОтключающая способность: 6кА\r\n\tНоминальное напряжение: 400В\r\n\tПроизводитель: Chint",
    "price": 12370,
@@ -6672,8 +6672,8 @@
      "quantity": 11
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/760411_av_nxb_63_3p_63a_c_6ka_chint/",
+   "image": "/api/v1/product-images/SYN-900043.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/modulnye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_nxb_63_3p_63a_c_6ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100043_",
@@ -6704,7 +6704,7 @@
   },
   {
    "id": 900044,
-   "name": "971300 АВ DRX250 MT 3ф 160А 18kA Legrand",
+   "name": "Автоматический выключатель в литом корпусе DRX250 MT 3P 160А 18кА Legrand",
    "article": "990100044_",
    "description": "Автоматический выключатель DRX250 MT 3P 160А 18kA Legrand для распределительных сетей.\r\n\r\nОсновные характеристики:\r\n\r\n\tСерия: DRX250 MT\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 160А\r\n\tОтключающая способность: 18kA\r\n\tНоминальное напряжение: 400В AC",
    "price": 61900,
@@ -6831,8 +6831,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/971300_av_drx250_mt_3f_160a_18ka_legrand/",
+   "image": "/api/v1/product-images/SYN-900044.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_v_litom_korpuse_drx250_mt_3p_160a_18ka_legra/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100044_",
@@ -6863,7 +6863,7 @@
   },
   {
    "id": 900045,
-   "name": "971301 АВ ВА88-35 3P 160А 35кА IEK",
+   "name": "Автоматический выключатель в литом корпусе ВА88-35 3P 160А 35кА IEK",
    "article": "990100045_",
    "description": "Автоматический выключатель ВА88-35 3P 160А 35кА IEK в литом корпусе.\r\n\r\nОсновные характеристики:\r\n\r\n\tКоличество полюсов: 3\r\n\tНоминальный ток: 160А\r\n\tОтключающая способность: 35кА\r\n\tНоминальное напряжение: 400В",
    "price": 48700,
@@ -6990,8 +6990,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/971301_av_va88_35_3p_160a_35ka_iek/",
+   "image": "/api/v1/product-images/SYN-900045.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_v_litom_korpuse_va88_35_3p_160a_35ka_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100045_",
@@ -7022,7 +7022,7 @@
   },
   {
    "id": 900046,
-   "name": "739650 Диф.авт. АД12 1P+N 16А 30мА C IEK",
+   "name": "Дифференциальный автомат АД12 1P+N 16А 30мА C IEK",
    "article": "990100046_",
    "description": "Дифференциальный автомат АД12 1P+N 16А 30мА IEK. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 6900,
@@ -7149,8 +7149,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/739650_dif_avt_ad12_1p_n_16a_30ma_c_iek/",
+   "image": "/api/v1/product-images/SYN-900046.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_ad12_1p_n_16a_30ma_c_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100046_",
@@ -7183,7 +7183,7 @@
   },
   {
    "id": 900047,
-   "name": "375325 Диф.авт. АД12 1P+N 25А 30мА C IEK",
+   "name": "Дифференциальный автомат АД12 1P+N 25А 30мА C IEK",
    "article": "990100047_",
    "description": "Дифференциальный автомат АД12 1P+N 25А 30мА IEK. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 25А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 7710,
@@ -7310,8 +7310,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/375325_dif_avt_ad12_1p_n_25a_30ma_c_iek/",
+   "image": "/api/v1/product-images/SYN-900047.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_ad12_1p_n_25a_30ma_c_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100047_",
@@ -7344,7 +7344,7 @@
   },
   {
    "id": 900048,
-   "name": "461883 Диф.авт. АД12 1P+N 32А 30мА C IEK",
+   "name": "Дифференциальный автомат АД12 1P+N 32А 30мА C IEK",
    "article": "990100048_",
    "description": "Дифференциальный автомат АД12 1P+N 32А 30мА IEK. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 32А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 8340,
@@ -7471,8 +7471,8 @@
      "quantity": 32
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/461883_dif_avt_ad12_1p_n_32a_30ma_c_iek/",
+   "image": "/api/v1/product-images/SYN-900048.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_ad12_1p_n_32a_30ma_c_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100048_",
@@ -7505,7 +7505,7 @@
   },
   {
    "id": 900049,
-   "name": "889884 Диф.авт. DX3 1P+N 16А 30мА C Legrand",
+   "name": "Дифференциальный автомат DX3 1P+N 16А 30мА C Legrand",
    "article": "990100049_",
    "description": "Дифференциальный автомат DX3 1P+N 16А 30мА Legrand. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 18400,
@@ -7632,8 +7632,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/889884_dif_avt_dx3_1p_n_16a_30ma_c_legrand/",
+   "image": "/api/v1/product-images/SYN-900049.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_dx3_1p_n_16a_30ma_c_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100049_",
@@ -7666,7 +7666,7 @@
   },
   {
    "id": 900050,
-   "name": "788967 Диф.авт. DX3 1P+N 25А 30мА C Legrand",
+   "name": "Дифференциальный автомат DX3 1P+N 25А 30мА C Legrand",
    "article": "990100050_",
    "description": "Дифференциальный автомат DX3 1P+N 25А 30мА Legrand. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 25А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 19210,
@@ -7793,8 +7793,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/788967_dif_avt_dx3_1p_n_25a_30ma_c_legrand/",
+   "image": "/api/v1/product-images/SYN-900050.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_dx3_1p_n_25a_30ma_c_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100050_",
@@ -7827,7 +7827,7 @@
   },
   {
    "id": 900051,
-   "name": "428919 Диф.авт. DX3 1P+N 32А 30мА C Legrand",
+   "name": "Дифференциальный автомат DX3 1P+N 32А 30мА C Legrand",
    "article": "990100051_",
    "description": "Дифференциальный автомат DX3 1P+N 32А 30мА Legrand. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 32А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 19840,
@@ -7954,8 +7954,8 @@
      "quantity": 59
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/428919_dif_avt_dx3_1p_n_32a_30ma_c_legrand/",
+   "image": "/api/v1/product-images/SYN-900051.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_dx3_1p_n_32a_30ma_c_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100051_",
@@ -7988,7 +7988,7 @@
   },
   {
    "id": 900052,
-   "name": "529601 Диф.авт. NXBLE-32 1P+N 16А 30мА C Chint",
+   "name": "Дифференциальный автомат NXBLE-32 1P+N 16А 30мА C Chint",
    "article": "990100052_",
    "description": "Дифференциальный автомат NXBLE-32 1P+N 16А 30мА Chint. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 7600,
@@ -8115,8 +8115,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/529601_dif_avt_nxble_32_1p_n_16a_30ma_c_chint/",
+   "image": "/api/v1/product-images/SYN-900052.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_nxble_32_1p_n_16a_30ma_c_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100052_",
@@ -8149,7 +8149,7 @@
   },
   {
    "id": 900053,
-   "name": "379399 Диф.авт. NXBLE-32 1P+N 25А 30мА C Chint",
+   "name": "Дифференциальный автомат NXBLE-32 1P+N 25А 30мА C Chint",
    "article": "990100053_",
    "description": "Дифференциальный автомат NXBLE-32 1P+N 25А 30мА Chint. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 25А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 8410,
@@ -8276,8 +8276,8 @@
      "quantity": 50
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/379399_dif_avt_nxble_32_1p_n_25a_30ma_c_chint/",
+   "image": "/api/v1/product-images/SYN-900053.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_nxble_32_1p_n_25a_30ma_c_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100053_",
@@ -8310,7 +8310,7 @@
   },
   {
    "id": 900054,
-   "name": "702289 Диф.авт. NXBLE-32 1P+N 32А 30мА C Chint",
+   "name": "Дифференциальный автомат NXBLE-32 1P+N 32А 30мА C Chint",
    "article": "990100054_",
    "description": "Дифференциальный автомат NXBLE-32 1P+N 32А 30мА Chint. Защищает от перегрузки, короткого замыкания и токов утечки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 32А\r\n\tТок утечки: 30мА\r\n\tХарактеристика: C",
    "price": 9040,
@@ -8437,8 +8437,8 @@
      "quantity": 46
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/702289_dif_avt_nxble_32_1p_n_32a_30ma_c_chint/",
+   "image": "/api/v1/product-images/SYN-900054.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/differentsialnye_avtomaty/differencial_nyi_avtomat_nxble_32_1p_n_32a_30ma_c_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100054_",
@@ -8471,7 +8471,7 @@
   },
   {
    "id": 900055,
-   "name": "904419 Розетка 2К+З Mosaic белый Legrand",
+   "name": "Розетка с заземлением Mosaic 2К+З 16А белый Legrand",
    "article": "990100055_",
    "description": "Розетка с заземлением Mosaic Legrand, цвет белый, для скрытой установки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tНапряжение: 250В\r\n\tЦвет: белый",
    "price": 2350,
@@ -8598,8 +8598,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/904419_rozetka_2k_z_mosaic_belyi_legrand/",
+   "image": "/api/v1/product-images/SYN-900055.svg",
+   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/rozetka_s_zazemleniem_mosaic_2k_z_16a_belyi_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100055_",
@@ -8629,7 +8629,7 @@
   },
   {
    "id": 900056,
-   "name": "988517 Розетка 2К+З Valena Life белый Legrand",
+   "name": "Розетка с заземлением Valena Life 2К+З 16А белый Legrand",
    "article": "990100056_",
    "description": "Розетка с заземлением Valena Life Legrand, цвет белый, для скрытой установки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tНапряжение: 250В\r\n\tЦвет: белый",
    "price": 1980,
@@ -8756,8 +8756,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/988517_rozetka_2k_z_valena_life_belyi_legrand/",
+   "image": "/api/v1/product-images/SYN-900056.svg",
+   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/rozetka_s_zazemleniem_valena_life_2k_z_16a_belyi_legrand/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100056_",
@@ -8787,7 +8787,7 @@
   },
   {
    "id": 900057,
-   "name": "835777 Розетка 2К+З AtlasDesign белый Schneider Electric",
+   "name": "Розетка с заземлением AtlasDesign 2К+З 16А белый Schneider Electric",
    "article": "990100057_",
    "description": "Розетка с заземлением AtlasDesign Schneider Electric, цвет белый, для скрытой установки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tНапряжение: 250В\r\n\tЦвет: белый",
    "price": 1650,
@@ -8914,8 +8914,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/835777_rozetka_2k_z_atlasdesign_belyi_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900057.svg",
+   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/rozetka_s_zazemleniem_atlasdesign_2k_z_16a_belyi_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100057_",
@@ -8945,7 +8945,7 @@
   },
   {
    "id": 900058,
-   "name": "894055 Розетка 2К+З AtlasDesign антрацит Schneider Electric",
+   "name": "Розетка с заземлением AtlasDesign 2К+З 16А антрацит Schneider Electric",
    "article": "990100058_",
    "description": "Розетка с заземлением AtlasDesign Schneider Electric, цвет антрацит, для скрытой установки.\r\n\r\nОсновные характеристики:\r\n\r\n\tНоминальный ток: 16А\r\n\tНапряжение: 250В\r\n\tЦвет: антрацит",
    "price": 1890,
@@ -9072,8 +9072,8 @@
      "quantity": 21
     }
    ],
-   "image": null,
-   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/894055_rozetka_2k_z_atlasdesign_antracit_schneider_electric/",
+   "image": "/api/v1/product-images/SYN-900058.svg",
+   "url": "/catalog/rozetki_vyklyuchateli_korobki/rozetki/rozetka_s_zazemleniem_atlasdesign_2k_z_16a_antracit_schneider_electric/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100058_",
@@ -9103,7 +9103,7 @@
   },
   {
    "id": 900059,
-   "name": "Кабель ВВГнг(А)-LS 3х1,5 ок(N,PE)-0,66 ГОСТ",
+   "name": "Кабель силовой ВВГнг(А)-LS 3х1,5 ок(N,PE)-0,66 кВ",
    "article": "990100059_",
    "description": "Силовой кабель ВВГнг(А)-LS 3х1,5 с пониженным дымо- и газовыделением. Продаётся на метры.",
    "price": 410,
@@ -9230,8 +9230,8 @@
      "quantity": 7
     }
    ],
-   "image": null,
-   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_vvgng_a_ls_3h1_5_ok_n_pe_0_66_gost/",
+   "image": "/api/v1/product-images/SYN-900059.svg",
+   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_silovoi_vvgng_a_ls_3h1_5_ok_n_pe_0_66_kv/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100059_",
@@ -9261,7 +9261,7 @@
   },
   {
    "id": 900060,
-   "name": "Кабель ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 ГОСТ",
+   "name": "Кабель силовой ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 кВ",
    "article": "990100060_",
    "description": "Силовой кабель ВВГнг(А)-LS 3х2,5 с пониженным дымо- и газовыделением. Продаётся на метры.",
    "price": 620,
@@ -9388,8 +9388,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_vvgng_a_ls_3h2_5_ok_n_pe_0_66_gost/",
+   "image": "/api/v1/product-images/SYN-900060.svg",
+   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_silovoi_vvgng_a_ls_3h2_5_ok_n_pe_0_66_kv/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100060_",
@@ -9419,7 +9419,7 @@
   },
   {
    "id": 900061,
-   "name": "Кабель ВВГнг(А)-LS 5х4 ок(N,PE)-0,66 ГОСТ",
+   "name": "Кабель силовой ВВГнг(А)-LS 5х4 ок(N,PE)-0,66 кВ",
    "article": "990100061_",
    "description": "Силовой кабель ВВГнг(А)-LS 5х4 с пониженным дымо- и газовыделением. Продаётся на метры.",
    "price": 1650,
@@ -9546,8 +9546,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_vvgng_a_ls_5h4_ok_n_pe_0_66_gost/",
+   "image": "/api/v1/product-images/SYN-900061.svg",
+   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_silovoi_vvgng_a_ls_5h4_ok_n_pe_0_66_kv/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100061_",
@@ -9577,7 +9577,7 @@
   },
   {
    "id": 900062,
-   "name": "789842 Светильник LED ДПО 36W 3600Lm 4000K IP40 MEGALIGHT",
+   "name": "Светильник светодиодный ДПО 36W 3600Lm 4000K IP40 MEGALIGHT",
    "article": "990100062_",
    "description": "Светодиодный светильник 36Вт 3600Лм 4000K IP40 MEGALIGHT для офисов и общественных помещений.",
    "price": 6400,
@@ -9704,8 +9704,8 @@
      "quantity": 32
     }
    ],
-   "image": null,
-   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/789842_svetil_nik_led_dpo_36w_3600lm_4000k_ip40_megalight/",
+   "image": "/api/v1/product-images/SYN-900062.svg",
+   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/svetil_nik_svetodiodnyi_dpo_36w_3600lm_4000k_ip40_megalight/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100062_",
@@ -9734,7 +9734,7 @@
   },
   {
    "id": 900063,
-   "name": "774860 Светильник LED ДПО 18W 1800Lm 4000K IP40 MEGALIGHT",
+   "name": "Светильник светодиодный ДПО 18W 1800Lm 4000K IP40 MEGALIGHT",
    "article": "990100063_",
    "description": "Светодиодный светильник 18Вт 1800Лм 4000K IP40 MEGALIGHT для офисов и общественных помещений.",
    "price": 3900,
@@ -9861,8 +9861,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/774860_svetil_nik_led_dpo_18w_1800lm_4000k_ip40_megalight/",
+   "image": "/api/v1/product-images/SYN-900063.svg",
+   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/svetil_nik_svetodiodnyi_dpo_18w_1800lm_4000k_ip40_megalight/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100063_",
@@ -9891,7 +9891,7 @@
   },
   {
    "id": 900064,
-   "name": "604028 Светильник LED ДПО 36W 3200Lm 4000K IP40 IEK",
+   "name": "Светильник светодиодный ДПО 36W 3200Lm 4000K IP40 IEK",
    "article": "990100064_",
    "description": "Светодиодный светильник 36Вт 3200Лм 4000K IP40 IEK для офисов и общественных помещений.",
    "price": 5200,
@@ -10018,8 +10018,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/604028_svetil_nik_led_dpo_36w_3200lm_4000k_ip40_iek/",
+   "image": "/api/v1/product-images/SYN-900064.svg",
+   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/svetil_nik_svetodiodnyi_dpo_36w_3200lm_4000k_ip40_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100064_",
@@ -10048,7 +10048,7 @@
   },
   {
    "id": 900065,
-   "name": "328898 Светильник LED ДПО 40W 4000Lm 4000K IP40 Dekraft",
+   "name": "Светильник светодиодный ДПО 40W 4000Lm 4000K IP40 Dekraft",
    "article": "990100065_",
    "description": "Светодиодный светильник 40Вт 4000Лм 4000K IP40 Dekraft для офисов и общественных помещений.",
    "price": 5900,
@@ -10175,8 +10175,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/328898_svetil_nik_led_dpo_40w_4000lm_4000k_ip40_dekraft/",
+   "image": "/api/v1/product-images/SYN-900065.svg",
+   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/svetil_nik_svetodiodnyi_dpo_40w_4000lm_4000k_ip40_dekraft/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100065_",
@@ -10205,7 +10205,7 @@
   },
   {
    "id": 900066,
-   "name": "Кабель ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 ГОСТ завод Б",
+   "name": "Кабель силовой ВВГнг(А)-LS 3х2,5 ок(N,PE)-0,66 кВ, Кабельный завод Б",
    "article": "990100066_",
    "description": "Силовой кабель ВВГнг(А)-LS 3х2,5 другого завода. Продаётся на метры.",
    "price": 640,
@@ -10332,8 +10332,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_vvgng_a_ls_3h2_5_ok_n_pe_0_66_gost_zavod_b/",
+   "image": "/api/v1/product-images/SYN-900066.svg",
+   "url": "/catalog/kabel_provod/kabel_silovoy/kabel_silovoi_vvgng_a_ls_3h2_5_ok_n_pe_0_66_kv_kabel_nyi_zavod_b/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100066_",
@@ -10363,7 +10363,7 @@
   },
   {
    "id": 900067,
-   "name": "971302 АВ NM1-250 3P 160А 35кА Chint",
+   "name": "Автоматический выключатель в литом корпусе NM1-250 3P 160А 35кА Chint",
    "article": "990100067_",
    "description": "Автоматический выключатель NM1-250 3P 160А 35кА Chint в литом корпусе.",
    "price": 45200,
@@ -10490,8 +10490,8 @@
      "quantity": 0
     }
    ],
-   "image": null,
-   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/971302_av_nm1_250_3p_160a_35ka_chint/",
+   "image": "/api/v1/product-images/SYN-900067.svg",
+   "url": "/catalog/nizkovoltnaya_apparatura/silovye_avtomaticheskie_vyklyuchateli/avtomaticeskii_vyklucatel_v_litom_korpuse_nm1_250_3p_160a_35ka_chint/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100067_",
@@ -10522,7 +10522,7 @@
   },
   {
    "id": 900068,
-   "name": "971303 Светильник LED ДПО 18W 1800Lm 4000K IP40 IEK",
+   "name": "Светильник светодиодный ДПО 18W 1800Lm 4000K IP40 IEK",
    "article": "990100068_",
    "description": "Светодиодный светильник 18Вт 1800Лм 4000K IP40 IEK для офисов.",
    "price": 3700,
@@ -10649,8 +10649,8 @@
      "quantity": 36
     }
    ],
-   "image": null,
-   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/971303_svetil_nik_led_dpo_18w_1800lm_4000k_ip40_iek/",
+   "image": "/api/v1/product-images/SYN-900068.svg",
+   "url": "/catalog/svetilniki_lampy/svetilniki_ofisnye/svetil_nik_svetodiodnyi_dpo_18w_1800lm_4000k_ip40_iek/",
    "offers": [],
    "properties": {
     "CML2_ARTICLE": "990100068_",

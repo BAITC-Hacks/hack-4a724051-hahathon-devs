@@ -62,7 +62,7 @@ def test_synthetic_catalog_loads():
     products = list(catalog._by_id.values())
     assert len(products) > 50
     conflicts = [p for p in products if p.warnings]
-    assert [p.name for p in conflicts] == ["971300 АВ DRX250 MT 3ф 160А 18kA Legrand"]
+    assert [p.name for p in conflicts] == ["Автоматический выключатель в литом корпусе DRX250 MT 3P 160А 18кА Legrand"]
 
 
 def test_one_pole_plus_neutral_does_not_conflict_with_either_convention():
