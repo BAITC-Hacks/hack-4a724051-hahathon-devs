@@ -258,6 +258,7 @@ API и worker читают корневой `.env`; Next.js — `frontend/.env.l
 | `INTEGRATION_MODE` | `synthetic`, `catalog_db` или `unavailable` |
 | `LOCAL_DB_PATH` | Один абсолютный SQLite-путь API/worker; по умолчанию `backend/var/participant2.sqlite3` |
 | `DATABASE_URL` | PostgreSQL URI, обязателен для `catalog_db` |
+| `CATALOG_DB_SEED_DEMO` | `true`; в `catalog_db` досевает демо-товары в пустую базу. Для подготовленной базы партнёра ставьте `false` |
 | `EKT_API_USER`, `EKT_API_PASSWORD` | Basic Auth EKT; пустые в шаблоне |
 | `EKT_LIVE_REFRESH` | `false`; `true` проверяет цену/остаток перед корзиной **и обновляет карточку PostgreSQL** |
 | `LLM_ENABLED`, `LLM_API_KEY` | `false`, пустой серверный ключ |
@@ -267,6 +268,12 @@ API и worker читают корневой `.env`; Next.js — `frontend/.env.l
 | `LLM_DATA_POLICY_ACCEPTED` | `false`; `true` после принятия оператором политики передачи данных |
 | `LLM_TIMEOUT_SECONDS`, `LLM_MAX_OUTPUT_TOKENS` | `45`, `8192` |
 | `LLM_SESSION_DAILY_TOKENS`, `LLM_SITE_DAILY_TOKENS` | `100000`, `1000000`; токенные, не денежные лимиты |
+| `AI_SERVICES_PROVIDER` | `openai` или `nvidia`; провайдер OCR и эмбеддингов |
+| `NVIDIA_API_KEY`, `NVIDIA_DATA_POLICY_ACCEPTED` | Нужны только при `AI_SERVICES_PROVIDER=nvidia` |
+| `OCR_ENABLED`, `OCR_MODEL` | `false`, пусто; распознавание сканов и фото. Пустая модель — значение провайдера по умолчанию |
+| `SEMANTIC_SEARCH_ENABLED`, `EMBED_MODEL` | `false`, пусто; поиск по смыслу. Модель обязана совпадать с моделью индекса |
+| `SEMANTIC_INDEX_PATH` | `data/synthetic/embeddings.json`; файл индекса эмбеддингов |
+| `AI_SITE_DAILY_CALLS`, `AI_SESSION_DAILY_CALLS` | `3000`, `200`; лимиты вызовов AI-сервиса в сутки |
 | `WORKER_TIMEOUT_SECONDS`, `WORKER_LEASE_SECONDS` | `75`, `120`; timeout worker > timeout модели с запасом, lease > timeout worker |
 | `UPLOADS_ENABLED`, `SCANNER_COMMAND` | `false`, `[]`; включение требует настоящего антивируса |
 | `ASSETS_ROOT` | Приватные загрузки: по умолчанию `backend/var/assets` |
@@ -315,6 +322,33 @@ backend/.venv/Scripts/python.exe scripts/smoke_attachments.py --analyze
 
 Лимиты: 3 вложения на сообщение, 10 МиБ на файл, 200 строк таблиц, 20 листов XLSX, 20 страниц PDF, 40 000 символов; до 4 страниц PDF без текста передаются как изображения. При обрезке показывается предупреждение. `.doc`/`.xls` не поддерживаются — используйте `.docx`/`.xlsx`. Полный анализ больших документов требует обработки по частям. [Подробная инструкция](docs/assistant-testing.md).
 
+### Включение OCR и семантического поиска
+
+Обе возможности обращаются к внешнему AI-сервису и по умолчанию выключены. Провайдер задаёт `AI_SERVICES_PROVIDER`: значение `openai` использует уже настроенные `LLM_API_KEY` и `LLM_DATA_POLICY_ACCEPTED`, значение `nvidia` — отдельные `NVIDIA_API_KEY` и `NVIDIA_DATA_POLICY_ACCEPTED`. Без ключа и согласия на передачу данных запуск останавливается с сообщением, в котором названы недостающие переменные.
+
+**OCR** читает сканы и фотографии без текстового слоя — те файлы, для которых локального разбора не хватает:
+
+```dotenv
+AI_SERVICES_PROVIDER=openai
+OCR_ENABLED=true
+```
+
+**Семантический поиск** отвечает на запрос по смыслу, а не только по артикулу и подстроке. Ему нужен заранее посчитанный индекс эмбеддингов. Из `backend`:
+
+```powershell
+.venv/Scripts/python.exe -m app.catalog_cli embed --source synthetic
+```
+
+Для каталога PostgreSQL укажите `--source db`, путь файла меняется через `--out`. После этого в корневом `.env`:
+
+```dotenv
+SEMANTIC_SEARCH_ENABLED=true
+```
+
+Индекс читается из `SEMANTIC_INDEX_PATH`. `EMBED_MODEL` при запуске обязана совпадать с моделью, которой считался индекс: при расхождении выдача становится бессмысленной, а не пустой. Пустые `OCR_MODEL` и `EMBED_MODEL` означают модель провайдера по умолчанию.
+
+Расход ограничен числом вызовов в сутки — `AI_SITE_DAILY_CALLS` и `AI_SESSION_DAILY_CALLS`. Это лимиты вызовов, а не денег: бюджет настраивается в кабинете провайдера. Перезапустите API и worker; в `/api/v1/capabilities` поля `ocr` и `semantic_search` перейдут из `disabled` в рабочее состояние.
+
 ## Проверки качества
 
 Из `backend` (Linux/macOS: заменить `Scripts/python.exe` на `bin/python`):
@@ -338,9 +372,9 @@ npm run build
 backend/.venv/Scripts/python.exe scripts/verify_assistant_fixtures.py
 ```
 
-PostgreSQL-тесты требуют отдельной одноразовой `TEST_DATABASE_URL`: **они пересоздают схему public**. Никогда не указывайте рабочую БД. Без неё 16 PostgreSQL-тестов пропускаются.
+PostgreSQL-тесты требуют отдельной одноразовой `TEST_DATABASE_URL`: **они пересоздают схему public**. Никогда не указывайте рабочую БД. Без неё 20 PostgreSQL-тестов пропускаются.
 
-Проверка 23.09.2026: **235 backend-тестов прошли, 16 PostgreSQL-тестов пропущены; 5 тестов proxy, TypeScript и сборка Next.js прошли.** Подробности и ограничения: [отчёт](docs/verification-2026-09-23.md). Тесты не гарантируют отсутствия всех ошибок; внешние зависимости проверяются отдельно.
+Проверка 23.09.2026: **254 backend-теста прошли, 20 PostgreSQL-тестов пропущены; 5 тестов proxy и TypeScript прошли.** Подробности и ограничения: [отчёт](docs/verification-2026-09-23.md). Тесты не гарантируют отсутствия всех ошибок; внешние зависимости проверяются отдельно.
 
 ## Диагностика запуска
 
@@ -354,6 +388,7 @@ PostgreSQL-тесты требуют отдельной одноразовой `
 | 403 / CSRF | Использовать один адрес `127.0.0.1:3000`, не смешивать localhost и IP; обновить сессию |
 | 503 при загрузке | Проверить включение, путь scanner, сигнатуры |
 | Модель недоступна | Проверить ключ, доступ к модели, квоту, политику; каталог может работать в резервном режиме |
+| OCR или семантический поиск не включаются | Проверить `AI_SERVICES_PROVIDER`, ключ и согласие на передачу данных; для поиска — что индекс посчитан `catalog_cli embed` и `EMBED_MODEL` совпадает с моделью индекса |
 | Порт занят | Остановить старый экземпляр; при смене порта согласованно изменить proxy и allowed origins |
 | SQLite занят / API и worker видят разное | Проверить общий абсолютный путь, права записи, лишние старые процессы |
 
