@@ -13,6 +13,7 @@ from app.core.errors import AppError
 from app.core.privacy import payment_data
 from app.modules.actions.service import is_explicit_confirmation, is_explicit_rejection
 from app.modules.assistant.state import AssistantState
+from app.modules.assistant.references import followup_kind, reference_product_id
 from app.modules.chat.models import AssistantOutput
 from app.modules.knowledge.service import PurchaseTermsService
 from app.modules.knowledge.translations import localized_topic, localized_title
@@ -125,11 +126,14 @@ class GroundedAssistant:
         text = context.payload.text.strip()
         lang = language(text, context.payload.language, previous.get("language", "ru"))
         words = TEXT[lang]
+        reference_id = reference_product_id(previous)
+        followup = followup_kind(text) if not context.documents else None
         # A current, standalone customer confirmation only. Model/file text is never consulted.
         if not context.documents and (is_explicit_confirmation(text) or is_explicit_rejection(text)):
             draft = previous.get("proposal")
             if not draft:
-                return AssistantOutput(message=words["noprop"], mode="action", language=lang)
+                return AssistantOutput(message=words["noprop"], mode="action", language=lang,
+                                       reference_product_id=reference_id)
             if is_explicit_confirmation(text):
                 proposal = await self.actions.confirm(context.session_id, draft["id"], draft["version"],
                                                       "chat-confirm-" + context.turn_id)
@@ -139,7 +143,17 @@ class GroundedAssistant:
                 message = words["rejected"] if proposal.status == "rejected" else words["inactive"]
             if proposal.status == "applied" and proposal.cart_url:
                 message += "\n" + proposal.cart_url
-            return AssistantOutput(message=message, mode="action", proposal=proposal, language=lang)
+            return AssistantOutput(message=message, mode="action", proposal=proposal, language=lang,
+                                   reference_product_id=reference_id)
+
+        if followup and reference_id is None and not context.payload.page_product_id:
+            clarification = {
+                "ru": "Для какого товара? Укажите артикул или выберите одну карточку, чтобы я подобрал аналоги или уточнил характеристики.",
+                "kk": "Қай тауар үшін? Артикулды көрсетіңіз немесе бір тауарды таңдаңыз.",
+                "en": "Which product? Please provide its article or select one product card.",
+            }
+            return AssistantOutput(message=clarification[lang], mode="catalog_only", language=lang,
+                                   warnings=["product_reference_required"])
 
         warnings = [w for d in context.documents for w in d.warnings]
         if any(d.status == "partial" for d in context.documents):
@@ -149,24 +163,22 @@ class GroundedAssistant:
         coverage = "unknown"
         unavailable = False
         try:
-            if context.payload.page_product_id:
+            if followup:
+                item = await self.catalog.get_product(reference_id or context.payload.page_product_id)
+                candidates[item.id] = item
+            elif context.payload.page_product_id and not identifier_candidates(text):
                 item = await self.catalog.get_product(context.payload.page_product_id)
                 candidates[item.id] = item
-            if not topics or identifier_candidates(text):
+            if not followup and (not topics or identifier_candidates(text)):
                 result = await self.catalog.search(text[:200], 8)
                 candidates.update((p.id, p) for p in result.items)
                 coverage = result.coverage
-            # The previous response is a reference, never a source of fresh prices.
-            if not candidates and not topics:
-                for item in previous.get("products", [])[:4]:
-                    product = await self.catalog.get_product(item["id"])
-                    candidates[product.id] = product
         except AppError:
             unavailable = True
 
         plan = None
         allow_files = context.payload.allow_external_analysis
-        if self.planner and (not context.documents or allow_files):
+        if self.planner and not followup and (not context.documents or allow_files):
             images = []
             if context.documents and hasattr(self.documents, "images"):
                 images = await self.documents.images(context.session_id, [str(d.asset_id) for d in context.documents])
@@ -192,7 +204,7 @@ class GroundedAssistant:
         elif context.documents and self.planner:
             warnings.append("external_analysis_consent_required")
 
-        intent = (plan or {}).get("intent", "search")
+        intent = followup or (plan or {}).get("intent", "search")
         if plan:
             # Plan IDs must come from pre-fetched catalog candidates, never model imagination.
             ids = plan.get("product_ids", [])
@@ -231,6 +243,9 @@ class GroundedAssistant:
                 sources.extend(topic.sources)
         if re.search(r"менеджер|manager|оператор", text, re.I):
             lines.append(words["manager"])
+        # Capture the explicitly selected primary product BEFORE adding alternatives.
+        # Terms retain it; ambiguous/new failed searches clear it instead of guessing.
+        selected_reference = next(iter(candidates)) if len(candidates) == 1 else reference_id if topics and not candidates else None
         products = list(candidates.values())[:8]
         for p in list(products):
             if p.stock_status == "out_of_stock" or intent == "alternatives" or re.search(r"аналог|балама|alternative", text, re.I):
@@ -304,6 +319,7 @@ class GroundedAssistant:
             answer = answer[:7800] + "\n" + words["partial"]
             warnings.append("response_truncated")
         return AssistantOutput(message=answer, products=products, proposal=proposal, sources=list(dict.fromkeys(sources))[:30],
+                               reference_product_id=selected_reference,
                                alternative_reasons=reasons, language=lang, unknowns=unknowns,
                                warnings=list(dict.fromkeys(warnings))[:30],
                                mode="grounded" if plan else "unavailable" if unavailable and not products else "catalog_only")

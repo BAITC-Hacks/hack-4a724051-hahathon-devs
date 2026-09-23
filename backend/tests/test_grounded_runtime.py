@@ -106,6 +106,89 @@ def test_zero_stock_offers_only_explained_available_candidates(grounded):
         assert "совместимость требует проверки" in reason
 
 
+@pytest.mark.parametrize("question", ["есть аналог?", "А есть ещё аналоги?", "чем заменить?", "any alternatives?", "баламасы бар ма?"])
+def test_followup_uses_primary_product_not_search_words_or_previous_alternatives(grounded, monkeypatch, question):
+    first = turn(grounded, "990100015_")
+    assert first["reference_product_id"] == 900015
+    expected = set(first["alternative_reasons"])
+    assert expected
+
+    async def no_search(*args, **kwargs):
+        pytest.fail("A reference-only follow-up must not run broad catalog search")
+
+    monkeypatch.setattr(grounded[0].catalog, "search", no_search)
+    answer = turn(grounded, question)
+    assert answer["reference_product_id"] == 900015
+    assert answer["products"][0]["id"] == 900015
+    assert set(answer["alternative_reasons"]) == expected
+    assert {str(item["id"]) for item in answer["products"]} == expected | {"900015"}
+    repeated = turn(grounded, "есть аналог?")
+    assert repeated["reference_product_id"] == 900015
+    assert set(repeated["alternative_reasons"]) == expected
+
+
+def test_reference_survives_terms_and_processor_restart_and_reads_current_facts(grounded):
+    from dataclasses import replace
+    from decimal import Decimal
+    from app.modules.assistant.runtime import GroundedAssistant
+
+    turn(grounded, "990100015_")
+    assert turn(grounded, "условия доставки")["reference_product_id"] == 900015
+    services = grounded[0]
+    original = services.catalog.catalog.get_product(900015)
+    services.catalog.catalog.replace_product(replace(original, price=Decimal("9999")))
+    services.worker.processor = GroundedAssistant(services.catalog, services.actions, services.documents, services.settings.local_db_path)
+    answer = turn(grounded, "есть аналог?")
+    assert answer["products"][0]["id"] == 900015
+    assert answer["products"][0]["price_amount"] == "9999"
+    assert answer["alternative_reasons"]
+
+
+def test_followup_without_unique_product_clarifies_and_does_not_call_model(grounded):
+    planner = RecordingPlanner(product_ids=[900003])
+    grounded[0].worker.processor.planner = planner
+    answer = turn(grounded, "есть аналог?")
+    assert not answer["products"] and not answer["alternative_reasons"]
+    assert "product_reference_required" in answer["warnings"]
+    assert planner.calls == []
+    grounded[0].worker.processor.planner = None
+    multiple = turn(grounded, "автомат")
+    assert len(multiple["products"]) > 1 and multiple["reference_product_id"] is None
+    assert not turn(grounded, "есть аналог?")["products"]
+
+
+def test_new_article_replaces_context_and_unknown_article_clears_it(grounded):
+    turn(grounded, "990100015_")
+    answer = turn(grounded, "990100003_")
+    assert answer["reference_product_id"] == 900003
+    assert turn(grounded, "характеристики")["products"][0]["id"] == 900003
+    missing = turn(grounded, "NONEXISTENT990999999_")
+    assert missing["reference_product_id"] is None
+    assert not missing["products"]
+    assert not turn(grounded, "есть аналог?")["products"]
+
+
+def test_reference_does_not_cross_conversation_or_session(grounded):
+    turn(grounded, "990100015_")
+    services, client, headers, _ = grounded
+    other = conversation(client, headers)
+    assert not turn(grounded, "есть аналог?", conv=other)["products"]
+    with TestClient(create_app(container=services)) as stranger:
+        stranger_headers = authenticate(stranger)
+        stranger_conv = conversation(stranger, stranger_headers)
+        assert not turn((services, stranger, stranger_headers, stranger_conv), "есть аналог?")["products"]
+
+
+def test_explicit_alternative_article_and_new_description_do_not_reuse_old_context(grounded):
+    turn(grounded, "990100003_")
+    explicit = turn(grounded, "аналог 990100015_")
+    assert explicit["reference_product_id"] == 900015
+    assert explicit["alternative_reasons"]
+    from app.modules.assistant.references import followup_kind
+    assert followup_kind("аналог кабеля 3x2.5") is None
+    assert followup_kind("аналог розетки") is None
+
+
 @pytest.mark.parametrize("question,topic", [("Расскажите про доставку", "delivery"),
                                            ("Какие способы оплаты?", "payment")])
 def test_purchase_terms_are_sourced(grounded, question, topic):

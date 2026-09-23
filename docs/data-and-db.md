@@ -7,7 +7,7 @@
 ```
 cd backend
 python -m app.catalog_cli migrate            # таблицы products, catalog_sync_runs, assets
-python -m app.catalog_cli import-synthetic   # 65 синтетических товаров для демо
+python -m app.catalog_cli import-synthetic   # 281 демонстрационный товар; только для отдельной демо-БД
 python -m app.catalog_cli import-ekt --pages 3   # реальный API, нужны EKT_API_USER/PASSWORD
 python -m app.catalog_cli status             # сколько товаров и полон ли последний импорт
 ```

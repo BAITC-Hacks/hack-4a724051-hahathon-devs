@@ -23,6 +23,7 @@ class TurnInput(DTO):
 
 
 class AssistantOutput(DTO):
+    reference_product_id: int | None = Field(default=None, gt=0)
     message: str = Field(max_length=8000)
     products: list[Product] = Field(default_factory=list, max_length=20)
     unknowns: list[str] = Field(default_factory=list, max_length=20)
